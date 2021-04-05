@@ -12,14 +12,16 @@ import (
 )
 
 type Post struct {
-	repo   repository.PostI
-	logger kitlog.Logger
+	repoPost    repository.PostI
+	repoComment repository.CommentI
+	logger      kitlog.Logger
 }
 
-func NewPost(repo repository.PostI, logger kitlog.Logger) *Post {
+func NewPost(repoPost repository.PostI, repoComment repository.CommentI, logger kitlog.Logger) *Post {
 	return &Post{
-		repo:   repo,
-		logger: logger,
+		repoPost:    repoPost,
+		repoComment: repoComment,
+		logger:      logger,
 	}
 }
 
@@ -43,7 +45,7 @@ func (p *Post) GetListPost(ctx context.Context, params *model.GetListRequest) (*
 		OrderBy:      params.ActivityName,
 	}
 
-	listData, err := p.repo.GetListPost(ctx, req)
+	listData, err := p.repoPost.GetListPost(ctx, req)
 	if err != nil {
 		level.Error(logger).Log("error_get_userpost", err)
 		return nil, err
@@ -65,7 +67,7 @@ func (p *Post) GetListPost(ctx context.Context, params *model.GetListRequest) (*
 			UpdatedAt:     v.UpdatedAt,
 		}
 		if v.LastUserPostCommentID.Valid {
-			comment, err := p.repo.GetLastComment(ctx, v.LastUserPostCommentID.Int64)
+			comment, err := p.repoComment.GetLastComment(ctx, v.LastUserPostCommentID.Int64)
 			if err != nil {
 				level.Error(logger).Log("error_get_last_comment", err)
 				return nil, err
@@ -74,7 +76,7 @@ func (p *Post) GetListPost(ctx context.Context, params *model.GetListRequest) (*
 			userPost.LastComment = comment
 		}
 		if v.CreatedBy.Valid {
-			user, err := p.repo.GetActor(ctx, v.CreatedBy.Int64)
+			user, err := p.repoPost.GetActor(ctx, v.CreatedBy.Int64)
 			if err != nil {
 				level.Error(logger).Log("error_get_actor", err)
 				return nil, err
@@ -85,7 +87,7 @@ func (p *Post) GetListPost(ctx context.Context, params *model.GetListRequest) (*
 		// isLiked, err := p.repo.GetIsLikedByUser()
 	}
 
-	total, err := p.repo.GetMetadataPost(ctx, req)
+	total, err := p.repoPost.GetMetadataPost(ctx, req)
 	if err != nil {
 		level.Error(logger).Log("error_get_metadata", err)
 		return nil, err
