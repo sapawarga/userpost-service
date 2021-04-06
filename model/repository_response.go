@@ -39,13 +39,15 @@ type LikeResponse struct {
 }
 
 type CommentResponse struct {
-	ID            int64  `db:"id"`
-	Comment       string `db:"comment"`
-	ActorID       int64  `db:"actor_id"`
-	ActorName     string `db:"actor_name"`
-	ActorPhotoURL string `db:"actor_photo_url"`
-	RegencyName   string `db:"regency_name"`
-	DistrictName  string `db:"district_name"`
-	VillageName   string `db:"village_name"`
-	RW            string `db:"rw"`
+	ID           int64     `db:"id"`
+	UserPostID   int64     `db:"user_post_id"`
+	Comment      string    `db:"comment"`
+	RegencyName  string    `db:"regency_name"`
+	DistrictName string    `db:"district_name"`
+	VillageName  string    `db:"village_name"`
+	RW           string    `db:"rw"`
+	CreatedAt    time.Time `db:"created_at"`
+	UpdatedAt    time.Time `db:"updated_at"`
+	CreatedBy    int64     `db:"created_by"`
+	UpdatedBy    int64     `db:"updated_by"`
 }

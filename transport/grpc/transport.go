@@ -74,16 +74,34 @@ func encodeGetListUserPost(ctx context.Context, r interface{}) (interface{}, err
 		}
 		if v.LastComment != nil {
 			comment := &transportUserPost.Comment{
-				Id:            v.LastComment.ID,
-				Comment:       v.LastComment.Comment,
-				ActorId:       v.LastComment.ActorID,
-				ActorName:     v.LastComment.ActorName,
-				ActorPhotoUrl: v.LastComment.ActorPhotoURL,
-				RegencyName:   v.LastComment.RegencyName,
-				DistrictName:  v.LastComment.DistrictName,
-				VillageName:   v.LastComment.DistrictName,
-				Rw:            v.LastComment.RW,
+				Id:         v.LastComment.ID,
+				UserPostId: v.LastComment.UserPostID,
+				Comment:    v.LastComment.Text,
+				CreatedAt:  v.LastComment.CreatedAt.String(),
+				UpdatedAt:  v.LastComment.UpdatedAt.String(),
 			}
+			actorCreated := &transportUserPost.Actor{
+				Id:       v.LastComment.CreatedBy.ID,
+				Name:     v.LastComment.CreatedBy.Name.String,
+				PhotoUrl: v.LastComment.CreatedBy.PhotoURL.String,
+				Role:     v.LastComment.CreatedBy.Role.Int64,
+				Regency:  v.LastComment.CreatedBy.Regency,
+				District: v.LastComment.CreatedBy.District,
+				Village:  v.LastComment.CreatedBy.Village,
+				Rw:       v.LastComment.CreatedBy.RW.String,
+			}
+			actorUpdated := &transportUserPost.Actor{
+				Id:       v.LastComment.UpdatedBy.ID,
+				Name:     v.LastComment.UpdatedBy.Name.String,
+				PhotoUrl: v.LastComment.UpdatedBy.PhotoURL.String,
+				Role:     v.LastComment.UpdatedBy.Role.Int64,
+				Regency:  v.LastComment.UpdatedBy.Regency,
+				District: v.LastComment.UpdatedBy.District,
+				Village:  v.LastComment.UpdatedBy.Village,
+				Rw:       v.LastComment.UpdatedBy.RW.String,
+			}
+			comment.CreatedBy = actorCreated
+			comment.UpdatedBy = actorUpdated
 			result.LastComment = comment
 		}
 

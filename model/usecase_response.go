@@ -11,7 +11,7 @@ type UserPostResponse struct {
 	ImagePath             string
 	Images                string
 	LastUserPostCommentID *int64
-	LastComment           *CommentResponse
+	LastComment           *Comment
 	LikesCount            int64
 	IsLiked               bool
 	CommentCounts         int64
@@ -30,4 +30,14 @@ type Metadata struct {
 	Page      int64
 	TotalPage int64
 	Total     int64
+}
+
+type Comment struct {
+	ID         int64
+	UserPostID int64
+	Text       string
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+	CreatedBy  *UserResponse
+	UpdatedBy  *UserResponse
 }
