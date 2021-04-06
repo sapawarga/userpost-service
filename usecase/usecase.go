@@ -73,7 +73,25 @@ func (p *Post) GetListPost(ctx context.Context, params *model.GetListRequest) (*
 				return nil, err
 			}
 			userPost.LastUserPostCommentID = helper.SetPointerInt64(v.LastUserPostCommentID.Int64)
-			userPost.LastComment = comment
+			commentResp := &model.Comment{
+				ID:         comment.ID,
+				UserPostID: comment.UserPostID,
+				Text:       comment.Comment,
+				CreatedAt:  comment.CreatedAt,
+				UpdatedAt:  comment.UpdatedAt,
+			}
+			actorCreated, err := p.repoPost.GetActor(ctx, comment.CreatedBy)
+			if err != nil {
+				level.Error(logger).Log("error_get_actor_created", err)
+				return nil, err
+			}
+			commentResp.CreatedBy = actorCreated
+			actorUpdated, err := p.repoPost.GetActor(ctx, comment.UpdatedBy)
+			if err != nil {
+				level.Error(logger).Log("error_get_actor_updated", err)
+				return nil, err
+			}
+			commentResp.UpdatedBy = actorUpdated
 		}
 		if v.CreatedBy.Valid {
 			user, err := p.repoPost.GetActor(ctx, v.CreatedBy.Int64)

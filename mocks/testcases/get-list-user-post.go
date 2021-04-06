@@ -125,15 +125,22 @@ var (
 	}
 	metadataResponse = helper.SetPointerInt64(2)
 	commentResponse  = &model.CommentResponse{
-		ID:            1,
-		Comment:       "comment",
-		ActorID:       1,
-		ActorName:     "John Doe",
-		ActorPhotoURL: "url",
-		RegencyName:   "regency",
-		DistrictName:  "district",
-		VillageName:   "village",
-		RW:            "rw",
+		ID:         1,
+		Comment:    "comment",
+		UserPostID: 1,
+		CreatedAt:  current,
+		UpdatedAt:  current,
+		CreatedBy:  1,
+		UpdatedBy:  1,
+	}
+	comment = &model.Comment{
+		ID:         commentResponse.ID,
+		UserPostID: commentResponse.UserPostID,
+		Text:       commentResponse.Comment,
+		CreatedAt:  commentResponse.CreatedAt,
+		UpdatedAt:  commentResponse.UpdatedAt,
+		CreatedBy:  actorResponse,
+		UpdatedBy:  actorResponse,
 	}
 	totalComment     = helper.SetPointerInt64(1)
 	userPostResponse = []*model.UserPostResponse{
@@ -144,7 +151,7 @@ var (
 			ImagePath:             "test",
 			Images:                "test",
 			LastUserPostCommentID: helper.SetPointerInt64(1),
-			LastComment:           commentResponse,
+			LastComment:           comment,
 			LikesCount:            0,
 			IsLiked:               false,
 			CommentCounts:         1,
@@ -159,7 +166,7 @@ var (
 			ImagePath:             "test",
 			Images:                "test",
 			LastUserPostCommentID: helper.SetPointerInt64(1),
-			LastComment:           commentResponse,
+			LastComment:           comment,
 			LikesCount:            0,
 			IsLiked:               false,
 			CommentCounts:         1,
