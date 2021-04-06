@@ -49,6 +49,21 @@ func (mr *MockPostIMockRecorder) GetActor(arg0, arg1 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetActor", reflect.TypeOf((*MockPostI)(nil).GetActor), arg0, arg1)
 }
 
+// GetDetailPost mocks base method
+func (m *MockPostI) GetDetailPost(arg0 context.Context, arg1 int64) (*model.PostResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetDetailPost", arg0, arg1)
+	ret0, _ := ret[0].(*model.PostResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetDetailPost indicates an expected call of GetDetailPost
+func (mr *MockPostIMockRecorder) GetDetailPost(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDetailPost", reflect.TypeOf((*MockPostI)(nil).GetDetailPost), arg0, arg1)
+}
+
 // GetIsLikedByUser mocks base method
 func (m *MockPostI) GetIsLikedByUser(arg0 context.Context, arg1 *model.IsLikedByUser) (bool, error) {
 	m.ctrl.T.Helper()

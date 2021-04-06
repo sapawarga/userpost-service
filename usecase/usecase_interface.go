@@ -8,5 +8,5 @@ import (
 
 type UsecaseI interface {
 	GetListPost(ctx context.Context, params *model.GetListRequest) (*model.UserPostWithMetadata, error)
-	// GetDetailPost(ctx context.Context, id int64) (interface{}, error)
+	GetDetailPost(ctx context.Context, id int64) (*model.UserPostResponse, error)
 }
