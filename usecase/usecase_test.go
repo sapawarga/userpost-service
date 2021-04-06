@@ -48,8 +48,8 @@ var _ = Describe("Usecase", func() {
 			Expect(resp).To(BeNil())
 		} else {
 			Expect(err).To(BeNil())
-			Expect(resp.Page).To(Equal(data.ResponseUsecase.Result.Metadata.Page))
-			Expect(resp.Total).To(Equal(data.ResponseUsecase.Result.Metadata.Total))
+			Expect(resp.Metadata.Page).To(Equal(data.ResponseUsecase.Result.Metadata.Page))
+			Expect(resp.Metadata.Total).To(Equal(data.ResponseUsecase.Result.Metadata.Total))
 			Expect(resp).NotTo(BeNil())
 		}
 	}

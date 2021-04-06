@@ -22,8 +22,8 @@ type UserPostResponse struct {
 }
 
 type UserPostWithMetadata struct {
-	Data []*UserPostResponse
-	*Metadata
+	Data     []*UserPostResponse
+	Metadata *Metadata
 }
 
 type Metadata struct {
