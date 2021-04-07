@@ -10,3 +10,7 @@ type GetListUserPostRequest struct {
 	SortBy       *string `httpquery:"sort_by"`
 	OrderBy      *string `httpquery:"order_by"`
 }
+
+type GetByID struct {
+	ID int64 `json:"id" httpquery:"id"`
+}
