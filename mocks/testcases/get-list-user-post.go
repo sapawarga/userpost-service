@@ -2,6 +2,7 @@ package testcases
 
 import (
 	"database/sql"
+	"errors"
 
 	"github.com/sapawarga/userpost-service/helper"
 	"github.com/sapawarga/userpost-service/model"
@@ -218,6 +219,134 @@ var GetListUserPostData = []GetListUserPost{
 		ResponseUsecase: ResponseUsecase{
 			Result: usecaseResponse,
 			Error:  nil,
+		},
+	}, {
+		Description:            "failed_get_user_post",
+		UsecaseParams:          requestUsecase,
+		GetUserPostParams:      userPostParams,
+		GetMetadataParams:      userPostParams,
+		GetActorParams:         1,
+		GetLastCommentParams:   1,
+		GetTotalCommentsParams: 1,
+		ResponseGetList: ResponseGetList{
+			Result: nil,
+			Error:  errors.New("failed_get_user_posts"),
+		},
+		ResponseGetActor: ResponseGetActor{
+			Result: nil,
+			Error:  nil,
+		},
+		ResponseMetadata: ResponseMetadata{
+			Result: nil,
+			Error:  nil,
+		},
+		ResponseGetLastComment: ResponseGetLastComment{
+			Result: nil,
+			Error:  nil,
+		},
+		ResponseGetTotalComment: ResponseGetTotalComment{
+			Result: nil,
+			Error:  nil,
+		},
+		ResponseUsecase: ResponseUsecase{
+			Result: nil,
+			Error:  errors.New("failed_get_user_posts"),
+		},
+	}, {
+		Description:            "failed_get_actor_created",
+		UsecaseParams:          requestUsecase,
+		GetUserPostParams:      userPostParams,
+		GetMetadataParams:      userPostParams,
+		GetActorParams:         1,
+		GetLastCommentParams:   1,
+		GetTotalCommentsParams: 1,
+		ResponseGetList: ResponseGetList{
+			Result: postResponse,
+			Error:  nil,
+		},
+		ResponseGetActor: ResponseGetActor{
+			Result: nil,
+			Error:  errors.New("failed_get_actor"),
+		},
+		ResponseMetadata: ResponseMetadata{
+			Result: metadataResponse,
+			Error:  nil,
+		},
+		ResponseGetLastComment: ResponseGetLastComment{
+			Result: commentResponse,
+			Error:  nil,
+		},
+		ResponseGetTotalComment: ResponseGetTotalComment{
+			Result: totalComment,
+			Error:  nil,
+		},
+		ResponseUsecase: ResponseUsecase{
+			Result: nil,
+			Error:  errors.New("failed_get_actor"),
+		},
+	}, {
+		Description:            "failed_get_comment",
+		UsecaseParams:          requestUsecase,
+		GetUserPostParams:      userPostParams,
+		GetMetadataParams:      userPostParams,
+		GetActorParams:         1,
+		GetLastCommentParams:   1,
+		GetTotalCommentsParams: 1,
+		ResponseGetList: ResponseGetList{
+			Result: postResponse,
+			Error:  nil,
+		},
+		ResponseGetActor: ResponseGetActor{
+			Result: actorResponse,
+			Error:  nil,
+		},
+		ResponseMetadata: ResponseMetadata{
+			Result: metadataResponse,
+			Error:  nil,
+		},
+		ResponseGetLastComment: ResponseGetLastComment{
+			Result: nil,
+			Error:  errors.New("failed_get_comment"),
+		},
+		ResponseGetTotalComment: ResponseGetTotalComment{
+			Result: totalComment,
+			Error:  nil,
+		},
+		ResponseUsecase: ResponseUsecase{
+			Result: nil,
+			Error:  errors.New("failed_get_comment"),
+		},
+	}, {
+		Description:            "failed_get_metadata",
+		UsecaseParams:          requestUsecase,
+		GetUserPostParams:      userPostParams,
+		GetMetadataParams:      userPostParams,
+		GetActorParams:         1,
+		GetLastCommentParams:   1,
+		GetTotalCommentsParams: 1,
+		ResponseGetList: ResponseGetList{
+			Result: postResponse,
+			Error:  nil,
+		},
+		ResponseGetActor: ResponseGetActor{
+			Result: actorResponse,
+			Error:  nil,
+		},
+		ResponseMetadata: ResponseMetadata{
+			Result: nil,
+			Error:  errors.New("failed_get_metadata"),
+		},
+		ResponseGetLastComment: ResponseGetLastComment{
+			Result: commentResponse,
+			Error:  nil,
+		},
+		ResponseGetTotalComment: ResponseGetTotalComment{
+			Result: totalComment,
+			Error:  nil,
+		},
+		ResponseUsecase: ResponseUsecase{
+			Result: nil,
+			Error:  errors.New("failed_get_metadata"),
 		},
 	},
 }
