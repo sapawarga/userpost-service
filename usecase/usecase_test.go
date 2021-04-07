@@ -41,7 +41,7 @@ var _ = Describe("Usecase", func() {
 		mockPostRepo.EXPECT().GetListPost(ctx, gomock.Any()).Return(data.ResponseGetList.Result, data.ResponseGetList.Error).Times(1)
 		mockPostRepo.EXPECT().GetMetadataPost(ctx, gomock.Any()).Return(data.ResponseMetadata.Result, data.ResponseMetadata.Error).Times(1)
 		mockCommentsRepo.EXPECT().GetLastComment(ctx, data.GetLastCommentParams).Return(data.ResponseGetLastComment.Result, data.ResponseGetLastComment.Error).Times(len(data.ResponseGetList.Result))
-		mockPostRepo.EXPECT().GetActor(ctx, data.GetActorParams).Return(data.ResponseGetActor.Result, data.ResponseGetActor.Error).Times(len(data.ResponseGetList.Result))
+		mockPostRepo.EXPECT().GetActor(ctx, data.GetActorParams).Return(data.ResponseGetActor.Result, data.ResponseGetActor.Error).Times(len(data.ResponseGetList.Result) * 3)
 		resp, err := userPost.GetListPost(ctx, &data.UsecaseParams)
 		if err != nil {
 			Expect(err).NotTo(BeNil())
@@ -54,8 +54,26 @@ var _ = Describe("Usecase", func() {
 		}
 	}
 
+	var GetDetailUserPostLogic = func(idx int) {
+		ctx := context.Background()
+		data := testcases.GetDetailUserPostData[idx]
+		mockPostRepo.EXPECT().GetDetailPost(ctx, data.GetUserPostParams).Return(data.ResponseGetDetailUserPost.Result, data.ResponseGetDetailUserPost.Error).Times(1)
+		mockCommentsRepo.EXPECT().GetLastComment(ctx, data.GetLastCommentParams).Return(data.ResponseGetLastComment.Result, data.ResponseGetLastComment.Error).Times(1)
+		mockCommentsRepo.EXPECT().GetTotalComments(ctx, data.GetTotalCommentsParams).Return(data.ResponseGetTotalComment.Result, data.ResponseGetTotalComment.Error).Times(1)
+		mockPostRepo.EXPECT().GetActor(ctx, data.GetActorParams).Return(data.ResponseGetActor.Result, data.ResponseGetActor.Error).Times(3)
+		resp, err := userPost.GetDetailPost(ctx, data.UsecaseParams)
+		if err != nil {
+			Expect(err).NotTo(BeNil())
+			Expect(resp).To(BeNil())
+		} else {
+			Expect(err).To(BeNil())
+			Expect(resp).NotTo(BeNil())
+		}
+	}
+
 	var unitTestLogic = map[string]map[string]interface{}{
-		"GetListUserPost": {"func": GetListUserPostLogic, "test_case_count": len(testcases.GetListUserPostData), "desc": testcases.ListUserPostDescription()},
+		"GetListUserPost":   {"func": GetListUserPostLogic, "test_case_count": len(testcases.GetListUserPostData), "desc": testcases.ListUserPostDescription()},
+		"GetDetailUserPost": {"func": GetDetailUserPostLogic, "test_case_count": len(testcases.GetDetailUserPostData), "desc": testcases.ListUserPostDetailDescription()},
 	}
 
 	for _, val := range unitTestLogic {
