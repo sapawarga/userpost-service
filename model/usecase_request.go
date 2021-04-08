@@ -10,3 +10,11 @@ type GetListRequest struct {
 	SortBy       *string
 	OrderBy      *string
 }
+
+type CreateNewPostRequest struct {
+	Title        string
+	ImagePathURL string
+	Images       string
+	Tags         *string
+	Status       int64
+}
