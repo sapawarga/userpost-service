@@ -18,8 +18,15 @@ func MakeHandler(ctx context.Context, fs usecase.UsecaseI) transportUserPost.Use
 		encodeGetListUserPost,
 	)
 
+	userPostGetDetailHandler := kitgrpc.NewServer(
+		endpoint.MakeGetDetailUserPost(ctx, fs),
+		decodeByIDRequest,
+		encodedUserPostDetail,
+	)
+
 	return &grpcServer{
 		userPostGetListHandler,
+		userPostGetDetailHandler,
 	}
 }
 
@@ -118,4 +125,81 @@ func encodeGetListUserPost(ctx context.Context, r interface{}) (interface{}, err
 		Data:     resultData,
 		Metadata: meta,
 	}, nil
+}
+
+func decodeByIDRequest(ctx context.Context, r interface{}) (interface{}, error) {
+	req := r.(*transportUserPost.ByID)
+
+	return &endpoint.GetByID{
+		ID: req.GetId(),
+	}, nil
+}
+
+func encodedUserPostDetail(ctx context.Context, r interface{}) (interface{}, error) {
+	resp := r.(*endpoint.UserPostDetail)
+	comment := resp.LastComment
+	actor := resp.Actor
+
+	lastComment := &transportUserPost.Comment{
+		Id:         comment.ID,
+		UserPostId: comment.UserPostID,
+		Comment:    comment.Text,
+		CreatedAt:  comment.CreatedAt.String(),
+		UpdatedAt:  comment.UpdatedAt.String(),
+	}
+
+	lastCommentActorCreated := &transportUserPost.Actor{
+		Id:       comment.CreatedBy.ID,
+		Name:     comment.CreatedBy.Name.String,
+		PhotoUrl: comment.CreatedBy.PhotoURL.String,
+		Role:     comment.CreatedBy.Role.Int64,
+		Regency:  comment.CreatedBy.Regency,
+		District: comment.CreatedBy.District,
+		Village:  comment.CreatedBy.Village,
+		Rw:       comment.CreatedBy.RW.String,
+	}
+
+	lastCommentActorUpdated := &transportUserPost.Actor{
+		Id:       comment.UpdatedBy.ID,
+		Name:     comment.UpdatedBy.Name.String,
+		PhotoUrl: comment.UpdatedBy.PhotoURL.String,
+		Role:     comment.UpdatedBy.Role.Int64,
+		Regency:  comment.UpdatedBy.Regency,
+		District: comment.UpdatedBy.District,
+		Village:  comment.UpdatedBy.Village,
+		Rw:       comment.UpdatedBy.RW.String,
+	}
+
+	lastComment.CreatedBy = lastCommentActorCreated
+	lastComment.UpdatedBy = lastCommentActorUpdated
+
+	actorUserPost := &transportUserPost.Actor{
+		Id:       actor.ID,
+		Name:     actor.Name.String,
+		PhotoUrl: actor.PhotoURL.String,
+		Role:     actor.Role.Int64,
+		Regency:  actor.Regency,
+		District: actor.District,
+		Village:  actor.Village,
+		Rw:       actor.RW.String,
+	}
+
+	userDetail := &transportUserPost.UserPost{
+		Id:                    resp.ID,
+		Title:                 resp.Title,
+		Tag:                   helper.GetStringFromPointer(resp.Tag),
+		ImagePath:             resp.ImagePath,
+		Images:                resp.Images,
+		LastUserPostCommentId: helper.GetInt64FromPointer(resp.LastUserPostCommentID),
+		LastComment:           lastComment,
+		LikesCount:            resp.LikesCount,
+		IsLiked:               resp.IsLiked,
+		CommentCounts:         resp.CommentCounts,
+		Status:                resp.Status,
+		Actor:                 actorUserPost,
+		CreatedAt:             resp.CreatedAt.String(),
+		UpdatedAt:             resp.UpdatedAt.String(),
+	}
+
+	return userDetail, nil
 }

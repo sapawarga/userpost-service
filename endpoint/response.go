@@ -12,3 +12,7 @@ type Metadata struct {
 	TotalPage int64 `json:"total_page"`
 	Total     int64 `json:"total"`
 }
+
+type UserPostDetail struct {
+	*model.UserPostResponse
+}
