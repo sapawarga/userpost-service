@@ -97,6 +97,17 @@ func (p *Post) GetDetailPost(ctx context.Context, id int64) (*model.UserPostResp
 	return userPost, nil
 }
 
+func (p *Post) CreateNewPost(ctx context.Context, requestBody *model.CreateNewPostRequest) error {
+	// TODO: add checker tags
+	logger := kitlog.With(p.logger, "method", "CreateNewPost")
+	if err := p.repoPost.InsertPost(ctx, requestBody); err != nil {
+		level.Error(logger).Log("error_create_post", err)
+		return err
+	}
+
+	return nil
+}
+
 func (p *Post) getDetailOfUserPost(ctx context.Context, post *model.PostResponse) (*model.UserPostResponse, error) {
 	logger := kitlog.With(p.logger, "method", "getDetailOfUserPost")
 	userPost := &model.UserPostResponse{
