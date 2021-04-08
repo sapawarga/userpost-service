@@ -34,3 +34,14 @@ func MakeGetListUserPost(ctx context.Context, usecase usecase.UsecaseI) endpoint
 		}, nil
 	}
 }
+
+func MakeGetDetailUserPost(ctx context.Context, usecase usecase.UsecaseI) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*GetByID)
+		resp, err := usecase.GetDetailPost(ctx, req.ID)
+		if err != nil {
+			return nil, err
+		}
+		return resp, nil
+	}
+}
