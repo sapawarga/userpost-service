@@ -71,9 +71,22 @@ var _ = Describe("Usecase", func() {
 		}
 	}
 
+	var CreateNewPostLogic = func(idx int) {
+		ctx := context.Background()
+		data := testcases.CreateNewUserPostData[idx]
+		mockPostRepo.EXPECT().InsertPost(ctx, data.RepositoryRequest).Return(data.MockRepository).Times(1)
+		err := userPost.CreateNewPost(ctx, data.UsecaseRequest)
+		if err != nil {
+			Expect(err).NotTo(BeNil())
+		} else {
+			Expect(err).To(BeNil())
+		}
+	}
+
 	var unitTestLogic = map[string]map[string]interface{}{
 		"GetListUserPost":   {"func": GetListUserPostLogic, "test_case_count": len(testcases.GetListUserPostData), "desc": testcases.ListUserPostDescription()},
 		"GetDetailUserPost": {"func": GetDetailUserPostLogic, "test_case_count": len(testcases.GetDetailUserPostData), "desc": testcases.ListUserPostDetailDescription()},
+		"CreateNewPost":     {"func": CreateNewPostLogic, "test_case_count": len(testcases.CreateNewUserPostData), "desc": testcases.CreateNewUserPostDescription()},
 	}
 
 	for _, val := range unitTestLogic {
