@@ -123,32 +123,13 @@ func (p *Post) getDetailOfUserPost(ctx context.Context, post *model.PostResponse
 		UpdatedAt:     post.UpdatedAt,
 	}
 	if post.LastUserPostCommentID.Valid {
-		comment, err := p.repoComment.GetLastComment(ctx, post.LastUserPostCommentID.Int64)
+		comment, err := p.getLastComment(ctx, post.LastUserPostCommentID.Int64)
 		if err != nil {
-			level.Error(logger).Log("error_get_last_comment", err)
+			level.Error(logger).Log("error_get_comment", err)
 			return nil, err
 		}
-		commentResp := &model.Comment{
-			ID:         comment.ID,
-			UserPostID: comment.UserPostID,
-			Text:       comment.Comment,
-			CreatedAt:  comment.CreatedAt,
-			UpdatedAt:  comment.UpdatedAt,
-		}
-		actorCreated, err := p.repoPost.GetActor(ctx, comment.CreatedBy)
-		if err != nil {
-			level.Error(logger).Log("error_get_actor_created", err)
-			return nil, err
-		}
-		commentResp.CreatedBy = actorCreated
-		actorUpdated, err := p.repoPost.GetActor(ctx, comment.UpdatedBy)
-		if err != nil {
-			level.Error(logger).Log("error_get_actor_updated", err)
-			return nil, err
-		}
-		commentResp.UpdatedBy = actorUpdated
 		userPost.LastUserPostCommentID = helper.SetPointerInt64(post.LastUserPostCommentID.Int64)
-		userPost.LastComment = commentResp
+		userPost.LastComment = comment
 	}
 	if post.CreatedBy.Valid {
 		user, err := p.repoPost.GetActor(ctx, post.CreatedBy.Int64)
@@ -163,4 +144,33 @@ func (p *Post) getDetailOfUserPost(ctx context.Context, post *model.PostResponse
 	// isLiked, err := p.repo.GetIsLikedByUser()
 
 	return userPost, nil
+}
+
+func (p *Post) getLastComment(ctx context.Context, id int64) (*model.Comment, error) {
+	logger := kitlog.With(p.logger, "method", "getLastComment")
+	comment, err := p.repoComment.GetLastComment(ctx, id)
+	if err != nil {
+		level.Error(logger).Log("error_get_last_comment", err)
+		return nil, err
+	}
+	commentResp := &model.Comment{
+		ID:         comment.ID,
+		UserPostID: comment.UserPostID,
+		Text:       comment.Comment,
+		CreatedAt:  comment.CreatedAt,
+		UpdatedAt:  comment.UpdatedAt,
+	}
+	actorCreated, err := p.repoPost.GetActor(ctx, comment.CreatedBy)
+	if err != nil {
+		level.Error(logger).Log("error_get_actor_created", err)
+		return nil, err
+	}
+	commentResp.CreatedBy = actorCreated
+	actorUpdated, err := p.repoPost.GetActor(ctx, comment.UpdatedBy)
+	if err != nil {
+		level.Error(logger).Log("error_get_actor_updated", err)
+		return nil, err
+	}
+	commentResp.UpdatedBy = actorUpdated
+	return commentResp, nil
 }
