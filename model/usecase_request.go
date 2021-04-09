@@ -18,3 +18,9 @@ type CreateNewPostRequest struct {
 	Tags         *string
 	Status       int64
 }
+
+type UpdatePostRequest struct {
+	ID     int64
+	Status *int64
+	Title  *string
+}
