@@ -2,8 +2,10 @@ package endpoint
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/go-kit/kit/endpoint"
+	"github.com/sapawarga/userpost-service/helper"
 	"github.com/sapawarga/userpost-service/model"
 	"github.com/sapawarga/userpost-service/usecase"
 )
@@ -43,5 +45,37 @@ func MakeGetDetailUserPost(ctx context.Context, usecase usecase.UsecaseI) endpoi
 			return nil, err
 		}
 		return resp, nil
+	}
+}
+
+func MakeCreateNewPost(ctx context.Context, usecase usecase.UsecaseI) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*CreateNewPostRequest)
+		if err := Validate(req); err != nil {
+			return nil, err
+		}
+
+		imagePathURL := req.Images[0]
+		imagesFormatted, err := json.Marshal(req.Images)
+		if err != nil {
+			return nil, err
+		}
+
+		bodyRequest := &model.CreateNewPostRequest{
+			Title:        helper.GetStringFromPointer(req.Title),
+			ImagePathURL: imagePathURL.Path,
+			Images:       string(imagesFormatted),
+			Tags:         req.Tags,
+			Status:       helper.GetInt64FromPointer(req.Status),
+		}
+
+		if err = usecase.CreateNewPost(ctx, bodyRequest); err != nil {
+			return nil, err
+		}
+
+		return &StatusResponse{
+			Code:    helper.STATUSCREATED,
+			Message: "a_post_has_been_created",
+		}, nil
 	}
 }

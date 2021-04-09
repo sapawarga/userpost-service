@@ -7,4 +7,7 @@ const (
 	DELETED_STRING         = "deleted"
 	INACTIVED_STRING       = "inactived"
 	ACTIVED_STRING         = "actived"
+	STATUSCREATED          = "status_created"
+	STATUSUPDATED          = "status_updated"
+	STATUSDELETED          = "status_deleted"
 )

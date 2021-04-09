@@ -16,3 +16,8 @@ type Metadata struct {
 type UserPostDetail struct {
 	*model.UserPostResponse
 }
+
+type StatusResponse struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
