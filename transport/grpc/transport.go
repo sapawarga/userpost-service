@@ -24,9 +24,16 @@ func MakeHandler(ctx context.Context, fs usecase.UsecaseI) transportUserPost.Use
 		encodedUserPostDetail,
 	)
 
+	userPostCreateNewPostHandler := kitgrpc.NewServer(
+		endpoint.MakeCreateNewPost(ctx, fs),
+		decodeCreateNewPostRequest,
+		encodeStatusResponse,
+	)
+
 	return &grpcServer{
 		userPostGetListHandler,
 		userPostGetDetailHandler,
+		userPostCreateNewPostHandler,
 	}
 }
 
@@ -202,4 +209,33 @@ func encodedUserPostDetail(ctx context.Context, r interface{}) (interface{}, err
 	}
 
 	return userDetail, nil
+}
+
+func decodeCreateNewPostRequest(ctx context.Context, r interface{}) (interface{}, error) {
+	req := r.(*transportUserPost.CreateNewPostRequest)
+
+	images := make([]*endpoint.Image, 0)
+
+	for _, v := range req.Images {
+		image := &endpoint.Image{
+			Path: v.GetPath(),
+		}
+		images = append(images, image)
+	}
+
+	return &endpoint.CreateNewPostRequest{
+		Title:  helper.SetPointerString(req.GetTitle()),
+		Images: images,
+		Tags:   helper.SetPointerString(req.GetTags()),
+		Status: helper.SetPointerInt64(req.GetStatus()),
+	}, nil
+}
+
+func encodeStatusResponse(ctx context.Context, r interface{}) (interface{}, error) {
+	resp := r.(*endpoint.StatusResponse)
+
+	return &transportUserPost.StatusResponse{
+		Code:    resp.Code,
+		Message: resp.Message,
+	}, nil
 }
