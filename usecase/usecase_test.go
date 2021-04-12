@@ -83,10 +83,23 @@ var _ = Describe("Usecase", func() {
 		}
 	}
 
+	var UpdateUserPostLogic = func(idx int) {
+		ctx := context.Background()
+		data := testcases.UpdateUserPostDetailData[idx]
+		mockPostRepo.EXPECT().GetDetailPost(ctx, data.GetDetailParam).Return(nil, data.ResponseGetDetailRepo.Error).Times(1)
+		mockPostRepo.EXPECT().UpdateStatusOrTitle(ctx, data.UpdateUserPostParam).Return(data.ResponseUpdateUserPostRepo).Times(1)
+		if err := userPost.UpdateTitleOrStatus(ctx, data.UsecaseRequest); err != nil {
+			Expect(err).NotTo(BeNil())
+		} else {
+			Expect(err).To(BeNil())
+		}
+	}
+
 	var unitTestLogic = map[string]map[string]interface{}{
 		"GetListUserPost":   {"func": GetListUserPostLogic, "test_case_count": len(testcases.GetListUserPostData), "desc": testcases.ListUserPostDescription()},
 		"GetDetailUserPost": {"func": GetDetailUserPostLogic, "test_case_count": len(testcases.GetDetailUserPostData), "desc": testcases.ListUserPostDetailDescription()},
 		"CreateNewPost":     {"func": CreateNewPostLogic, "test_case_count": len(testcases.CreateNewUserPostData), "desc": testcases.CreateNewUserPostDescription()},
+		"UpdateUserPost":    {"func": UpdateUserPostLogic, "test_case_count": len(testcases.UpdateUserPostDetailData), "desc": testcases.UpdateUserPostDetailDescription()},
 	}
 
 	for _, val := range unitTestLogic {

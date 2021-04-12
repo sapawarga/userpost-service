@@ -108,6 +108,21 @@ func (p *Post) CreateNewPost(ctx context.Context, requestBody *model.CreateNewPo
 	return nil
 }
 
+func (p *Post) UpdateTitleOrStatus(ctx context.Context, requestBody *model.UpdatePostRequest) error {
+	logger := kitlog.With(p.logger, "method", "UpdateTItleOrStatus")
+	_, err := p.repoPost.GetDetailPost(ctx, requestBody.ID)
+	if err != nil {
+		level.Error(logger).Log("error_get_detail", err)
+		return err
+	}
+	if err = p.repoPost.UpdateStatusOrTitle(ctx, requestBody); err != nil {
+		level.Error(logger).Log("error_update", err)
+		return err
+	}
+
+	return nil
+}
+
 func (p *Post) getDetailOfUserPost(ctx context.Context, post *model.PostResponse) (*model.UserPostResponse, error) {
 	logger := kitlog.With(p.logger, "method", "getDetailOfUserPost")
 	userPost := &model.UserPostResponse{
