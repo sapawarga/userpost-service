@@ -32,13 +32,29 @@ type Image struct {
 	Path string `json:"path"`
 }
 
-func Validate(in *CreateNewPostRequest) error {
-	return validation.ValidateStruct(in,
-		validation.Field(&in.Title, validation.Required, validation.Length(0, 10)),
-		validation.Field(in.Images, validation.Required, validation.By(validationImages(in.Images))),
-		validation.Field(&in.Tags, validation.Required),
-		validation.Field(&in.Status, validation.Required, validation.In(helper.ACTIVED, helper.DELETED, helper.INACTIVED)),
-	)
+type UpdateStatusOrTitle struct {
+	ID     int64   `json:"id"`
+	Status *int64  `json:"status"`
+	Title  *string `json:"title"`
+}
+
+func Validate(in interface{}) error {
+	var err error
+	if obj, ok := in.(*CreateNewPostRequest); ok {
+		err = validation.ValidateStruct(in,
+			validation.Field(&obj.Title, validation.Required, validation.Length(0, 10)),
+			validation.Field(obj.Images, validation.Required, validation.By(validationImages(obj.Images))),
+			validation.Field(&obj.Tags, validation.Required),
+			validation.Field(&obj.Status, validation.Required, validation.In(helper.ACTIVED, helper.DELETED, helper.INACTIVED)),
+		)
+	} else if obj, ok := in.(*UpdateStatusOrTitle); ok {
+		err = validation.ValidateStruct(in,
+			validation.Field(obj.ID, validation.Required),
+			validation.Field(&obj.Title, validation.Required, validation.Length(0, 10)),
+			validation.Field(&obj.Status, validation.Required, validation.In(helper.ACTIVED, helper.DELETED, helper.INACTIVED)),
+		)
+	}
+	return err
 }
 
 func validationImages(in []*Image) validation.RuleFunc {
