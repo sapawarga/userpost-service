@@ -30,10 +30,17 @@ func MakeHandler(ctx context.Context, fs usecase.UsecaseI) transportUserPost.Use
 		encodeStatusResponse,
 	)
 
+	userPostUpdateHandnler := kitgrpc.NewServer(
+		endpoint.MakeUpdateStatusOrTitle(ctx, fs),
+		decodeUpdateUserPost,
+		encodeStatusResponse,
+	)
+
 	return &grpcServer{
 		userPostGetListHandler,
 		userPostGetDetailHandler,
 		userPostCreateNewPostHandler,
+		userPostUpdateHandnler,
 	}
 }
 
@@ -237,5 +244,15 @@ func encodeStatusResponse(ctx context.Context, r interface{}) (interface{}, erro
 	return &transportUserPost.StatusResponse{
 		Code:    resp.Code,
 		Message: resp.Message,
+	}, nil
+}
+
+func decodeUpdateUserPost(ctx context.Context, r interface{}) (interface{}, error) {
+	req := r.(*transportUserPost.UpdateUserPostRequest)
+
+	return &endpoint.UpdateStatusOrTitle{
+		ID:     req.GetId(),
+		Status: helper.SetPointerInt64(req.GetStatus()),
+		Title:  helper.SetPointerString(req.GetTitle()),
 	}, nil
 }

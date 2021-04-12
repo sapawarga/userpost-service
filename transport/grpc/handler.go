@@ -11,6 +11,7 @@ type grpcServer struct {
 	userPostGetList   kitgrpc.Handler
 	userPostGetDetail kitgrpc.Handler
 	userPostCreateNew kitgrpc.Handler
+	userpostUpdate    kitgrpc.Handler
 }
 
 func (g *grpcServer) GetListUserPost(ctx context.Context, in *transportUserPost.GetListUserPostRequest) (*transportUserPost.GetListUserPostResponse, error) {
@@ -31,6 +32,14 @@ func (g *grpcServer) GetDetailUserPost(ctx context.Context, in *transportUserPos
 
 func (g *grpcServer) CreateNewPost(ctx context.Context, in *transportUserPost.CreateNewPostRequest) (*transportUserPost.StatusResponse, error) {
 	_, resp, err := g.userPostCreateNew.ServeGRPC(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return resp.(*transportUserPost.StatusResponse), nil
+}
+
+func (g *grpcServer) UpdateStatusOrTitle(ctx context.Context, in *transportUserPost.UpdateUserPostRequest) (*transportUserPost.StatusResponse, error) {
+	_, resp, err := g.userpostUpdate.ServeGRPC(ctx, in)
 	if err != nil {
 		return nil, err
 	}
