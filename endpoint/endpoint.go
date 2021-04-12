@@ -79,3 +79,24 @@ func MakeCreateNewPost(ctx context.Context, usecase usecase.UsecaseI) endpoint.E
 		}, nil
 	}
 }
+
+func MakeUpdateStatusOrTitle(ctx context.Context, usecase usecase.UsecaseI) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*UpdateStatusOrTitle)
+		if err := Validate(req); err != nil {
+			return nil, err
+		}
+
+		if err = usecase.UpdateTitleOrStatus(ctx, &model.UpdatePostRequest{
+			ID:     req.ID,
+			Status: req.Status,
+			Title:  req.Title,
+		}); err != nil {
+			return nil, err
+		}
+		return &StatusResponse{
+			Code:    helper.STATUSUPDATED,
+			Message: "post_has_been_updated",
+		}, nil
+	}
+}
