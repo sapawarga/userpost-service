@@ -109,6 +109,8 @@ func MakeGetCommentsByID(ctx context.Context, usecase usecase.UsecaseI) endpoint
 			return nil, err
 		}
 
-		return resp, nil
+		return &CommentsResponse{
+			Data: resp,
+		}, nil
 	}
 }
