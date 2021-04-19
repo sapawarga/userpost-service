@@ -100,3 +100,15 @@ func MakeUpdateStatusOrTitle(ctx context.Context, usecase usecase.UsecaseI) endp
 		}, nil
 	}
 }
+
+func MakeGetCommentsByID(ctx context.Context, usecase usecase.UsecaseI) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*GetByID)
+		resp, err := usecase.GetCommentsByPostID(ctx, req.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		return resp, nil
+	}
+}
