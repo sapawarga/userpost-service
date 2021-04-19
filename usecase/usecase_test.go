@@ -95,11 +95,26 @@ var _ = Describe("Usecase", func() {
 		}
 	}
 
+	var GetCommentsLogic = func(idx int) {
+		ctx := context.Background()
+		data := testcases.GetCommentsData[idx]
+		mockCommentsRepo.EXPECT().GetCommentsByPostID(ctx, data.GetCommentsByIDRequestRepository).Return(data.ResponseGetComments.Result, data.ResponseGetComments.Error).Times(1)
+		mockPostRepo.EXPECT().GetActor(ctx, data.GetActorParams).Return(data.ResponseGetActor.Result, data.ResponseGetActor.Error).Times(len(testcases.GetCommentsData) * 3)
+		resp, err := userPost.GetCommentsByPostID(ctx, data.UsecaseParams)
+		if err != nil {
+			Expect(err).NotTo(BeNil())
+			Expect(resp).To(BeNil())
+		} else {
+			Expect(resp).To(Equal(data.ResponseUsecase.Result))
+		}
+	}
+
 	var unitTestLogic = map[string]map[string]interface{}{
 		"GetListUserPost":   {"func": GetListUserPostLogic, "test_case_count": len(testcases.GetListUserPostData), "desc": testcases.ListUserPostDescription()},
 		"GetDetailUserPost": {"func": GetDetailUserPostLogic, "test_case_count": len(testcases.GetDetailUserPostData), "desc": testcases.ListUserPostDetailDescription()},
 		"CreateNewPost":     {"func": CreateNewPostLogic, "test_case_count": len(testcases.CreateNewUserPostData), "desc": testcases.CreateNewUserPostDescription()},
 		"UpdateUserPost":    {"func": UpdateUserPostLogic, "test_case_count": len(testcases.UpdateUserPostDetailData), "desc": testcases.UpdateUserPostDetailDescription()},
+		"GetCommentsByID":   {"func": GetCommentsLogic, "test_case_count": len(testcases.GetCommentsData), "desc": testcases.ListGetCommentsDescription()},
 	}
 
 	for _, val := range unitTestLogic {
