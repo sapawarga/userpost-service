@@ -123,6 +123,46 @@ func (p *Post) UpdateTitleOrStatus(ctx context.Context, requestBody *model.Updat
 	return nil
 }
 
+func (p *Post) GetCommentsByPostID(ctx context.Context, id int64) ([]*model.Comment, error) {
+	logger := kitlog.With(p.logger, "method", "GetCommentsByPostID")
+	resp, err := p.repoComment.GetCommentsByPostID(ctx, id)
+	if err != nil {
+		level.Error(logger).Log("error_get_comments_by_post_id", err)
+		return nil, err
+	}
+
+	if len(resp) == 0 {
+		return nil, nil
+	}
+
+	comments := make([]*model.Comment, 0)
+	for _, v := range resp {
+		actorCreated, err := p.repoPost.GetActor(ctx, v.CreatedBy)
+		if err != nil {
+			level.Error(logger).Log("error_get_actor_created", err)
+			return nil, err
+		}
+		actorUpdated, err := p.repoPost.GetActor(ctx, v.UpdatedBy)
+		if err != nil {
+			level.Error(logger).Log("error_get_actor_updated", err)
+			return nil, err
+		}
+		comment := &model.Comment{
+			ID:         v.ID,
+			UserPostID: v.UserPostID,
+			Text:       v.Comment,
+			CreatedAt:  v.CreatedAt,
+			UpdatedAt:  v.UpdatedAt,
+			CreatedBy:  actorCreated,
+			UpdatedBy:  actorUpdated,
+		}
+
+		comments = append(comments, comment)
+	}
+
+	return comments, nil
+}
+
 func (p *Post) getDetailOfUserPost(ctx context.Context, post *model.PostResponse) (*model.UserPostResponse, error) {
 	logger := kitlog.With(p.logger, "method", "getDetailOfUserPost")
 	userPost := &model.UserPostResponse{

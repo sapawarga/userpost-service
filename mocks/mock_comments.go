@@ -34,6 +34,21 @@ func (m *MockCommentI) EXPECT() *MockCommentIMockRecorder {
 	return m.recorder
 }
 
+// GetCommentsByPostID mocks base method
+func (m *MockCommentI) GetCommentsByPostID(arg0 context.Context, arg1 int64) ([]*model.CommentResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCommentsByPostID", arg0, arg1)
+	ret0, _ := ret[0].([]*model.CommentResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCommentsByPostID indicates an expected call of GetCommentsByPostID
+func (mr *MockCommentIMockRecorder) GetCommentsByPostID(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCommentsByPostID", reflect.TypeOf((*MockCommentI)(nil).GetCommentsByPostID), arg0, arg1)
+}
+
 // GetLastComment mocks base method
 func (m *MockCommentI) GetLastComment(arg0 context.Context, arg1 int64) (*model.CommentResponse, error) {
 	m.ctrl.T.Helper()

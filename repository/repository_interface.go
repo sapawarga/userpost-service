@@ -22,4 +22,5 @@ type PostI interface {
 type CommentI interface {
 	GetLastComment(ctx context.Context, id int64) (*model.CommentResponse, error)
 	GetTotalComments(ctx context.Context, userPostID int64) (*int64, error)
+	GetCommentsByPostID(ctx context.Context, id int64) ([]*model.CommentResponse, error)
 }
