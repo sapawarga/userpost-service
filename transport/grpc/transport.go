@@ -30,17 +30,24 @@ func MakeHandler(ctx context.Context, fs usecase.UsecaseI) transportUserPost.Use
 		encodeStatusResponse,
 	)
 
-	userPostUpdateHandnler := kitgrpc.NewServer(
+	userPostUpdateHandler := kitgrpc.NewServer(
 		endpoint.MakeUpdateStatusOrTitle(ctx, fs),
 		decodeUpdateUserPost,
 		encodeStatusResponse,
+	)
+
+	userPostGetCommentsHandler := kitgrpc.NewServer(
+		endpoint.MakeGetCommentsByID(ctx, fs),
+		decodeByIDRequest,
+		encodeGetCommentsByIDResponse,
 	)
 
 	return &grpcServer{
 		userPostGetListHandler,
 		userPostGetDetailHandler,
 		userPostCreateNewPostHandler,
-		userPostUpdateHandnler,
+		userPostUpdateHandler,
+		userPostGetCommentsHandler,
 	}
 }
 
@@ -254,5 +261,47 @@ func decodeUpdateUserPost(ctx context.Context, r interface{}) (interface{}, erro
 		ID:     req.GetId(),
 		Status: helper.SetPointerInt64(req.GetStatus()),
 		Title:  helper.SetPointerString(req.GetTitle()),
+	}, nil
+}
+
+func encodeGetCommentsByIDResponse(ctx context.Context, r interface{}) (interface{}, error) {
+	resp := r.(*endpoint.CommentsResponse)
+
+	response := make([]*transportUserPost.Comment, 0)
+	for _, v := range resp.Data {
+		created := &transportUserPost.Actor{
+			Id:       v.CreatedBy.ID,
+			Name:     v.CreatedBy.Name.String,
+			PhotoUrl: v.CreatedBy.PhotoURL.String,
+			Role:     v.CreatedBy.Role.Int64,
+			Regency:  v.CreatedBy.Regency,
+			District: v.CreatedBy.District,
+			Village:  v.CreatedBy.Village,
+			Rw:       v.CreatedBy.RW.String,
+		}
+		updated := &transportUserPost.Actor{
+			Id:       v.UpdatedBy.ID,
+			Name:     v.UpdatedBy.Name.String,
+			PhotoUrl: v.UpdatedBy.PhotoURL.String,
+			Role:     v.UpdatedBy.Role.Int64,
+			Regency:  v.UpdatedBy.Regency,
+			District: v.UpdatedBy.District,
+			Village:  v.UpdatedBy.Village,
+			Rw:       v.UpdatedBy.RW.String,
+		}
+		comment := &transportUserPost.Comment{
+			Id:         v.ID,
+			UserPostId: v.UserPostID,
+			Comment:    v.Text,
+			CreatedAt:  v.CreatedAt.String(),
+			UpdatedAt:  v.UpdatedAt.String(),
+			CreatedBy:  created,
+			UpdatedBy:  updated,
+		}
+		response = append(response, comment)
+	}
+
+	return &transportUserPost.CommentsResponse{
+		Comments: response,
 	}, nil
 }

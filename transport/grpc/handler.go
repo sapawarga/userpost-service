@@ -8,10 +8,11 @@ import (
 )
 
 type grpcServer struct {
-	userPostGetList   kitgrpc.Handler
-	userPostGetDetail kitgrpc.Handler
-	userPostCreateNew kitgrpc.Handler
-	userpostUpdate    kitgrpc.Handler
+	userPostGetList     kitgrpc.Handler
+	userPostGetDetail   kitgrpc.Handler
+	userPostCreateNew   kitgrpc.Handler
+	userpostUpdate      kitgrpc.Handler
+	userPostGetComments kitgrpc.Handler
 }
 
 func (g *grpcServer) GetListUserPost(ctx context.Context, in *transportUserPost.GetListUserPostRequest) (*transportUserPost.GetListUserPostResponse, error) {
@@ -44,4 +45,12 @@ func (g *grpcServer) UpdateStatusOrTitle(ctx context.Context, in *transportUserP
 		return nil, err
 	}
 	return resp.(*transportUserPost.StatusResponse), nil
+}
+
+func (g *grpcServer) GetCommentsByID(ctx context.Context, in *transportUserPost.ByID) (*transportUserPost.CommentsResponse, error) {
+	_, resp, err := g.userPostGetComments.ServeGRPC(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return resp.(*transportUserPost.CommentsResponse), nil
 }

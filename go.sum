@@ -249,6 +249,8 @@ github.com/sapawarga/proto-file v0.0.0-20210412064916-1e6446b32030 h1:rcULeqoYKA
 github.com/sapawarga/proto-file v0.0.0-20210412064916-1e6446b32030/go.mod h1:BbK0gf1YDzZvQzkKI8YsGSMHp9Iedtgw7a/XYoCMsBo=
 github.com/sapawarga/proto-file v0.0.0-20210412074109-cf880acf9b6f h1:jJpN0k74LW+QKLfqJExrU70STcT8eD9FMTm8DYxhruI=
 github.com/sapawarga/proto-file v0.0.0-20210412074109-cf880acf9b6f/go.mod h1:BbK0gf1YDzZvQzkKI8YsGSMHp9Iedtgw7a/XYoCMsBo=
+github.com/sapawarga/proto-file v0.0.0-20210419071250-96d51da5cd5c h1:7KAoCcaL6iNJQ1LbAiHCP8bagNM+75RcUNtVpOubbrg=
+github.com/sapawarga/proto-file v0.0.0-20210419071250-96d51da5cd5c/go.mod h1:BbK0gf1YDzZvQzkKI8YsGSMHp9Iedtgw7a/XYoCMsBo=
 github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529/go.mod h1:DxrIzT+xaE7yg65j358z/aeFdxmN0P9QXhEzd20vsDc=
 github.com/shurcooL/sanitized_anchor_name v1.0.0/go.mod h1:1NzhyTcUVG4SuEtjjoZeVRXNmyL/1OwPU0+IJeTBvfc=
 github.com/sirupsen/logrus v1.2.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=
