@@ -123,6 +123,41 @@ func (p *Post) UpdateTitleOrStatus(ctx context.Context, requestBody *model.Updat
 	return nil
 }
 
+func (p *Post) GetCommentsByPostID(ctx context.Context, id int64) ([]*model.Comment, error) {
+	logger := kitlog.With(p.logger, "method", "GetCommentsByPostID")
+	resp, err := p.repoComment.GetCommentsByPostID(ctx, id)
+	if err != nil {
+		level.Error(logger).Log("error_get_comments_by_post_id", err)
+		return nil, err
+	}
+
+	if len(resp) == 0 {
+		return nil, nil
+	}
+
+	comments := make([]*model.Comment, 0)
+	for _, v := range resp {
+		detailComment, err := p.getDetailComment(ctx, v)
+		if err != nil {
+			level.Error(logger).Log("error_get_detail_comment", err)
+			return nil, err
+		}
+		comment := &model.Comment{
+			ID:         detailComment.ID,
+			UserPostID: detailComment.UserPostID,
+			Text:       detailComment.Text,
+			CreatedAt:  detailComment.CreatedAt,
+			UpdatedAt:  detailComment.UpdatedAt,
+			CreatedBy:  detailComment.CreatedBy,
+			UpdatedBy:  detailComment.UpdatedBy,
+		}
+
+		comments = append(comments, comment)
+	}
+
+	return comments, nil
+}
+
 func (p *Post) getDetailOfUserPost(ctx context.Context, post *model.PostResponse) (*model.UserPostResponse, error) {
 	logger := kitlog.With(p.logger, "method", "getDetailOfUserPost")
 	userPost := &model.UserPostResponse{
@@ -138,13 +173,18 @@ func (p *Post) getDetailOfUserPost(ctx context.Context, post *model.PostResponse
 		UpdatedAt:     post.UpdatedAt,
 	}
 	if post.LastUserPostCommentID.Valid {
-		comment, err := p.getLastComment(ctx, post.LastUserPostCommentID.Int64)
+		comment, err := p.repoComment.GetLastComment(ctx, post.LastUserPostCommentID.Int64)
+		if err != nil {
+			level.Error(logger).Log("error_get_comment", err)
+			return nil, err
+		}
+		detailComment, err := p.getDetailComment(ctx, comment)
 		if err != nil {
 			level.Error(logger).Log("error_get_comment", err)
 			return nil, err
 		}
 		userPost.LastUserPostCommentID = helper.SetPointerInt64(post.LastUserPostCommentID.Int64)
-		userPost.LastComment = comment
+		userPost.LastComment = detailComment
 	}
 	if post.CreatedBy.Valid {
 		user, err := p.repoPost.GetActor(ctx, post.CreatedBy.Int64)
@@ -161,13 +201,8 @@ func (p *Post) getDetailOfUserPost(ctx context.Context, post *model.PostResponse
 	return userPost, nil
 }
 
-func (p *Post) getLastComment(ctx context.Context, id int64) (*model.Comment, error) {
-	logger := kitlog.With(p.logger, "method", "getLastComment")
-	comment, err := p.repoComment.GetLastComment(ctx, id)
-	if err != nil {
-		level.Error(logger).Log("error_get_last_comment", err)
-		return nil, err
-	}
+func (p *Post) getDetailComment(ctx context.Context, comment *model.CommentResponse) (*model.Comment, error) {
+	logger := kitlog.With(p.logger, "method", "getDetailComment")
 	commentResp := &model.Comment{
 		ID:         comment.ID,
 		UserPostID: comment.UserPostID,
