@@ -158,6 +158,16 @@ func (p *Post) GetCommentsByPostID(ctx context.Context, id int64) ([]*model.Comm
 	return comments, nil
 }
 
+func (p *Post) CreateCommentOnPost(ctx context.Context, req *model.CreateCommentRequest) error {
+	logger := kitlog.With(p.logger, "method", "CreateCommentOnPost")
+	if err := p.repoComment.Create(ctx, req); err != nil {
+		level.Error(logger).Log("error_create_comment", err)
+		return err
+	}
+
+	return nil
+}
+
 func (p *Post) getDetailOfUserPost(ctx context.Context, post *model.PostResponse) (*model.UserPostResponse, error) {
 	logger := kitlog.With(p.logger, "method", "getDetailOfUserPost")
 	userPost := &model.UserPostResponse{
