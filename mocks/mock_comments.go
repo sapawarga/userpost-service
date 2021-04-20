@@ -34,6 +34,20 @@ func (m *MockCommentI) EXPECT() *MockCommentIMockRecorder {
 	return m.recorder
 }
 
+// Create mocks base method
+func (m *MockCommentI) Create(arg0 context.Context, arg1 *model.CreateCommentRequest) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Create", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Create indicates an expected call of Create
+func (mr *MockCommentIMockRecorder) Create(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockCommentI)(nil).Create), arg0, arg1)
+}
+
 // GetCommentsByPostID mocks base method
 func (m *MockCommentI) GetCommentsByPostID(arg0 context.Context, arg1 int64) ([]*model.CommentResponse, error) {
 	m.ctrl.T.Helper()
