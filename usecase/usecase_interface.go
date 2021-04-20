@@ -12,4 +12,5 @@ type UsecaseI interface {
 	CreateNewPost(ctx context.Context, requestBody *model.CreateNewPostRequest) error
 	UpdateTitleOrStatus(ctx context.Context, requestBody *model.UpdatePostRequest) error
 	GetCommentsByPostID(ctx context.Context, id int64) ([]*model.Comment, error)
+	CreateCommentOnPost(ctx context.Context, req *model.CreateCommentRequest) error
 }
