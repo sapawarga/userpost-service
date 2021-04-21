@@ -78,7 +78,6 @@ func validationImages(in []*Image) validation.RuleFunc {
 				validation.Field(v.Path, is.URL),
 			)
 		}
-
 		return err
 	}
 }
