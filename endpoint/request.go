@@ -38,6 +38,12 @@ type UpdateStatusOrTitle struct {
 	Title  *string `json:"title"`
 }
 
+type CreateCommentRequest struct {
+	UserPostID int64  `json:"user_post_id"`
+	Comment    string `json:"comment"`
+	Status     *int64 `json:"status"`
+}
+
 func Validate(in interface{}) error {
 	var err error
 	if obj, ok := in.(*CreateNewPostRequest); ok {
@@ -53,6 +59,12 @@ func Validate(in interface{}) error {
 			validation.Field(&obj.Title, validation.Required, validation.Length(0, 10)),
 			validation.Field(&obj.Status, validation.Required, validation.In(helper.ACTIVED, helper.DELETED, helper.INACTIVED)),
 		)
+	} else if obj, ok := in.(*CreateCommentRequest); ok {
+		err = validation.ValidateStruct(in,
+			validation.Field(obj.UserPostID, validation.Required),
+			validation.Field(obj.Comment, validation.Required, validation.Length(0, 10)),
+			validation.Field(&obj.Status, validation.Required, validation.In(helper.ACTIVED, helper.DELETED, helper.INACTIVED)),
+		)
 	}
 	return err
 }
@@ -66,7 +78,6 @@ func validationImages(in []*Image) validation.RuleFunc {
 				validation.Field(v.Path, is.URL),
 			)
 		}
-
 		return err
 	}
 }

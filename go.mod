@@ -9,5 +9,5 @@ require (
 	github.com/golang/mock v1.5.0
 	github.com/onsi/ginkgo v1.7.0
 	github.com/onsi/gomega v1.4.3
-	github.com/sapawarga/proto-file v0.0.0-20210419071250-96d51da5cd5c
+	github.com/sapawarga/proto-file v0.0.0-20210420033700-9b438a6e2d2d
 )

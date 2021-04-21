@@ -42,12 +42,19 @@ func MakeHandler(ctx context.Context, fs usecase.UsecaseI) transportUserPost.Use
 		encodeGetCommentsByIDResponse,
 	)
 
+	userPostCreateCommentHandler := kitgrpc.NewServer(
+		endpoint.MakeCreateComment(ctx, fs),
+		decodeCreateCommentRequest,
+		encodeStatusResponse,
+	)
+
 	return &grpcServer{
 		userPostGetListHandler,
 		userPostGetDetailHandler,
 		userPostCreateNewPostHandler,
 		userPostUpdateHandler,
 		userPostGetCommentsHandler,
+		userPostCreateCommentHandler,
 	}
 }
 
@@ -303,5 +310,15 @@ func encodeGetCommentsByIDResponse(ctx context.Context, r interface{}) (interfac
 
 	return &transportUserPost.CommentsResponse{
 		Comments: response,
+	}, nil
+}
+
+func decodeCreateCommentRequest(ctx context.Context, r interface{}) (interface{}, error) {
+	req := r.(*transportUserPost.CreateCommentRequest)
+
+	return &endpoint.CreateCommentRequest{
+		UserPostID: req.GetUserPostId(),
+		Comment:    req.GetComment(),
+		Status:     helper.SetPointerInt64(req.GetStatus()),
 	}, nil
 }
