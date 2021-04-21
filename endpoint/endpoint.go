@@ -114,3 +114,28 @@ func MakeGetCommentsByID(ctx context.Context, usecase usecase.UsecaseI) endpoint
 		}, nil
 	}
 }
+
+func MakeCreateComment(ctx context.Context, usecase usecase.UsecaseI) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*CreateCommentRequest)
+		if err := Validate(req); err != nil {
+			return nil, err
+		}
+
+		current, _ := helper.GetCurrentTimeUTC()
+
+		if err = usecase.CreateCommentOnPost(ctx, &model.CreateCommentRequest{
+			UserPostID: req.UserPostID,
+			Text:       req.Comment,
+			CreatedAt:  current,
+			UpdatedAt:  current,
+		}); err != nil {
+			return nil, err
+		}
+
+		return &StatusResponse{
+			Code:    helper.STATUSCREATED,
+			Message: "success_post_comment",
+		}, nil
+	}
+}
