@@ -11,3 +11,7 @@ const (
 	STATUSUPDATED          = "status_updated"
 	STATUSDELETED          = "status_deleted"
 )
+
+type keyType string
+
+var ACTORKEY keyType = "Actor"

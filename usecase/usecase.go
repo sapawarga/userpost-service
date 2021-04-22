@@ -90,7 +90,7 @@ func (p *Post) GetListPostByMe(ctx context.Context, params *model.GetListRequest
 	}
 
 	req := &model.UserPostByMeRequest{
-		ActorID: ctx.Value("Actor").(*model.ActorFromContext).Get("id").(int64),
+		ActorID: ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Get("id").(int64),
 		UserPostRequest: &model.UserPostRequest{
 			ActivityName: params.ActivityName,
 			Username:     params.Username,

@@ -26,9 +26,9 @@ type UpdatePostRequest struct {
 }
 
 type ActorFromContext struct {
-	m map[string]interface{}
+	Data map[string]interface{}
 }
 
 func (ac *ActorFromContext) Get(key string) interface{} {
-	return ac.m[key]
+	return ac.Data[key]
 }
