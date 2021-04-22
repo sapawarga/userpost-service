@@ -13,6 +13,7 @@ type PostI interface {
 	GetActor(ctx context.Context, id int64) (*model.UserResponse, error)
 	GetIsLikedByUser(ctx context.Context, req *model.IsLikedByUser) (bool, error)
 	GetDetailPost(ctx context.Context, id int64) (*model.PostResponse, error)
+	GetListPostByMe(ctx context.Context, actorID int64) ([]*model.PostResponse, error)
 	// query for create post
 	InsertPost(ctx context.Context, request *model.CreateNewPostRequest) error
 	// query for update
