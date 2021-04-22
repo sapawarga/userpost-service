@@ -80,6 +80,58 @@ func (p *Post) GetListPost(ctx context.Context, params *model.GetListRequest) (*
 	}, nil
 }
 
+func (p *Post) GetListPostByMe(ctx context.Context, params *model.GetListRequest) (*model.UserPostWithMetadata, error) {
+	logger := kitlog.With(p.logger, "method", "GetListPostByMe")
+	var limit, offset int64 = 10, 0
+
+	if params.Page != nil && params.Limit != nil {
+		limit = helper.GetInt64FromPointer(params.Limit)
+		offset = (helper.GetInt64FromPointer(params.Page) - 1) * limit
+	}
+
+	req := &model.UserPostByMeRequest{
+		ActorID: ctx.Value("Actor").(*model.ActorFromContext).Get("id").(int64),
+		UserPostRequest: &model.UserPostRequest{
+			ActivityName: params.ActivityName,
+			Username:     params.Username,
+			Category:     params.Category,
+			Status:       params.Status,
+			Offset:       helper.SetPointerInt64(offset),
+			Limit:        helper.SetPointerInt64(limit),
+			SortBy:       params.SortBy,
+			OrderBy:      params.OrderBy},
+	}
+	resp, err := p.repoPost.GetListPostByMe(ctx, req)
+	if err != nil {
+		level.Error(logger).Log("error_get_list_post_by_me", err)
+		return nil, err
+	}
+
+	userPosts := make([]*model.UserPostResponse, 0)
+	for _, v := range resp {
+		userPost, err := p.getDetailOfUserPost(ctx, v)
+		if err != nil {
+			level.Error(logger).Log("error_get_detail_user_post", err)
+			return nil, err
+		}
+		userPosts = append(userPosts, userPost)
+	}
+
+	total, err := p.repoPost.GetMetadataPostByMe(ctx, req)
+	if err != nil {
+		level.Error(logger).Log("error_get_metadata", err)
+		return nil, err
+	}
+	return &model.UserPostWithMetadata{
+		Data: userPosts,
+		Metadata: &model.Metadata{
+			Page:      helper.GetInt64FromPointer(params.Page),
+			TotalPage: helper.GetInt64FromPointer(total) / limit,
+			Total:     helper.GetInt64FromPointer(total),
+		},
+	}, nil
+}
+
 func (p *Post) GetDetailPost(ctx context.Context, id int64) (*model.UserPostResponse, error) {
 	logger := kitlog.With(p.logger, "method", "GetDetailPost")
 	resp, err := p.repoPost.GetDetailPost(ctx, id)

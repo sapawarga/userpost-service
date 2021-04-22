@@ -24,3 +24,11 @@ type UpdatePostRequest struct {
 	Status *int64
 	Title  *string
 }
+
+type ActorFromContext struct {
+	m map[string]interface{}
+}
+
+func (ac *ActorFromContext) Get(key string) interface{} {
+	return ac.m[key]
+}
