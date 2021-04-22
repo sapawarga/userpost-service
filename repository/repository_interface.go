@@ -10,6 +10,8 @@ type PostI interface {
 	// query for get userpost
 	GetListPost(ctx context.Context, request *model.UserPostRequest) ([]*model.PostResponse, error)
 	GetMetadataPost(ctx context.Context, request *model.UserPostRequest) (*int64, error)
+	GetListPostByMe(ctx context.Context, request *model.UserPostByMeRequest) ([]*model.PostResponse, error)
+	GetMetadataPostByMe(ctx context.Context, request *model.UserPostByMeRequest) (*int64, error)
 	GetActor(ctx context.Context, id int64) (*model.UserResponse, error)
 	GetIsLikedByUser(ctx context.Context, req *model.IsLikedByUser) (bool, error)
 	GetDetailPost(ctx context.Context, id int64) (*model.PostResponse, error)

@@ -13,6 +13,11 @@ type UserPostRequest struct {
 	OrderBy      *string
 }
 
+type UserPostByMeRequest struct {
+	ActorID int64
+	*UserPostRequest
+}
+
 type IsLikedByUser struct {
 	Type   string
 	UserID int64

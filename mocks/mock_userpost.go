@@ -94,6 +94,21 @@ func (mr *MockPostIMockRecorder) GetListPost(arg0, arg1 interface{}) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetListPost", reflect.TypeOf((*MockPostI)(nil).GetListPost), arg0, arg1)
 }
 
+// GetListPostByMe mocks base method
+func (m *MockPostI) GetListPostByMe(arg0 context.Context, arg1 *model.UserPostByMeRequest) ([]*model.PostResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetListPostByMe", arg0, arg1)
+	ret0, _ := ret[0].([]*model.PostResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetListPostByMe indicates an expected call of GetListPostByMe
+func (mr *MockPostIMockRecorder) GetListPostByMe(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetListPostByMe", reflect.TypeOf((*MockPostI)(nil).GetListPostByMe), arg0, arg1)
+}
+
 // GetMetadataPost mocks base method
 func (m *MockPostI) GetMetadataPost(arg0 context.Context, arg1 *model.UserPostRequest) (*int64, error) {
 	m.ctrl.T.Helper()
@@ -107,6 +122,21 @@ func (m *MockPostI) GetMetadataPost(arg0 context.Context, arg1 *model.UserPostRe
 func (mr *MockPostIMockRecorder) GetMetadataPost(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMetadataPost", reflect.TypeOf((*MockPostI)(nil).GetMetadataPost), arg0, arg1)
+}
+
+// GetMetadataPostByMe mocks base method
+func (m *MockPostI) GetMetadataPostByMe(arg0 context.Context, arg1 *model.UserPostByMeRequest) (*int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetMetadataPostByMe", arg0, arg1)
+	ret0, _ := ret[0].(*int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetMetadataPostByMe indicates an expected call of GetMetadataPostByMe
+func (mr *MockPostIMockRecorder) GetMetadataPostByMe(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMetadataPostByMe", reflect.TypeOf((*MockPostI)(nil).GetMetadataPostByMe), arg0, arg1)
 }
 
 // InsertPost mocks base method
