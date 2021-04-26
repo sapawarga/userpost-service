@@ -8,12 +8,13 @@ import (
 	"github.com/sapawarga/userpost-service/helper"
 	"github.com/sapawarga/userpost-service/model"
 	"github.com/sapawarga/userpost-service/usecase"
+	"google.golang.org/grpc/metadata"
 )
 
 func MakeGetListUserPost(ctx context.Context, usecase usecase.UsecaseI) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(*GetListUserPostRequest)
-		resp, err := usecase.GetListPost(ctx, &model.GetListRequest{
+		params := &model.GetListRequest{
 			ActivityName: req.ActivityName,
 			Username:     req.Username,
 			Category:     req.Category,
@@ -22,10 +23,22 @@ func MakeGetListUserPost(ctx context.Context, usecase usecase.UsecaseI) endpoint
 			Limit:        req.Limit,
 			SortBy:       req.SortBy,
 			OrderBy:      req.OrderBy,
-		})
+		}
+		// TODO: for get metadata from headers grpc needs to update when using authorization
+		headers, ok := metadata.FromIncomingContext(ctx)
+		var resp *model.UserPostWithMetadata
+		if !ok {
+			resp, err = usecase.GetListPost(ctx, params)
+		} else {
+			actor := headers["Actor"]
+			ctx = context.WithValue(ctx, helper.ACTORKEY, actor)
+			resp, err = usecase.GetListPostByMe(ctx, params)
+		}
+
 		if err != nil {
 			return nil, err
 		}
+
 		return &UserPostWithMetadata{
 			Data: resp.Data,
 			Metadata: &Metadata{
