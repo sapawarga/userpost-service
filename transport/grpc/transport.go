@@ -172,7 +172,6 @@ func encodedUserPostDetail(ctx context.Context, r interface{}) (interface{}, err
 	resp := r.(*endpoint.UserPostDetail)
 	comment := resp.LastComment
 	actor := resp.Actor
-
 	lastComment := &transportUserPost.Comment{comment.ID, comment.UserPostID, comment.Text,
 		comment.CreatedAt.String(), comment.UpdatedAt.String(),
 	}
