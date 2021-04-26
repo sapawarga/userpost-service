@@ -51,15 +51,10 @@ func (p *Post) GetListPost(ctx context.Context, params *model.GetListRequest) (*
 		return nil, err
 	}
 
-	userPosts := make([]*model.UserPostResponse, 0)
-
-	for _, v := range listData {
-		userPost, err := p.getDetailOfUserPost(ctx, v)
-		if err != nil {
-			level.Error(logger).Log("error_get_detail_user_post", err)
-			return nil, err
-		}
-		userPosts = append(userPosts, userPost)
+	userPosts, err := p.appendListUserPost(ctx, listData)
+	if err != nil {
+		level.Error(logger).Log("error_append_list", err)
+		return nil, err
 	}
 
 	total, err := p.repoPost.GetMetadataPost(ctx, req)
@@ -74,10 +69,7 @@ func (p *Post) GetListPost(ctx context.Context, params *model.GetListRequest) (*
 		Total:     helper.GetInt64FromPointer(total),
 	}
 
-	return &model.UserPostWithMetadata{
-		Data:     userPosts,
-		Metadata: metadata,
-	}, nil
+	return &model.UserPostWithMetadata{Data: userPosts, Metadata: metadata}, nil
 }
 
 func (p *Post) GetListPostByMe(ctx context.Context, params *model.GetListRequest) (*model.UserPostWithMetadata, error) {
@@ -107,14 +99,10 @@ func (p *Post) GetListPostByMe(ctx context.Context, params *model.GetListRequest
 		return nil, err
 	}
 
-	userPosts := make([]*model.UserPostResponse, 0)
-	for _, v := range resp {
-		userPost, err := p.getDetailOfUserPost(ctx, v)
-		if err != nil {
-			level.Error(logger).Log("error_get_detail_user_post", err)
-			return nil, err
-		}
-		userPosts = append(userPosts, userPost)
+	userPosts, err := p.appendListUserPost(ctx, resp)
+	if err != nil {
+		level.Error(logger).Log("error_append_list", err)
+		return nil, err
 	}
 
 	total, err := p.repoPost.GetMetadataPostByMe(ctx, req)
@@ -285,4 +273,15 @@ func (p *Post) getDetailComment(ctx context.Context, comment *model.CommentRespo
 	}
 	commentResp.UpdatedBy = actorUpdated
 	return commentResp, nil
+}
+
+func (p *Post) appendListUserPost(ctx context.Context, resp []*model.PostResponse) (userPosts []*model.UserPostResponse, err error) {
+	for _, v := range resp {
+		userPost, err := p.getDetailOfUserPost(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+		userPosts = append(userPosts, userPost)
+	}
+	return userPosts, nil
 }

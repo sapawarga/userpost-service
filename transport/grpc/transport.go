@@ -5,6 +5,7 @@ import (
 
 	"github.com/sapawarga/userpost-service/endpoint"
 	"github.com/sapawarga/userpost-service/helper"
+	"github.com/sapawarga/userpost-service/model"
 	"github.com/sapawarga/userpost-service/usecase"
 
 	kitgrpc "github.com/go-kit/kit/transport/grpc"
@@ -94,52 +95,7 @@ func encodeGetListUserPost(ctx context.Context, r interface{}) (interface{}, err
 			CreatedAt:             v.CreatedAt.String(),
 			UpdatedAt:             v.UpdatedAt.String(),
 		}
-		if v.Actor != nil {
-			actor := &transportUserPost.Actor{
-				Id:       v.Actor.ID,
-				Name:     v.Actor.Name.String,
-				PhotoUrl: v.Actor.PhotoURL.String,
-				Role:     v.Actor.Role.Int64,
-				Regency:  v.Actor.Regency,
-				District: v.Actor.District,
-				Village:  v.Actor.Village,
-				Rw:       v.Actor.RW.String,
-			}
-			result.Actor = actor
-		}
-		if v.LastComment != nil {
-			comment := &transportUserPost.Comment{
-				Id:         v.LastComment.ID,
-				UserPostId: v.LastComment.UserPostID,
-				Comment:    v.LastComment.Text,
-				CreatedAt:  v.LastComment.CreatedAt.String(),
-				UpdatedAt:  v.LastComment.UpdatedAt.String(),
-			}
-			actorCreated := &transportUserPost.Actor{
-				Id:       v.LastComment.CreatedBy.ID,
-				Name:     v.LastComment.CreatedBy.Name.String,
-				PhotoUrl: v.LastComment.CreatedBy.PhotoURL.String,
-				Role:     v.LastComment.CreatedBy.Role.Int64,
-				Regency:  v.LastComment.CreatedBy.Regency,
-				District: v.LastComment.CreatedBy.District,
-				Village:  v.LastComment.CreatedBy.Village,
-				Rw:       v.LastComment.CreatedBy.RW.String,
-			}
-			actorUpdated := &transportUserPost.Actor{
-				Id:       v.LastComment.UpdatedBy.ID,
-				Name:     v.LastComment.UpdatedBy.Name.String,
-				PhotoUrl: v.LastComment.UpdatedBy.PhotoURL.String,
-				Role:     v.LastComment.UpdatedBy.Role.Int64,
-				Regency:  v.LastComment.UpdatedBy.Regency,
-				District: v.LastComment.UpdatedBy.District,
-				Village:  v.LastComment.UpdatedBy.Village,
-				Rw:       v.LastComment.UpdatedBy.RW.String,
-			}
-			comment.CreatedBy = actorCreated
-			comment.UpdatedBy = actorUpdated
-			result.LastComment = comment
-		}
-
+		result = appendDetailUserPost(ctx, v, result)
 		resultData = append(resultData, result)
 	}
 
@@ -153,6 +109,55 @@ func encodeGetListUserPost(ctx context.Context, r interface{}) (interface{}, err
 		Data:     resultData,
 		Metadata: meta,
 	}, nil
+}
+
+func appendDetailUserPost(_ context.Context, r *model.UserPostResponse, data *transportUserPost.UserPost) *transportUserPost.UserPost {
+	if r.Actor != nil {
+		actor := &transportUserPost.Actor{
+			Id:       r.Actor.ID,
+			Name:     r.Actor.Name.String,
+			PhotoUrl: r.Actor.PhotoURL.String,
+			Role:     r.Actor.Role.Int64,
+			Regency:  r.Actor.Regency,
+			District: r.Actor.District,
+			Village:  r.Actor.Village,
+			Rw:       r.Actor.RW.String,
+		}
+		data.Actor = actor
+	}
+	if r.LastComment != nil {
+		comment := &transportUserPost.Comment{
+			Id:         r.LastComment.ID,
+			UserPostId: r.LastComment.UserPostID,
+			Comment:    r.LastComment.Text,
+			CreatedAt:  r.LastComment.CreatedAt.String(),
+			UpdatedAt:  r.LastComment.UpdatedAt.String(),
+		}
+		actorCreated := &transportUserPost.Actor{
+			Id:       r.LastComment.CreatedBy.ID,
+			Name:     r.LastComment.CreatedBy.Name.String,
+			PhotoUrl: r.LastComment.CreatedBy.PhotoURL.String,
+			Role:     r.LastComment.CreatedBy.Role.Int64,
+			Regency:  r.LastComment.CreatedBy.Regency,
+			District: r.LastComment.CreatedBy.District,
+			Village:  r.LastComment.CreatedBy.Village,
+			Rw:       r.LastComment.CreatedBy.RW.String,
+		}
+		actorUpdated := &transportUserPost.Actor{
+			Id:       r.LastComment.UpdatedBy.ID,
+			Name:     r.LastComment.UpdatedBy.Name.String,
+			PhotoUrl: r.LastComment.UpdatedBy.PhotoURL.String,
+			Role:     r.LastComment.UpdatedBy.Role.Int64,
+			Regency:  r.LastComment.UpdatedBy.Regency,
+			District: r.LastComment.UpdatedBy.District,
+			Village:  r.LastComment.UpdatedBy.Village,
+			Rw:       r.LastComment.UpdatedBy.RW.String,
+		}
+		comment.CreatedBy = actorCreated
+		comment.UpdatedBy = actorUpdated
+		data.LastComment = comment
+	}
+	return data
 }
 
 func decodeByIDRequest(ctx context.Context, r interface{}) (interface{}, error) {

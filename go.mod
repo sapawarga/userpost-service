@@ -10,4 +10,5 @@ require (
 	github.com/onsi/ginkgo v1.7.0
 	github.com/onsi/gomega v1.4.3
 	github.com/sapawarga/proto-file v0.0.0-20210420033700-9b438a6e2d2d
+	google.golang.org/grpc v1.36.0
 )
