@@ -173,51 +173,24 @@ func encodedUserPostDetail(ctx context.Context, r interface{}) (interface{}, err
 	comment := resp.LastComment
 	actor := resp.Actor
 
-	lastComment := &transportUserPost.Comment{
-		Id:         comment.ID,
-		UserPostId: comment.UserPostID,
-		Comment:    comment.Text,
-		CreatedAt:  comment.CreatedAt.String(),
-		UpdatedAt:  comment.UpdatedAt.String(),
+	lastComment := &transportUserPost.Comment{comment.ID, comment.UserPostID, comment.Text,
+		comment.CreatedAt.String(), comment.UpdatedAt.String(),
 	}
-
-	lastCommentActorCreated := &transportUserPost.Actor{
-		Id:       comment.CreatedBy.ID,
-		Name:     comment.CreatedBy.Name.String,
-		PhotoUrl: comment.CreatedBy.PhotoURL.String,
-		Role:     comment.CreatedBy.Role.Int64,
-		Regency:  comment.CreatedBy.Regency,
-		District: comment.CreatedBy.District,
-		Village:  comment.CreatedBy.Village,
-		Rw:       comment.CreatedBy.RW.String,
+	lastCommentActorCreated := &transportUserPost.Actor{comment.CreatedBy.ID,
+		comment.CreatedBy.Name.String, comment.CreatedBy.PhotoURL.String, comment.CreatedBy.Role.Int64,
+		comment.CreatedBy.Regency, comment.CreatedBy.District, comment.CreatedBy.Village, comment.CreatedBy.RW.String,
 	}
-
-	lastCommentActorUpdated := &transportUserPost.Actor{
-		Id:       comment.UpdatedBy.ID,
-		Name:     comment.UpdatedBy.Name.String,
-		PhotoUrl: comment.UpdatedBy.PhotoURL.String,
-		Role:     comment.UpdatedBy.Role.Int64,
-		Regency:  comment.UpdatedBy.Regency,
-		District: comment.UpdatedBy.District,
-		Village:  comment.UpdatedBy.Village,
-		Rw:       comment.UpdatedBy.RW.String,
+	lastCommentActorUpdated := &transportUserPost.Actor{comment.UpdatedBy.ID, comment.UpdatedBy.Name.String,
+		comment.UpdatedBy.PhotoURL.String, comment.UpdatedBy.Role.Int64, comment.UpdatedBy.Regency, comment.UpdatedBy.District,
+		comment.UpdatedBy.Village, comment.UpdatedBy.RW.String,
 	}
-
 	lastComment.CreatedBy = lastCommentActorCreated
 	lastComment.UpdatedBy = lastCommentActorUpdated
-
-	actorUserPost := &transportUserPost.Actor{
-		Id:       actor.ID,
-		Name:     actor.Name.String,
-		PhotoUrl: actor.PhotoURL.String,
-		Role:     actor.Role.Int64,
-		Regency:  actor.Regency,
-		District: actor.District,
-		Village:  actor.Village,
-		Rw:       actor.RW.String,
+	actorUserPost := &transportUserPost.Actor{actor.ID, actor.Name.String, actor.PhotoURL.String,
+		actor.Role.Int64, actor.Regency, actor.District, actor.Village, actor.RW.String,
 	}
 
-	userDetail := &transportUserPost.UserPost{
+	return &transportUserPost.UserPost{
 		Id:                    resp.ID,
 		Title:                 resp.Title,
 		Tag:                   helper.GetStringFromPointer(resp.Tag),
@@ -232,9 +205,7 @@ func encodedUserPostDetail(ctx context.Context, r interface{}) (interface{}, err
 		Actor:                 actorUserPost,
 		CreatedAt:             resp.CreatedAt.String(),
 		UpdatedAt:             resp.UpdatedAt.String(),
-	}
-
-	return userDetail, nil
+	}, nil
 }
 
 func decodeCreateNewPostRequest(ctx context.Context, r interface{}) (interface{}, error) {
