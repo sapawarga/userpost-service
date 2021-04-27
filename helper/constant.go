@@ -10,6 +10,8 @@ const (
 	STATUSCREATED          = "status_created"
 	STATUSUPDATED          = "status_updated"
 	STATUSDELETED          = "status_deleted"
+	SELECT_QUERY           = "select"
+	UPDATE_QUERY           = "update"
 )
 
 type keyType string
