@@ -1,7 +1,5 @@
 package model
 
-import "time"
-
 type UserPostRequest struct {
 	ActivityName *string
 	Username     *string
@@ -24,11 +22,10 @@ type IsLikedByUser struct {
 	EntityID int64
 }
 
-type CreateCommentRequest struct {
+type CreateCommentRequestRepository struct {
 	UserPostID int64
 	Text       string
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
+	ActorID    int64
 }
 
 type CreateNewPostRequestRepository struct {

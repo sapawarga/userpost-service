@@ -135,13 +135,9 @@ func MakeCreateComment(ctx context.Context, usecase usecase.UsecaseI) endpoint.E
 			return nil, err
 		}
 
-		current, _ := helper.GetCurrentTimeUTC()
-
 		if err = usecase.CreateCommentOnPost(ctx, &model.CreateCommentRequest{
 			UserPostID: req.UserPostID,
 			Text:       req.Comment,
-			CreatedAt:  current,
-			UpdatedAt:  current,
 		}); err != nil {
 			return nil, err
 		}

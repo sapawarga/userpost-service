@@ -208,7 +208,12 @@ func (p *Post) GetCommentsByPostID(ctx context.Context, id int64) ([]*model.Comm
 
 func (p *Post) CreateCommentOnPost(ctx context.Context, req *model.CreateCommentRequest) error {
 	logger := kitlog.With(p.logger, "method", "CreateCommentOnPost")
-	if err := p.repoComment.Create(ctx, req); err != nil {
+	actor := ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Data
+	if err := p.repoComment.Create(ctx, &model.CreateCommentRequestRepository{
+		UserPostID: req.UserPostID,
+		Text:       req.Text,
+		ActorID:    actor["id"].(int64),
+	}); err != nil {
 		level.Error(logger).Log("error_create_comment", err)
 		return err
 	}

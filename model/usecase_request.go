@@ -25,6 +25,11 @@ type UpdatePostRequest struct {
 	Title  *string
 }
 
+type CreateCommentRequest struct {
+	UserPostID int64
+	Text       string
+}
+
 type ActorFromContext struct {
 	Data map[string]interface{}
 }
