@@ -19,8 +19,9 @@ type UserPostByMeRequest struct {
 }
 
 type IsLikedByUser struct {
-	Type   string
-	UserID int64
+	Type     string
+	UserID   int64
+	EntityID int64
 }
 
 type CreateCommentRequest struct {
@@ -28,4 +29,13 @@ type CreateCommentRequest struct {
 	Text       string
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
+}
+
+type CreateNewPostRequestRepository struct {
+	Title        string
+	ImagePathURL string
+	Images       string
+	Tags         *string
+	Status       int64
+	ActorID      int64
 }

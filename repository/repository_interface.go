@@ -16,7 +16,7 @@ type PostI interface {
 	GetIsLikedByUser(ctx context.Context, req *model.IsLikedByUser) (bool, error)
 	GetDetailPost(ctx context.Context, id int64) (*model.PostResponse, error)
 	// query for create post
-	InsertPost(ctx context.Context, request *model.CreateNewPostRequest) error
+	InsertPost(ctx context.Context, request *model.CreateNewPostRequestRepository) error
 	// query for update
 	UpdateStatusOrTitle(ctx context.Context, request *model.UpdatePostRequest) error
 }

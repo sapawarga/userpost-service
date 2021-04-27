@@ -140,7 +140,15 @@ func (p *Post) GetDetailPost(ctx context.Context, id int64) (*model.UserPostResp
 func (p *Post) CreateNewPost(ctx context.Context, requestBody *model.CreateNewPostRequest) error {
 	// TODO: add checker tags
 	logger := kitlog.With(p.logger, "method", "CreateNewPost")
-	if err := p.repoPost.InsertPost(ctx, requestBody); err != nil {
+	actor := ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Data
+	if err := p.repoPost.InsertPost(ctx, &model.CreateNewPostRequestRepository{
+		Title:        requestBody.Title,
+		ImagePathURL: requestBody.ImagePathURL,
+		Images:       requestBody.Images,
+		Tags:         requestBody.Tags,
+		Status:       requestBody.Status,
+		ActorID:      actor["id"].(int64),
+	}); err != nil {
 		level.Error(logger).Log("error_create_post", err)
 		return err
 	}
