@@ -75,6 +75,11 @@ var _ = Describe("Usecase", func() {
 
 	var CreateNewPostLogic = func(idx int) {
 		ctx := context.TODO()
+		actor := map[string]interface{}{
+			"id": int64(1),
+		}
+		actorData := &model.ActorFromContext{Data: actor}
+		ctx = context.WithValue(ctx, helper.ACTORKEY, actorData)
 		data := testcases.CreateNewUserPostData[idx]
 		mockPostRepo.EXPECT().InsertPost(ctx, data.RepositoryRequest).Return(data.MockRepository).Times(1)
 		err := userPost.CreateNewPost(ctx, data.UsecaseRequest)
