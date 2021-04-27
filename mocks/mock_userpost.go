@@ -140,7 +140,7 @@ func (mr *MockPostIMockRecorder) GetMetadataPostByMe(arg0, arg1 interface{}) *go
 }
 
 // InsertPost mocks base method
-func (m *MockPostI) InsertPost(arg0 context.Context, arg1 *model.CreateNewPostRequest) error {
+func (m *MockPostI) InsertPost(arg0 context.Context, arg1 *model.CreateNewPostRequestRepository) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "InsertPost", arg0, arg1)
 	ret0, _ := ret[0].(error)

@@ -30,6 +30,7 @@ type UserResponse struct {
 	District string         `db:"district_name"`
 	Village  string         `db:"village_name"`
 	RW       sql.NullString `db:"rw"`
+	Status   int64          `db:"status"`
 }
 
 type LikeResponse struct {
