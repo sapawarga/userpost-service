@@ -35,7 +35,7 @@ func (m *MockCommentI) EXPECT() *MockCommentIMockRecorder {
 }
 
 // Create mocks base method
-func (m *MockCommentI) Create(arg0 context.Context, arg1 *model.CreateCommentRequest) error {
+func (m *MockCommentI) Create(arg0 context.Context, arg1 *model.CreateCommentRequestRepository) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", arg0, arg1)
 	ret0, _ := ret[0].(error)

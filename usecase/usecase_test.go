@@ -118,6 +118,11 @@ var _ = Describe("Usecase", func() {
 
 	var CreateCommentLogic = func(idx int) {
 		ctx := context.TODO()
+		actor := map[string]interface{}{
+			"id": int64(1),
+		}
+		actorData := &model.ActorFromContext{Data: actor}
+		ctx = context.WithValue(ctx, helper.ACTORKEY, actorData)
 		data := testcases.CreateCommentOnAPostData[idx]
 		mockCommentsRepo.EXPECT().Create(ctx, data.RepositoryRequest).Return(data.MockRepository).Times(1)
 		if err := userPost.CreateCommentOnPost(ctx, data.UsecaseRequest); err != nil {
