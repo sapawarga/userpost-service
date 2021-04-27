@@ -171,7 +171,6 @@ func decodeByIDRequest(ctx context.Context, r interface{}) (interface{}, error) 
 func encodedUserPostDetail(ctx context.Context, r interface{}) (interface{}, error) {
 	resp := r.(*endpoint.UserPostDetail)
 	comment := resp.LastComment
-	actor := resp.Actor
 
 	lastComment := &transportUserPost.Comment{
 		Id:         comment.ID,
@@ -181,41 +180,13 @@ func encodedUserPostDetail(ctx context.Context, r interface{}) (interface{}, err
 		UpdatedAt:  comment.UpdatedAt.String(),
 	}
 
-	lastCommentActorCreated := &transportUserPost.Actor{
-		Id:       comment.CreatedBy.ID,
-		Name:     comment.CreatedBy.Name.String,
-		PhotoUrl: comment.CreatedBy.PhotoURL.String,
-		Role:     comment.CreatedBy.Role.Int64,
-		Regency:  comment.CreatedBy.Regency,
-		District: comment.CreatedBy.District,
-		Village:  comment.CreatedBy.Village,
-		Rw:       comment.CreatedBy.RW.String,
-	}
-
-	lastCommentActorUpdated := &transportUserPost.Actor{
-		Id:       comment.UpdatedBy.ID,
-		Name:     comment.UpdatedBy.Name.String,
-		PhotoUrl: comment.UpdatedBy.PhotoURL.String,
-		Role:     comment.UpdatedBy.Role.Int64,
-		Regency:  comment.UpdatedBy.Regency,
-		District: comment.UpdatedBy.District,
-		Village:  comment.UpdatedBy.Village,
-		Rw:       comment.UpdatedBy.RW.String,
-	}
+	lastCommentActorCreated := encodeActor(ctx, comment.CreatedBy)
+	lastCommentActorUpdated := encodeActor(ctx, comment.UpdatedBy)
 
 	lastComment.CreatedBy = lastCommentActorCreated
 	lastComment.UpdatedBy = lastCommentActorUpdated
 
-	actorUserPost := &transportUserPost.Actor{
-		Id:       actor.ID,
-		Name:     actor.Name.String,
-		PhotoUrl: actor.PhotoURL.String,
-		Role:     actor.Role.Int64,
-		Regency:  actor.Regency,
-		District: actor.District,
-		Village:  actor.Village,
-		Rw:       actor.RW.String,
-	}
+	actorUserPost := encodeActor(ctx, resp.Actor)
 
 	userDetail := &transportUserPost.UserPost{
 		Id:                    resp.ID,
@@ -235,6 +206,20 @@ func encodedUserPostDetail(ctx context.Context, r interface{}) (interface{}, err
 	}
 
 	return userDetail, nil
+}
+
+func encodeActor(ctx context.Context, r interface{}) *transportUserPost.Actor {
+	actorResp := r.(*model.UserResponse)
+	return &transportUserPost.Actor{
+		Id:       actorResp.ID,
+		Name:     actorResp.Name.String,
+		PhotoUrl: actorResp.PhotoURL.String,
+		Role:     actorResp.Role.Int64,
+		Regency:  actorResp.Regency,
+		District: actorResp.District,
+		Village:  actorResp.Village,
+		Rw:       actorResp.RW.String,
+	}
 }
 
 func decodeCreateNewPostRequest(ctx context.Context, r interface{}) (interface{}, error) {
