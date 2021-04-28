@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/sapawarga/userpost-service/helper"
 	"github.com/sapawarga/userpost-service/model"
@@ -224,8 +223,31 @@ func (p *Post) CreateCommentOnPost(ctx context.Context, req *model.CreateComment
 
 func (p *Post) LikeOrDislikePost(ctx context.Context, id int64) error {
 	logger := kitlog.With(p.logger, "method", "LikeOrDislikePost")
-	actorID := ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Get("id")
-	fmt.Println(logger, actorID)
+	actorID := ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Get("id").(int64)
+	var err error
+
+	request := &model.AddOrRemoveLikeOnPostRequest{
+		UserPostID: id,
+		ActorID:    actorID,
+		TypeEntity: helper.TYPE_USERPOST,
+	}
+	isExist, err := p.repoPost.CheckIsExistLikeOnPostBy(ctx, request)
+	if err != nil {
+		level.Error(logger).Log("error_check_is_liked", err)
+		return err
+	}
+
+	if isExist {
+		err = p.repoPost.AddLikeOnPost(ctx, request)
+	} else {
+		err = p.repoPost.RemoveLikeOnPost(ctx, request)
+	}
+
+	if err != nil {
+		level.Error(logger).Log("error_add_or_remove_like", err)
+		return err
+	}
+
 	return nil
 }
 
