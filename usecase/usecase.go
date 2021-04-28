@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/sapawarga/userpost-service/helper"
 	"github.com/sapawarga/userpost-service/model"
@@ -218,6 +219,13 @@ func (p *Post) CreateCommentOnPost(ctx context.Context, req *model.CreateComment
 		return err
 	}
 
+	return nil
+}
+
+func (p *Post) LikeOrDislikePost(ctx context.Context, id int64) error {
+	logger := kitlog.With(p.logger, "method", "LikeOrDislikePost")
+	actorID := ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Get("id")
+	fmt.Println(logger, actorID)
 	return nil
 }
 

@@ -15,10 +15,14 @@ type PostI interface {
 	GetActor(ctx context.Context, id int64) (*model.UserResponse, error)
 	GetIsLikedByUser(ctx context.Context, req *model.IsLikedByUser) (bool, error)
 	GetDetailPost(ctx context.Context, id int64) (*model.PostResponse, error)
-	// query for create post
+	CheckIsExistLikeOnPostBy(ctx context.Context, request *model.AddOrRemoveLikeOnPostRequest) (bool, error)
+	// query for create
 	InsertPost(ctx context.Context, request *model.CreateNewPostRequestRepository) error
+	AddLikeOnPost(ctx context.Context, request *model.AddOrRemoveLikeOnPostRequest) error
 	// query for update
 	UpdateStatusOrTitle(ctx context.Context, request *model.UpdatePostRequest) error
+	// query for delete
+	RemoveLikeOnPost(ctx context.Context, request *model.AddOrRemoveLikeOnPostRequest) error
 }
 
 type CommentI interface {

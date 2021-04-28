@@ -36,3 +36,9 @@ type CreateNewPostRequestRepository struct {
 	Status       int64
 	ActorID      int64
 }
+
+type AddOrRemoveLikeOnPostRequest struct {
+	UserPostID int64
+	ActorID    int64
+	TypeEntity string
+}

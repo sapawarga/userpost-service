@@ -34,6 +34,35 @@ func (m *MockPostI) EXPECT() *MockPostIMockRecorder {
 	return m.recorder
 }
 
+// AddLikeOnPost mocks base method
+func (m *MockPostI) AddLikeOnPost(arg0 context.Context, arg1 *model.AddOrRemoveLikeOnPostRequest) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AddLikeOnPost", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// AddLikeOnPost indicates an expected call of AddLikeOnPost
+func (mr *MockPostIMockRecorder) AddLikeOnPost(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddLikeOnPost", reflect.TypeOf((*MockPostI)(nil).AddLikeOnPost), arg0, arg1)
+}
+
+// CheckIsExistLikeOnPostBy mocks base method
+func (m *MockPostI) CheckIsExistLikeOnPostBy(arg0 context.Context, arg1 *model.AddOrRemoveLikeOnPostRequest) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CheckIsExistLikeOnPostBy", arg0, arg1)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CheckIsExistLikeOnPostBy indicates an expected call of CheckIsExistLikeOnPostBy
+func (mr *MockPostIMockRecorder) CheckIsExistLikeOnPostBy(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckIsExistLikeOnPostBy", reflect.TypeOf((*MockPostI)(nil).CheckIsExistLikeOnPostBy), arg0, arg1)
+}
+
 // GetActor mocks base method
 func (m *MockPostI) GetActor(arg0 context.Context, arg1 int64) (*model.UserResponse, error) {
 	m.ctrl.T.Helper()
@@ -151,6 +180,20 @@ func (m *MockPostI) InsertPost(arg0 context.Context, arg1 *model.CreateNewPostRe
 func (mr *MockPostIMockRecorder) InsertPost(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertPost", reflect.TypeOf((*MockPostI)(nil).InsertPost), arg0, arg1)
+}
+
+// RemoveLikeOnPost mocks base method
+func (m *MockPostI) RemoveLikeOnPost(arg0 context.Context, arg1 *model.AddOrRemoveLikeOnPostRequest) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RemoveLikeOnPost", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RemoveLikeOnPost indicates an expected call of RemoveLikeOnPost
+func (mr *MockPostIMockRecorder) RemoveLikeOnPost(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveLikeOnPost", reflect.TypeOf((*MockPostI)(nil).RemoveLikeOnPost), arg0, arg1)
 }
 
 // UpdateStatusOrTitle mocks base method
