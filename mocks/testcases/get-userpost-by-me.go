@@ -14,6 +14,8 @@ type GetListUserPostByMe struct {
 	GetActorParams         int64
 	GetLastCommentParams   int64
 	GetTotalCommentsParams int64
+	IsLikedRequest         *model.AddOrRemoveLikeOnPostRequest
+	CheckIsLikedResponse
 	ResponseGetList
 	ResponseGetActor
 	ResponseMetadata
@@ -36,6 +38,11 @@ var GetListUserPostByMeData = []GetListUserPostByMe{
 		GetActorParams:         1,
 		GetLastCommentParams:   1,
 		GetTotalCommentsParams: 1,
+		IsLikedRequest:         requestLikeOnPost,
+		CheckIsLikedResponse: CheckIsLikedResponse{
+			Result: true,
+			Error:  nil,
+		},
 		ResponseGetList: ResponseGetList{
 			Result: postResponse,
 			Error:  nil,
@@ -68,6 +75,11 @@ var GetListUserPostByMeData = []GetListUserPostByMe{
 		GetActorParams:         1,
 		GetLastCommentParams:   1,
 		GetTotalCommentsParams: 1,
+		IsLikedRequest:         requestLikeOnPost,
+		CheckIsLikedResponse: CheckIsLikedResponse{
+			Result: true,
+			Error:  nil,
+		},
 		ResponseGetList: ResponseGetList{
 			Result: nil,
 			Error:  errors.New("failed_get_user_posts_by_me"),
@@ -100,6 +112,11 @@ var GetListUserPostByMeData = []GetListUserPostByMe{
 		GetActorParams:         1,
 		GetLastCommentParams:   1,
 		GetTotalCommentsParams: 1,
+		IsLikedRequest:         requestLikeOnPost,
+		CheckIsLikedResponse: CheckIsLikedResponse{
+			Result: true,
+			Error:  nil,
+		},
 		ResponseGetList: ResponseGetList{
 			Result: postResponse,
 			Error:  nil,
@@ -132,6 +149,11 @@ var GetListUserPostByMeData = []GetListUserPostByMe{
 		GetActorParams:         1,
 		GetLastCommentParams:   1,
 		GetTotalCommentsParams: 1,
+		IsLikedRequest:         requestLikeOnPost,
+		CheckIsLikedResponse: CheckIsLikedResponse{
+			Result: true,
+			Error:  nil,
+		},
 		ResponseGetList: ResponseGetList{
 			Result: postResponse,
 			Error:  nil,
@@ -164,6 +186,11 @@ var GetListUserPostByMeData = []GetListUserPostByMe{
 		GetActorParams:         1,
 		GetLastCommentParams:   1,
 		GetTotalCommentsParams: 1,
+		IsLikedRequest:         requestLikeOnPost,
+		CheckIsLikedResponse: CheckIsLikedResponse{
+			Result: true,
+			Error:  nil,
+		},
 		ResponseGetList: ResponseGetList{
 			Result: postResponse,
 			Error:  nil,
@@ -196,6 +223,48 @@ var GetListUserPostByMeData = []GetListUserPostByMe{
 		GetActorParams:         1,
 		GetLastCommentParams:   1,
 		GetTotalCommentsParams: 1,
+		IsLikedRequest:         requestLikeOnPost,
+		CheckIsLikedResponse: CheckIsLikedResponse{
+			Result: true,
+			Error:  nil,
+		},
+		ResponseGetList: ResponseGetList{
+			Result: postResponse,
+			Error:  nil,
+		},
+		ResponseGetActor: ResponseGetActor{
+			Result: actorResponse,
+			Error:  nil,
+		},
+		ResponseMetadata: ResponseMetadata{
+			Result: nil,
+			Error:  errors.New("failed_get_metadata"),
+		},
+		ResponseGetLastComment: ResponseGetLastComment{
+			Result: commentResponse,
+			Error:  nil,
+		},
+		ResponseGetTotalComment: ResponseGetTotalComment{
+			Result: totalComment,
+			Error:  nil,
+		},
+		ResponseUsecase: ResponseUsecase{
+			Result: nil,
+			Error:  errors.New("failed_get_metadata"),
+		},
+	}, {
+		Description:            "failed_get_metadata",
+		UsecaseParams:          &requestUsecase,
+		GetUserPostParams:      userpostbyme,
+		GetMetadataParams:      userpostbyme,
+		GetActorParams:         1,
+		GetLastCommentParams:   1,
+		GetTotalCommentsParams: 1,
+		IsLikedRequest:         requestLikeOnPost,
+		CheckIsLikedResponse: CheckIsLikedResponse{
+			Result: false,
+			Error:  errors.New("something_went_wrong"),
+		},
 		ResponseGetList: ResponseGetList{
 			Result: postResponse,
 			Error:  nil,

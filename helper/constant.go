@@ -12,6 +12,7 @@ const (
 	STATUSDELETED          = "status_deleted"
 	SELECT_QUERY           = "select"
 	UPDATE_QUERY           = "update"
+	TYPE_USERPOST          = "user_post"
 )
 
 type keyType string

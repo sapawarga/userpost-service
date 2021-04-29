@@ -122,6 +122,7 @@ func (p *Post) GetListPostByMe(ctx context.Context, params *model.GetListRequest
 
 func (p *Post) GetDetailPost(ctx context.Context, id int64) (*model.UserPostResponse, error) {
 	logger := kitlog.With(p.logger, "method", "GetDetailPost")
+	actor := ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Data
 	resp, err := p.repoPost.GetDetailPost(ctx, id)
 	if err != nil {
 		level.Error(logger).Log("error_get_detail", err)
@@ -132,6 +133,20 @@ func (p *Post) GetDetailPost(ctx context.Context, id int64) (*model.UserPostResp
 	if err != nil {
 		level.Error(logger).Log("error_get_detail_user_post", err)
 		return nil, err
+	}
+
+	isLiked, err := p.repoPost.CheckIsExistLikeOnPostBy(ctx, &model.AddOrRemoveLikeOnPostRequest{
+		UserPostID: id,
+		ActorID:    actor["id"].(int64),
+		TypeEntity: helper.TYPE_USERPOST,
+	})
+	if err != nil {
+		level.Error(logger).Log("error_check_isliked", err)
+		return nil, err
+	}
+
+	if isLiked {
+		userPost.IsLiked = isLiked
 	}
 
 	return userPost, nil
@@ -221,6 +236,36 @@ func (p *Post) CreateCommentOnPost(ctx context.Context, req *model.CreateComment
 	return nil
 }
 
+func (p *Post) LikeOrDislikePost(ctx context.Context, id int64) error {
+	logger := kitlog.With(p.logger, "method", "LikeOrDislikePost")
+	actorID := ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Get("id").(int64)
+	var err error
+
+	request := &model.AddOrRemoveLikeOnPostRequest{
+		UserPostID: id,
+		ActorID:    actorID,
+		TypeEntity: helper.TYPE_USERPOST,
+	}
+	isExist, err := p.repoPost.CheckIsExistLikeOnPostBy(ctx, request)
+	if err != nil {
+		level.Error(logger).Log("error_check_is_liked", err)
+		return err
+	}
+
+	if isExist {
+		err = p.repoPost.AddLikeOnPost(ctx, request)
+	} else {
+		err = p.repoPost.RemoveLikeOnPost(ctx, request)
+	}
+
+	if err != nil {
+		level.Error(logger).Log("error_add_or_remove_like", err)
+		return err
+	}
+
+	return nil
+}
+
 func (p *Post) getDetailOfUserPost(ctx context.Context, post *model.PostResponse) (*model.UserPostResponse, error) {
 	logger := kitlog.With(p.logger, "method", "getDetailOfUserPost")
 	userPost := &model.UserPostResponse{
@@ -258,9 +303,6 @@ func (p *Post) getDetailOfUserPost(ctx context.Context, post *model.PostResponse
 		userPost.Actor = user
 	}
 
-	// TODO get isLiked by who is user login. Get the user login from context
-	// isLiked, err := p.repo.GetIsLikedByUser()
-
 	return userPost, nil
 }
 
@@ -289,10 +331,22 @@ func (p *Post) getDetailComment(ctx context.Context, comment *model.CommentRespo
 }
 
 func (p *Post) appendListUserPost(ctx context.Context, resp []*model.PostResponse) (userPosts []*model.UserPostResponse, err error) {
+	actorID := ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Get("id").(int64)
 	for _, v := range resp {
 		userPost, err := p.getDetailOfUserPost(ctx, v)
 		if err != nil {
 			return nil, err
+		}
+		isLiked, err := p.repoPost.CheckIsExistLikeOnPostBy(ctx, &model.AddOrRemoveLikeOnPostRequest{
+			UserPostID: v.ID,
+			ActorID:    actorID,
+			TypeEntity: helper.TYPE_USERPOST,
+		})
+		if err != nil {
+			return nil, err
+		}
+		if isLiked {
+			userPost.IsLiked = isLiked
 		}
 		userPosts = append(userPosts, userPost)
 	}

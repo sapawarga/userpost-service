@@ -16,12 +16,6 @@ type UserPostByMeRequest struct {
 	*UserPostRequest
 }
 
-type IsLikedByUser struct {
-	Type     string
-	UserID   int64
-	EntityID int64
-}
-
 type CreateCommentRequestRepository struct {
 	UserPostID int64
 	Text       string
@@ -35,4 +29,10 @@ type CreateNewPostRequestRepository struct {
 	Tags         *string
 	Status       int64
 	ActorID      int64
+}
+
+type AddOrRemoveLikeOnPostRequest struct {
+	UserPostID int64
+	ActorID    int64
+	TypeEntity string
 }

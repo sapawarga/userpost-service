@@ -49,6 +49,18 @@ func MakeHandler(ctx context.Context, fs usecase.UsecaseI) transportUserPost.Use
 		encodeStatusResponse,
 	)
 
+	userPostGetListByMeHandler := kitgrpc.NewServer(
+		endpoint.MakeGetListUserPostByMe(ctx, fs),
+		decodeGetListUserPost,
+		encodeGetListUserPost,
+	)
+
+	userPostLikeDislikeHandler := kitgrpc.NewServer(
+		endpoint.MakeLikeOrDislikePost(ctx, fs),
+		decodeByIDRequest,
+		encodeStatusResponse,
+	)
+
 	return &grpcServer{
 		userPostGetListHandler,
 		userPostGetDetailHandler,
@@ -56,6 +68,8 @@ func MakeHandler(ctx context.Context, fs usecase.UsecaseI) transportUserPost.Use
 		userPostUpdateHandler,
 		userPostGetCommentsHandler,
 		userPostCreateCommentHandler,
+		userPostGetListByMeHandler,
+		userPostLikeDislikeHandler,
 	}
 }
 

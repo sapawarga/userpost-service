@@ -153,30 +153,6 @@ func (r *UserPost) GetActor(ctx context.Context, id int64) (*model.UserResponse,
 	return result, nil
 }
 
-func (r *UserPost) GetIsLikedByUser(ctx context.Context, req *model.IsLikedByUser) (bool, error) {
-	var query bytes.Buffer
-	var isExists int64
-	var err error
-	var params []interface{}
-
-	query.WriteString("SELECT COUNT(1) as is_exists FROM likes WHERE WHERE `type` = ? AND user_id = ? AND entity_id = ?")
-	params = append(params, req.Type, req.UserID, req.EntityID)
-	if ctx != nil {
-		err = r.conn.GetContext(ctx, isExists, query.String(), params...)
-	} else {
-		err = r.conn.Get(isExists, query.String(), params...)
-	}
-
-	if err != nil {
-		return false, err
-	}
-
-	if isExists == 1 {
-		return true, nil
-	}
-	return false, nil
-}
-
 func (r *UserPost) GetDetailPost(ctx context.Context, id int64) (*model.PostResponse, error) {
 	var query bytes.Buffer
 	var result *model.PostResponse
@@ -198,6 +174,32 @@ func (r *UserPost) GetDetailPost(ctx context.Context, id int64) (*model.PostResp
 		return nil, err
 	}
 	return result, nil
+}
+
+func (r *UserPost) CheckIsExistLikeOnPostBy(ctx context.Context, request *model.AddOrRemoveLikeOnPostRequest) (bool, error) {
+	var query bytes.Buffer
+	var total *int64
+	var err error
+	var params []interface{}
+
+	query.WriteString("SELECT 1	FROM likes WHERE `type` = ? AND user_id  = ? AND entity_id = ?")
+	params = append(params, request.TypeEntity, request.ActorID, request.UserPostID)
+
+	if ctx != nil {
+		err = r.conn.GetContext(ctx, total, query.String(), params...)
+	} else {
+		err = r.conn.Get(total, query.String(), params...)
+	}
+
+	if total == nil || err == sql.ErrNoRows {
+		return false, nil
+	}
+
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
 
 func (r *UserPost) InsertPost(ctx context.Context, request *model.CreateNewPostRequestRepository) error {
@@ -228,6 +230,34 @@ func (r *UserPost) InsertPost(ctx context.Context, request *model.CreateNewPostR
 		return err
 	}
 	return nil
+}
+
+func (r *UserPost) AddLikeOnPost(ctx context.Context, request *model.AddOrRemoveLikeOnPostRequest) error {
+	var query bytes.Buffer
+	var params = make(map[string]interface{})
+	var err error
+	_, unixTime := helper.GetCurrentTimeUTC()
+
+	query.WriteString("INSERT INTO likes (`type`, user_id, entity_id, created_at, updated_at) ")
+	query.WriteString("VALUES(:type_entity, :user_id, :entity_id, :current, :current)")
+	params = map[string]interface{}{
+		"type_entity": request.TypeEntity,
+		"user_id":     request.ActorID,
+		"entity_id":   request.UserPostID,
+		"current":     unixTime,
+	}
+
+	if ctx != nil {
+		_, err = r.conn.NamedExecContext(ctx, query.String(), params)
+	} else {
+		_, err = r.conn.NamedExec(query.String(), params)
+	}
+
+	if err != nil {
+		return err
+	}
+	return nil
+
 }
 
 func (r *UserPost) UpdateStatusOrTitle(ctx context.Context, request *model.UpdatePostRequest) error {
@@ -263,6 +293,26 @@ func (r *UserPost) UpdateStatusOrTitle(ctx context.Context, request *model.Updat
 		_, err = r.conn.NamedExecContext(ctx, query.String(), params)
 	} else {
 		_, err = r.conn.NamedExec(query.String(), params)
+	}
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *UserPost) RemoveLikeOnPost(ctx context.Context, request *model.AddOrRemoveLikeOnPostRequest) error {
+	var query bytes.Buffer
+	var params []interface{}
+	var err error
+
+	query.WriteString("DELETE FROM likes WHERE `type` = ? AND user_id  = ? AND entity_id = ? ")
+	params = append(params, request.TypeEntity, request.ActorID, request.UserPostID)
+
+	if ctx != nil {
+		_, err = r.conn.ExecContext(ctx, query.String(), params...)
+	} else {
+		_, err = r.conn.Exec(query.String(), params...)
 	}
 
 	if err != nil {

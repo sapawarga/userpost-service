@@ -39,11 +39,17 @@ var _ = Describe("Usecase", func() {
 
 	var GetListUserPostLogic = func(idx int) {
 		ctx := context.Background()
+		actor := map[string]interface{}{
+			"id": int64(1),
+		}
+		actorData := &model.ActorFromContext{Data: actor}
+		ctx = context.WithValue(ctx, helper.ACTORKEY, actorData)
 		data := testcases.GetListUserPostData[idx]
 		mockPostRepo.EXPECT().GetListPost(ctx, gomock.Any()).Return(data.ResponseGetList.Result, data.ResponseGetList.Error).Times(1)
 		mockPostRepo.EXPECT().GetMetadataPost(ctx, gomock.Any()).Return(data.ResponseMetadata.Result, data.ResponseMetadata.Error).Times(1)
 		mockCommentsRepo.EXPECT().GetLastComment(ctx, data.GetLastCommentParams).Return(data.ResponseGetLastComment.Result, data.ResponseGetLastComment.Error).Times(len(data.ResponseGetList.Result))
 		mockPostRepo.EXPECT().GetActor(ctx, data.GetActorParams).Return(data.ResponseGetActor.Result, data.ResponseGetActor.Error).Times(len(data.ResponseGetList.Result) * 3)
+		mockPostRepo.EXPECT().CheckIsExistLikeOnPostBy(ctx, gomock.Any()).Return(data.CheckIsLikedResponse.Result, data.CheckIsLikedResponse.Error).Times(len(data.ResponseGetList.Result))
 		resp, err := userPost.GetListPost(ctx, &data.UsecaseParams)
 		if err != nil {
 			Expect(err).NotTo(BeNil())
@@ -58,11 +64,17 @@ var _ = Describe("Usecase", func() {
 
 	var GetDetailUserPostLogic = func(idx int) {
 		ctx := context.TODO()
+		actor := map[string]interface{}{
+			"id": int64(1),
+		}
+		actorData := &model.ActorFromContext{Data: actor}
+		ctx = context.WithValue(ctx, helper.ACTORKEY, actorData)
 		data := testcases.GetDetailUserPostData[idx]
 		mockPostRepo.EXPECT().GetDetailPost(ctx, data.GetUserPostParams).Return(data.ResponseGetDetailUserPost.Result, data.ResponseGetDetailUserPost.Error).Times(1)
 		mockCommentsRepo.EXPECT().GetLastComment(ctx, data.GetLastCommentParams).Return(data.ResponseGetLastComment.Result, data.ResponseGetLastComment.Error).Times(1)
 		mockCommentsRepo.EXPECT().GetTotalComments(ctx, data.GetTotalCommentsParams).Return(data.ResponseGetTotalComment.Result, data.ResponseGetTotalComment.Error).Times(1)
 		mockPostRepo.EXPECT().GetActor(ctx, data.GetActorParams).Return(data.ResponseGetActor.Result, data.ResponseGetActor.Error).Times(3)
+		mockPostRepo.EXPECT().CheckIsExistLikeOnPostBy(ctx, data.IsLikedRequest).Return(data.CheckIsLikedResponse.Result, data.CheckIsLikedResponse.Error).Times(1)
 		resp, err := userPost.GetDetailPost(ctx, data.UsecaseParams)
 		if err != nil {
 			Expect(err).NotTo(BeNil())
@@ -144,6 +156,7 @@ var _ = Describe("Usecase", func() {
 		mockCommentsRepo.EXPECT().GetLastComment(ctx, data.GetLastCommentParams).Return(data.ResponseGetLastComment.Result, data.ResponseGetLastComment.Error).Times(len(data.ResponseGetList.Result))
 		mockCommentsRepo.EXPECT().GetTotalComments(ctx, data.GetTotalCommentsParams).Return(data.ResponseGetTotalComment.Result, data.ResponseGetTotalComment.Error).Times(len(data.ResponseGetList.Result))
 		mockPostRepo.EXPECT().GetActor(ctx, data.GetActorParams).Return(data.ResponseGetActor.Result, data.ResponseGetActor.Error).Times(len(data.ResponseGetList.Result) * 3)
+		mockPostRepo.EXPECT().CheckIsExistLikeOnPostBy(ctx, gomock.Any()).Return(data.CheckIsLikedResponse.Result, data.CheckIsLikedResponse.Error).Times(len(data.ResponseGetList.Result))
 		resp, err := userPost.GetListPostByMe(ctx, data.UsecaseParams)
 		if err != nil {
 			Expect(err).NotTo(BeNil())
@@ -156,6 +169,24 @@ var _ = Describe("Usecase", func() {
 		}
 	}
 
+	var LikeOrDislikePostLogic = func(idx int) {
+		ctx := context.Background()
+		actor := &model.ActorFromContext{Data: map[string]interface{}{
+			"id": int64(1),
+		}}
+		ctx = context.WithValue(ctx, helper.ACTORKEY, actor)
+		data := testcases.LikeOrDislikePostData[idx]
+		mockPostRepo.EXPECT().CheckIsExistLikeOnPostBy(ctx, data.CheckIsLikedRequest).Return(data.MockCheckIsLiked.Result, data.MockCheckIsLiked.Error).Times(1)
+		mockPostRepo.EXPECT().AddLikeOnPost(ctx, data.AddLikeOnPostRequest).Return(data.MockAddLikeOnPost).Times(1)
+		mockPostRepo.EXPECT().RemoveLikeOnPost(ctx, data.RemoveLikeOnPostRequest).Return(data.MockRemoveLikeOnPost).Times(1)
+		err := userPost.LikeOrDislikePost(ctx, data.UsecaseRequest)
+		if err != nil {
+			Expect(err).To(Equal(data.MockUsecase))
+		} else {
+			Expect(err).To(BeNil())
+		}
+	}
+
 	var unitTestLogic = map[string]map[string]interface{}{
 		"GetListUserPost":     {"func": GetListUserPostLogic, "test_case_count": len(testcases.GetListUserPostData), "desc": testcases.ListUserPostDescription()},
 		"GetDetailUserPost":   {"func": GetDetailUserPostLogic, "test_case_count": len(testcases.GetDetailUserPostData), "desc": testcases.ListUserPostDetailDescription()},
@@ -164,6 +195,7 @@ var _ = Describe("Usecase", func() {
 		"GetCommentsByID":     {"func": GetCommentsLogic, "test_case_count": len(testcases.GetCommentsData), "desc": testcases.ListGetCommentsDescription()},
 		"CreateComment":       {"func": CreateCommentLogic, "test_case_count": len(testcases.CreateCommentOnAPostData), "desc": testcases.CreateCommentDescription()},
 		"GetListUserPostByMe": {"func": GetListPostByMeLogic, "test_case_count": len(testcases.GetListUserPostByMeData), "desc": testcases.ListUserPostByMeDescription()},
+		"LikeOrDislikeOnPost": {"func": LikeOrDislikePostLogic, "test_case_count": len(testcases.LikeOrDislikePostData), "desc": testcases.LikeOrDislikePostDescription()},
 	}
 
 	for _, val := range unitTestLogic {

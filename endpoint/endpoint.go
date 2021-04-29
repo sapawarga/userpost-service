@@ -3,6 +3,7 @@ package endpoint
 import (
 	"context"
 	"encoding/json"
+	"errors"
 
 	"github.com/go-kit/kit/endpoint"
 	"github.com/sapawarga/userpost-service/helper"
@@ -14,7 +15,15 @@ import (
 func MakeGetListUserPost(ctx context.Context, usecase usecase.UsecaseI) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(*GetListUserPostRequest)
-		params := &model.GetListRequest{
+		// TODO: for get metadata from headers grpc needs to update when using authorization
+		headers, ok := metadata.FromIncomingContext(ctx)
+		if !ok {
+			return nil, errors.New("invalid_metadata")
+		}
+		actor := headers["Actor"]
+		ctx = context.WithValue(ctx, helper.ACTORKEY, actor)
+
+		resp, err := usecase.GetListPost(ctx, &model.GetListRequest{
 			ActivityName: req.ActivityName,
 			Username:     req.Username,
 			Category:     req.Category,
@@ -23,18 +32,7 @@ func MakeGetListUserPost(ctx context.Context, usecase usecase.UsecaseI) endpoint
 			Limit:        req.Limit,
 			SortBy:       req.SortBy,
 			OrderBy:      req.OrderBy,
-		}
-		// TODO: for get metadata from headers grpc needs to update when using authorization
-		headers, ok := metadata.FromIncomingContext(ctx)
-		var resp *model.UserPostWithMetadata
-		if !ok {
-			resp, err = usecase.GetListPost(ctx, params)
-		} else {
-			actor := headers["Actor"]
-			ctx = context.WithValue(ctx, helper.ACTORKEY, actor)
-			resp, err = usecase.GetListPostByMe(ctx, params)
-		}
-
+		})
 		if err != nil {
 			return nil, err
 		}
@@ -53,11 +51,45 @@ func MakeGetListUserPost(ctx context.Context, usecase usecase.UsecaseI) endpoint
 func MakeGetDetailUserPost(ctx context.Context, usecase usecase.UsecaseI) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(*GetByID)
+		// TODO: for get metadata from headers grpc needs to update when using authorization
+		headers, ok := metadata.FromIncomingContext(ctx)
+		if !ok {
+			return nil, errors.New("invalid_metadata")
+		}
+		actor := headers["Actor"]
+		ctx = context.WithValue(ctx, helper.ACTORKEY, actor)
 		resp, err := usecase.GetDetailPost(ctx, req.ID)
 		if err != nil {
 			return nil, err
 		}
 		return resp, nil
+	}
+}
+
+func MakeGetListUserPostByMe(ctx context.Context, usecase usecase.UsecaseI) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*GetListUserPostRequest)
+		// TODO: for get metadata from headers grpc needs to update when using authorization
+		headers, ok := metadata.FromIncomingContext(ctx)
+		if !ok {
+			return nil, errors.New("invalid_metadata")
+		}
+		actor := headers["Actor"]
+		ctx = context.WithValue(ctx, helper.ACTORKEY, actor)
+		response, err = usecase.GetListPostByMe(ctx, &model.GetListRequest{
+			ActivityName: req.ActivityName,
+			Username:     req.Username,
+			Category:     req.Category,
+			Status:       req.Status,
+			Page:         req.Page,
+			Limit:        req.Limit,
+			SortBy:       req.SortBy,
+			OrderBy:      req.OrderBy,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return response, nil
 	}
 }
 
@@ -145,6 +177,27 @@ func MakeCreateComment(ctx context.Context, usecase usecase.UsecaseI) endpoint.E
 		return &StatusResponse{
 			Code:    helper.STATUSCREATED,
 			Message: "success_post_comment",
+		}, nil
+	}
+}
+
+func MakeLikeOrDislikePost(ctx context.Context, usecase usecase.UsecaseI) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*GetByID)
+		// TODO: for get metadata from headers grpc needs to update when using authorization
+		headers, ok := metadata.FromIncomingContext(ctx)
+		if !ok {
+			return nil, errors.New("invalid_metadata")
+		}
+		actor := headers["Actor"]
+		ctx = context.WithValue(ctx, helper.ACTORKEY, actor)
+		if err = usecase.LikeOrDislikePost(ctx, req.ID); err != nil {
+			return nil, err
+		}
+
+		return &StatusResponse{
+			Code:    helper.STATUSCREATED,
+			Message: "success_like_or_dislike_a_post",
 		}, nil
 	}
 }

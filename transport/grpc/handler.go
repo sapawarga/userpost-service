@@ -14,6 +14,8 @@ type grpcServer struct {
 	userpostUpdate        kitgrpc.Handler
 	userPostGetComments   kitgrpc.Handler
 	userPostCreateComment kitgrpc.Handler
+	userPostGetListByMe   kitgrpc.Handler
+	userPostLikeOrDislike kitgrpc.Handler
 }
 
 func (g *grpcServer) GetListUserPost(ctx context.Context, in *transportUserPost.GetListUserPostRequest) (*transportUserPost.GetListUserPostResponse, error) {
@@ -58,6 +60,22 @@ func (g *grpcServer) GetCommentsByID(ctx context.Context, in *transportUserPost.
 
 func (g *grpcServer) CreateComment(ctx context.Context, in *transportUserPost.CreateCommentRequest) (*transportUserPost.StatusResponse, error) {
 	_, resp, err := g.userPostCreateComment.ServeGRPC(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return resp.(*transportUserPost.StatusResponse), nil
+}
+
+func (g *grpcServer) GetListUserPostByMe(ctx context.Context, in *transportUserPost.GetListUserPostRequest) (*transportUserPost.GetListUserPostResponse, error) {
+	_, resp, err := g.userPostGetListByMe.ServeGRPC(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return resp.(*transportUserPost.GetListUserPostResponse), nil
+}
+
+func (g *grpcServer) LikeOrDislikeUserPost(ctx context.Context, in *transportUserPost.ByID) (*transportUserPost.StatusResponse, error) {
+	_, resp, err := g.userPostLikeOrDislike.ServeGRPC(ctx, in)
 	if err != nil {
 		return nil, err
 	}
