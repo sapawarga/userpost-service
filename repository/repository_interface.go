@@ -13,7 +13,6 @@ type PostI interface {
 	GetListPostByMe(ctx context.Context, request *model.UserPostByMeRequest) ([]*model.PostResponse, error)
 	GetMetadataPostByMe(ctx context.Context, request *model.UserPostByMeRequest) (*int64, error)
 	GetActor(ctx context.Context, id int64) (*model.UserResponse, error)
-	GetIsLikedByUser(ctx context.Context, req *model.IsLikedByUser) (bool, error)
 	GetDetailPost(ctx context.Context, id int64) (*model.PostResponse, error)
 	CheckIsExistLikeOnPostBy(ctx context.Context, request *model.AddOrRemoveLikeOnPostRequest) (bool, error)
 	// query for create

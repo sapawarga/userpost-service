@@ -153,30 +153,6 @@ func (r *UserPost) GetActor(ctx context.Context, id int64) (*model.UserResponse,
 	return result, nil
 }
 
-func (r *UserPost) GetIsLikedByUser(ctx context.Context, req *model.IsLikedByUser) (bool, error) {
-	var query bytes.Buffer
-	var isExists int64
-	var err error
-	var params []interface{}
-
-	query.WriteString("SELECT COUNT(1) as is_exists FROM likes WHERE WHERE `type` = ? AND user_id = ? AND entity_id = ?")
-	params = append(params, req.Type, req.UserID, req.EntityID)
-	if ctx != nil {
-		err = r.conn.GetContext(ctx, isExists, query.String(), params...)
-	} else {
-		err = r.conn.Get(isExists, query.String(), params...)
-	}
-
-	if err != nil {
-		return false, err
-	}
-
-	if isExists == 1 {
-		return true, nil
-	}
-	return false, nil
-}
-
 func (r *UserPost) GetDetailPost(ctx context.Context, id int64) (*model.PostResponse, error) {
 	var query bytes.Buffer
 	var result *model.PostResponse

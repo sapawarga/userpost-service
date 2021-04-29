@@ -16,12 +16,6 @@ type UserPostByMeRequest struct {
 	*UserPostRequest
 }
 
-type IsLikedByUser struct {
-	Type     string
-	UserID   int64
-	EntityID int64
-}
-
 type CreateCommentRequestRepository struct {
 	UserPostID int64
 	Text       string

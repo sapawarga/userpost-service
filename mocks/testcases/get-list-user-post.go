@@ -51,6 +51,8 @@ type GetListUserPost struct {
 	GetActorParams         int64
 	GetLastCommentParams   int64
 	GetTotalCommentsParams int64
+	IsLikedRequest         *model.AddOrRemoveLikeOnPostRequest
+	CheckIsLikedResponse
 	ResponseGetList
 	ResponseGetActor
 	ResponseMetadata
@@ -154,7 +156,7 @@ var (
 			LastUserPostCommentID: helper.SetPointerInt64(1),
 			LastComment:           comment,
 			LikesCount:            0,
-			IsLiked:               false,
+			IsLiked:               true,
 			CommentCounts:         1,
 			Status:                10,
 			Actor:                 actorResponse,
@@ -169,7 +171,7 @@ var (
 			LastUserPostCommentID: helper.SetPointerInt64(1),
 			LastComment:           comment,
 			LikesCount:            0,
-			IsLiked:               false,
+			IsLiked:               true,
 			CommentCounts:         1,
 			Status:                10,
 			Actor:                 actorResponse,
@@ -196,6 +198,11 @@ var GetListUserPostData = []GetListUserPost{
 		GetActorParams:         1,
 		GetLastCommentParams:   1,
 		GetTotalCommentsParams: 1,
+		IsLikedRequest:         requestLikeOnPost,
+		CheckIsLikedResponse: CheckIsLikedResponse{
+			Result: true,
+			Error:  nil,
+		},
 		ResponseGetList: ResponseGetList{
 			Result: postResponse,
 			Error:  nil,
@@ -228,6 +235,11 @@ var GetListUserPostData = []GetListUserPost{
 		GetActorParams:         1,
 		GetLastCommentParams:   1,
 		GetTotalCommentsParams: 1,
+		IsLikedRequest:         requestLikeOnPost,
+		CheckIsLikedResponse: CheckIsLikedResponse{
+			Result: true,
+			Error:  nil,
+		},
 		ResponseGetList: ResponseGetList{
 			Result: nil,
 			Error:  errors.New("failed_get_user_posts"),
@@ -260,6 +272,11 @@ var GetListUserPostData = []GetListUserPost{
 		GetActorParams:         1,
 		GetLastCommentParams:   1,
 		GetTotalCommentsParams: 1,
+		IsLikedRequest:         requestLikeOnPost,
+		CheckIsLikedResponse: CheckIsLikedResponse{
+			Result: true,
+			Error:  nil,
+		},
 		ResponseGetList: ResponseGetList{
 			Result: postResponse,
 			Error:  nil,
@@ -292,6 +309,11 @@ var GetListUserPostData = []GetListUserPost{
 		GetActorParams:         1,
 		GetLastCommentParams:   1,
 		GetTotalCommentsParams: 1,
+		IsLikedRequest:         requestLikeOnPost,
+		CheckIsLikedResponse: CheckIsLikedResponse{
+			Result: true,
+			Error:  nil,
+		},
 		ResponseGetList: ResponseGetList{
 			Result: postResponse,
 			Error:  nil,
@@ -324,6 +346,11 @@ var GetListUserPostData = []GetListUserPost{
 		GetActorParams:         1,
 		GetLastCommentParams:   1,
 		GetTotalCommentsParams: 1,
+		IsLikedRequest:         requestLikeOnPost,
+		CheckIsLikedResponse: CheckIsLikedResponse{
+			Result: true,
+			Error:  nil,
+		},
 		ResponseGetList: ResponseGetList{
 			Result: postResponse,
 			Error:  nil,
@@ -347,6 +374,43 @@ var GetListUserPostData = []GetListUserPost{
 		ResponseUsecase: ResponseUsecase{
 			Result: nil,
 			Error:  errors.New("failed_get_metadata"),
+		},
+	}, {
+		Description:            "failed_check_is_liked",
+		UsecaseParams:          requestUsecase,
+		GetUserPostParams:      userPostParams,
+		GetMetadataParams:      userPostParams,
+		GetActorParams:         1,
+		GetLastCommentParams:   1,
+		GetTotalCommentsParams: 1,
+		IsLikedRequest:         requestLikeOnPost,
+		CheckIsLikedResponse: CheckIsLikedResponse{
+			Result: false,
+			Error:  errors.New("something_went_wrong"),
+		},
+		ResponseGetList: ResponseGetList{
+			Result: postResponse,
+			Error:  nil,
+		},
+		ResponseGetActor: ResponseGetActor{
+			Result: actorResponse,
+			Error:  nil,
+		},
+		ResponseMetadata: ResponseMetadata{
+			Result: metadataResponse,
+			Error:  nil,
+		},
+		ResponseGetLastComment: ResponseGetLastComment{
+			Result: commentResponse,
+			Error:  nil,
+		},
+		ResponseGetTotalComment: ResponseGetTotalComment{
+			Result: totalComment,
+			Error:  nil,
+		},
+		ResponseUsecase: ResponseUsecase{
+			Result: nil,
+			Error:  errors.New("something_went_wrong"),
 		},
 	},
 }
