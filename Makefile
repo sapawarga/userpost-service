@@ -42,10 +42,10 @@ test:
 	
 build:
 	@GOOS=linux GOARCH=amd64
-	@echo ">> Building GRPC..."
-	@go build -o userpost-service-grpc ./cmd/grpc
+	@echo ">> Building SERVER..."
+	@go build -o userpost-service ./cmd/server
 	@echo ">> Finished"
 
 run:
-	@./userpost-service-grpc
+	@./userpost-service
 	
