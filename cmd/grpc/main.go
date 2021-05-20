@@ -44,7 +44,7 @@ func main() {
 	uc := usecase.NewPost(repoUserPost, repoComment, logger)
 
 	// Initialize grpc
-	grpcAdd := flag.String("grpc", fmt.Sprintf(":%d", config.AppPort), "gRPC listening address")
+	grpcAdd := flag.String("grpc", fmt.Sprintf(":%d", config.AppGRPCPort), "gRPC listening address")
 	go func() {
 		logger.Log("transport", "grpc", "address", *grpcAdd, "msg", "listening")
 		listener, err := net.Listen("tcp", *grpcAdd)
