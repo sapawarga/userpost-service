@@ -119,7 +119,7 @@ func MakeCreateNewPost(ctx context.Context, usecase usecase.UsecaseI) endpoint.E
 		}
 
 		return &StatusResponse{
-			Code:    helper.STATUSCREATED,
+			Code:    helper.STATUS_CREATED,
 			Message: "a_post_has_been_created",
 		}, nil
 	}
@@ -140,7 +140,7 @@ func MakeUpdateStatusOrTitle(ctx context.Context, usecase usecase.UsecaseI) endp
 			return nil, err
 		}
 		return &StatusResponse{
-			Code:    helper.STATUSUPDATED,
+			Code:    helper.STATUS_UPDATED,
 			Message: "post_has_been_updated",
 		}, nil
 	}
@@ -175,7 +175,7 @@ func MakeCreateComment(ctx context.Context, usecase usecase.UsecaseI) endpoint.E
 		}
 
 		return &StatusResponse{
-			Code:    helper.STATUSCREATED,
+			Code:    helper.STATUS_CREATED,
 			Message: "success_post_comment",
 		}, nil
 	}
@@ -196,8 +196,17 @@ func MakeLikeOrDislikePost(ctx context.Context, usecase usecase.UsecaseI) endpoi
 		}
 
 		return &StatusResponse{
-			Code:    helper.STATUSCREATED,
+			Code:    helper.STATUS_CREATED,
 			Message: "success_like_or_dislike_a_post",
+		}, nil
+	}
+}
+
+func MakeCheckHealthy(ctx context.Context) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		return &StatusResponse{
+			Code:    helper.STATUS_OK,
+			Message: "service_is_ok",
 		}, nil
 	}
 }
