@@ -1,6 +1,9 @@
 package helper
 
-import "time"
+import (
+	"strconv"
+	"time"
+)
 
 func SetPointerString(val string) *string {
 	if val == "" {
@@ -41,4 +44,9 @@ func GetTimeFromPointer(val *time.Time) time.Time {
 func GetCurrentTimeUTC() (standartTime time.Time, unixTime int64) {
 	current := time.Now().UTC()
 	return current, current.Unix()
+}
+
+func ConvertFromStringToInt64(val string) (pointerInt64 *int64, plainInt64 int64) {
+	valInt, _ := strconv.ParseInt(val, 10, 64)
+	return &valInt, valInt
 }

@@ -23,7 +23,8 @@ func init() {
 func NewConfig() (defConfig *Config, err error) {
 	defConfig = &Config{}
 	appEnv := viper.GetString(`APP_ENV`)
-	appPort := viper.GetInt(`APP_PORT`)
+	appGrpcPort := viper.GetInt(`APP_GRPC_PORT`)
+	appHttpPort := viper.GetInt(`APP_HTTP_PORT`)
 	debug := viper.GetBool(`APP_DEBUG`)
 
 	dbHost := viper.GetString(`DB_HOST`)
@@ -33,18 +34,19 @@ func NewConfig() (defConfig *Config, err error) {
 	dbName := viper.GetString(`DB_NAME`)
 	driverName := viper.GetString(`DB_DRIVER_NAME`)
 
-	if appEnv == "" || appPort == 0 {
+	if appEnv == "" || appGrpcPort == 0 || appHttpPort == 0 {
 		err = fmt.Errorf("[CONFIG][Critical] Please check section APP on %s", envFileName)
-		return
+		return defConfig, err
 	}
 
 	defConfig.AppEnv = appEnv
-	defConfig.AppPort = appPort
+	defConfig.AppGRPCPort = appGrpcPort
+	defConfig.AppHTTPPort = appHttpPort
 	defConfig.Debug = debug
 
 	if dbHost == "" || dbPort == 0 || dbUser == "" || dbName == "" || driverName == "" {
 		err = fmt.Errorf("[CONFIG][Critical] Please check section DB on %s", envFileName)
-		return
+		return defConfig, err
 	}
 
 	dbConfig := &DB{
@@ -60,12 +62,3 @@ func NewConfig() (defConfig *Config, err error) {
 
 	return defConfig, nil
 }
-
-// func NewConfig() (defConfig *Config, err error) {
-// 	defConfig = &Config{}
-// 	if err := env.Parse(defConfig); err != nil {
-// 		return nil, fmt.Errorf("[ERROR][Critical] %v", err)
-// 	}
-// 	return defConfig, nil
-
-// }

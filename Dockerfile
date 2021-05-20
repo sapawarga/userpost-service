@@ -30,9 +30,9 @@ WORKDIR /app
 RUN apk --update add tzdata ca-certificates && \
     update-ca-certificates 2>/dev/null || true 
 
-COPY --from=compile-image ${PROJECT_PATH}/userpost-service-grpc /app/userpost-service-grpc
+COPY --from=compile-image ${PROJECT_PATH}/userpost-service /app/userpost-service
 COPY --from=compile-image ${PROJECT_PATH}/.env /app/.env
 
-EXPOSE 3002
+EXPOSE 3002 3003
 
-ENTRYPOINT [ "/app/userpost-service-grpc" ]
+ENTRYPOINT [ "/app/userpost-service" ]
