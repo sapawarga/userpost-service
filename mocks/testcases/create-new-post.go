@@ -23,7 +23,7 @@ var newRepositoryRequest = &model.CreateNewPostRequestRepository{
 	Images:       "[{\"path\":\"http://localhost\"}]",
 	Tags:         tags,
 	Status:       helper.ACTIVED,
-	ActorID:      1,
+	// ActorID:      1,
 }
 
 type CreateNewUserPost struct {

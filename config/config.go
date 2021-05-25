@@ -25,10 +25,10 @@ func init() {
 func NewConfig() (defConfig *Config, err error) {
 	defConfig = &Config{}
 	appEnv := os.Getenv(`APP_ENV`)
-	appGRPCPort, _ := strconv.Atoi(os.Getenv(`APP_GRPC_PORT`))
-	// appGRPCPort := 9005
-	appHTTPPort, _ := strconv.Atoi(os.Getenv(`APP_HTTP_PORT`))
-	// appHTTPPort := 9006
+	// appGRPCPort, _ := strconv.Atoi(os.Getenv(`APP_GRPC_PORT`))
+	appGRPCPort := 9005
+	// appHTTPPort, _ := strconv.Atoi(os.Getenv(`APP_HTTP_PORT`))
+	appHTTPPort := 9006
 	debugString := os.Getenv(`APP_DEBUG`)
 	debug := false
 

@@ -8,7 +8,7 @@ import (
 
 var requestLikeOnPost = &model.AddOrRemoveLikeOnPostRequest{
 	UserPostID: 1,
-	ActorID:    1,
+	// ActorID:    1,
 	TypeEntity: "user_post",
 }
 
