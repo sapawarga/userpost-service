@@ -26,7 +26,7 @@ func (r *UserPost) GetListPost(ctx context.Context, request *model.UserPostReque
 	var result = make([]*model.PostResponse, 0)
 	var err error
 
-	query.WriteString("SELECT id, text, tags. image_path, images, last_user_post_comment_id, likes_count, comment_counts, status, created_by, updated_by, create_at, updated_at FROM userposts")
+	query.WriteString("SELECT id, text, tags, image_path, images, last_user_post_comment_id, likes_count, comments_count, status, created_by, updated_by, FROM_UNIXTIME(created_at) as created_at, FROM_UNIXTIME(updated_at) as updated_at FROM user_posts")
 	query, params := querySelectParams(ctx, query, request)
 	if request.Limit != nil && request.Offset != nil {
 		query.WriteString("LIMIT ?, ?")
@@ -37,9 +37,9 @@ func (r *UserPost) GetListPost(ctx context.Context, request *model.UserPostReque
 		params = append(params, request.OrderBy, request.SortBy)
 	}
 	if ctx != nil {
-		err = r.conn.SelectContext(ctx, result, query.String(), params...)
+		err = r.conn.SelectContext(ctx, &result, query.String(), params...)
 	} else {
-		err = r.conn.Select(result, query.String(), params...)
+		err = r.conn.Select(&result, query.String(), params...)
 	}
 
 	if err != nil {
@@ -54,9 +54,9 @@ func (r *UserPost) GetMetadataPost(ctx context.Context, request *model.UserPostR
 	var total *int64
 	var err error
 
-	query.WriteString("SELECT COUNT(1) FROM userposts")
+	query.WriteString("SELECT COUNT(1) FROM user_posts")
 	query, params := querySelectParams(ctx, query, request)
-	query.WriteString("FROM userposts")
+	query.WriteString("FROM user_posts")
 	if ctx != nil {
 		err = r.conn.GetContext(ctx, total, query.String(), params...)
 	} else {
@@ -75,7 +75,7 @@ func (r *UserPost) GetListPostByMe(ctx context.Context, request *model.UserPostB
 	var result = make([]*model.PostResponse, 0)
 	var err error
 
-	query.WriteString("SELECT id, text, tags. image_path, images, last_user_post_comment_id, likes_count, comment_counts, status, created_by, updated_by, create_at, updated_at FROM userposts")
+	query.WriteString("SELECT id, text, tags. image_path, images, last_user_post_comment_id, likes_count, comments_count, status, created_by, updated_by, FROM_UNIXTIME(created_at) as created_at, FROM_UNIXTIME(updated_at) as updated_at FROM user_posts")
 	query, params := querySelectParams(ctx, query, request.UserPostRequest)
 	query.WriteString("AND created_by = ? ")
 	params = append(params, request.ActorID)
@@ -89,9 +89,9 @@ func (r *UserPost) GetListPostByMe(ctx context.Context, request *model.UserPostB
 	}
 
 	if ctx != nil {
-		err = r.conn.SelectContext(ctx, result, query.String(), params...)
+		err = r.conn.SelectContext(ctx, &result, query.String(), params...)
 	} else {
-		err = r.conn.Select(result, query.String(), params...)
+		err = r.conn.Select(&result, query.String(), params...)
 	}
 
 	if err != nil {
@@ -106,10 +106,10 @@ func (r *UserPost) GetMetadataPostByMe(ctx context.Context, request *model.UserP
 	var total *int64
 	var err error
 
-	query.WriteString("SELECT COUNT(1) FROM userposts")
+	query.WriteString("SELECT COUNT(1) FROM user_posts")
 	query, params := querySelectParams(ctx, query, request.UserPostRequest)
 	query.WriteString("AND created_by = ? ")
-	query.WriteString("FROM userposts")
+	query.WriteString("FROM user_posts")
 	params = append(params, request.ActorID)
 
 	if ctx != nil {
@@ -158,7 +158,7 @@ func (r *UserPost) GetDetailPost(ctx context.Context, id int64) (*model.PostResp
 	var result *model.PostResponse
 	var err error
 
-	query.WriteString("SELECT id, text, tags. image_path, images, last_user_post_comment_id, likes_count, comment_counts, status, created_by, updated_by, create_at, updated_at FROM userposts")
+	query.WriteString("SELECT id, text, tags, image_path, images, last_user_post_comment_id, likes_count, comments_count, status, created_by, updated_by, FROM_UNIXTIME(created_at) as created_at, FROM_UNIXTIME(updated_at) as updated_at FROM user_posts")
 	query.WriteString("WHERE id = ?")
 	if ctx != nil {
 		err = r.conn.GetContext(ctx, result, query.String(), id)
@@ -204,13 +204,12 @@ func (r *UserPost) CheckIsExistLikeOnPostBy(ctx context.Context, request *model.
 
 func (r *UserPost) InsertPost(ctx context.Context, request *model.CreateNewPostRequestRepository) error {
 	var query bytes.Buffer
-	var params = make(map[string]interface{})
 	var err error
 	_, unixTime := helper.GetCurrentTimeUTC()
 
-	query.WriteString("INSERT INTO userposts (`text`, tags, image_path, images, status, created_by, updated_by, created_at, updated_at)")
+	query.WriteString("INSERT INTO user_posts (`text`, tags, image_path, images, status, created_by, updated_by, created_at, updated_at)")
 	query.WriteString("VALUES (:title, :tags, :image_path, :images, :status, :actor, :actor, :created_at, :created_at)")
-	params = map[string]interface{}{
+	params := map[string]interface{}{
 		"title":      request.Title,
 		"tags":       request.Tags,
 		"image_path": request.ImagePathURL,
@@ -234,13 +233,12 @@ func (r *UserPost) InsertPost(ctx context.Context, request *model.CreateNewPostR
 
 func (r *UserPost) AddLikeOnPost(ctx context.Context, request *model.AddOrRemoveLikeOnPostRequest) error {
 	var query bytes.Buffer
-	var params = make(map[string]interface{})
 	var err error
 	_, unixTime := helper.GetCurrentTimeUTC()
 
 	query.WriteString("INSERT INTO likes (`type`, user_id, entity_id, created_at, updated_at) ")
 	query.WriteString("VALUES(:type_entity, :user_id, :entity_id, :current, :current)")
-	params = map[string]interface{}{
+	params := map[string]interface{}{
 		"type_entity": request.TypeEntity,
 		"user_id":     request.ActorID,
 		"entity_id":   request.UserPostID,
@@ -267,7 +265,7 @@ func (r *UserPost) UpdateStatusOrTitle(ctx context.Context, request *model.Updat
 	var err error
 	_, unixTime := helper.GetCurrentTimeUTC()
 
-	query.WriteString("UPDATE userposts")
+	query.WriteString("UPDATE user_posts")
 	if request.Status != nil {
 		query.WriteString("status` = :status")
 		params["status"] = request.Status
@@ -343,7 +341,6 @@ func querySelectParams(ctx context.Context, query bytes.Buffer, params *model.Us
 		query.WriteString(qBuffer.String())
 		query.WriteString(" status = ?")
 		queryParams = append(queryParams, params.Status)
-		first = false
 	}
 
 	return query, queryParams

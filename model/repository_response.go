@@ -13,7 +13,7 @@ type PostResponse struct {
 	Images                sql.NullString `db:"images"`
 	LastUserPostCommentID sql.NullInt64  `db:"last_user_post_comment_id"`
 	LikesCount            int64          `db:"likes_count"`
-	CommentCounts         int64          `db:"comment_counts"`
+	CommentCounts         int64          `db:"comments_count"`
 	Status                int64          `db:"status"`
 	CreatedBy             sql.NullInt64  `db:"created_by"`
 	UpdatedBy             sql.NullInt64  `db:"updated_by"`

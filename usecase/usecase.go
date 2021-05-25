@@ -82,7 +82,7 @@ func (p *Post) GetListPostByMe(ctx context.Context, params *model.GetListRequest
 	}
 
 	req := &model.UserPostByMeRequest{
-		ActorID: ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Get("id").(int64),
+		// ActorID: ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Get("id").(int64),
 		UserPostRequest: &model.UserPostRequest{
 			ActivityName: params.ActivityName,
 			Username:     params.Username,
@@ -121,8 +121,9 @@ func (p *Post) GetListPostByMe(ctx context.Context, params *model.GetListRequest
 }
 
 func (p *Post) GetDetailPost(ctx context.Context, id int64) (*model.UserPostResponse, error) {
+	// TODO: add actor
 	logger := kitlog.With(p.logger, "method", "GetDetailPost")
-	actor := ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Data
+	// actor := ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Data
 	resp, err := p.repoPost.GetDetailPost(ctx, id)
 	if err != nil {
 		level.Error(logger).Log("error_get_detail", err)
@@ -137,7 +138,7 @@ func (p *Post) GetDetailPost(ctx context.Context, id int64) (*model.UserPostResp
 
 	isLiked, err := p.repoPost.CheckIsExistLikeOnPostBy(ctx, &model.AddOrRemoveLikeOnPostRequest{
 		UserPostID: id,
-		ActorID:    actor["id"].(int64),
+		// ActorID:    actor["id"].(int64),
 		TypeEntity: helper.TYPE_USERPOST,
 	})
 	if err != nil {
@@ -153,16 +154,16 @@ func (p *Post) GetDetailPost(ctx context.Context, id int64) (*model.UserPostResp
 }
 
 func (p *Post) CreateNewPost(ctx context.Context, requestBody *model.CreateNewPostRequest) error {
-	// TODO: add checker tags
+	// TODO: add checker tags, Add Actor
 	logger := kitlog.With(p.logger, "method", "CreateNewPost")
-	actor := ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Data
+	// actor := ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Data
 	if err := p.repoPost.InsertPost(ctx, &model.CreateNewPostRequestRepository{
 		Title:        requestBody.Title,
 		ImagePathURL: requestBody.ImagePathURL,
 		Images:       requestBody.Images,
 		Tags:         requestBody.Tags,
 		Status:       requestBody.Status,
-		ActorID:      actor["id"].(int64),
+		// ActorID:      actor["id"].(int64),
 	}); err != nil {
 		level.Error(logger).Log("error_create_post", err)
 		return err
@@ -237,13 +238,14 @@ func (p *Post) CreateCommentOnPost(ctx context.Context, req *model.CreateComment
 }
 
 func (p *Post) LikeOrDislikePost(ctx context.Context, id int64) error {
+	// TODO: context actor
 	logger := kitlog.With(p.logger, "method", "LikeOrDislikePost")
-	actorID := ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Get("id").(int64)
+	// actorID := ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Get("id").(int64)
 	var err error
 
 	request := &model.AddOrRemoveLikeOnPostRequest{
 		UserPostID: id,
-		ActorID:    actorID,
+		// ActorID:    actorID,
 		TypeEntity: helper.TYPE_USERPOST,
 	}
 	isExist, err := p.repoPost.CheckIsExistLikeOnPostBy(ctx, request)
@@ -331,7 +333,9 @@ func (p *Post) getDetailComment(ctx context.Context, comment *model.CommentRespo
 }
 
 func (p *Post) appendListUserPost(ctx context.Context, resp []*model.PostResponse) (userPosts []*model.UserPostResponse, err error) {
-	actorID := ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Get("id").(int64)
+	// TODO: using actor TODO
+
+	// actorID := ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Get("id").(int64)
 	for _, v := range resp {
 		userPost, err := p.getDetailOfUserPost(ctx, v)
 		if err != nil {
@@ -339,7 +343,7 @@ func (p *Post) appendListUserPost(ctx context.Context, resp []*model.PostRespons
 		}
 		isLiked, err := p.repoPost.CheckIsExistLikeOnPostBy(ctx, &model.AddOrRemoveLikeOnPostRequest{
 			UserPostID: v.ID,
-			ActorID:    actorID,
+			// ActorID:    actorID,
 			TypeEntity: helper.TYPE_USERPOST,
 		})
 		if err != nil {

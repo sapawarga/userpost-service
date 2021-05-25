@@ -3,26 +3,17 @@ package endpoint
 import (
 	"context"
 	"encoding/json"
-	"errors"
 
 	"github.com/go-kit/kit/endpoint"
 	"github.com/sapawarga/userpost-service/helper"
 	"github.com/sapawarga/userpost-service/model"
 	"github.com/sapawarga/userpost-service/usecase"
-	"google.golang.org/grpc/metadata"
 )
 
 func MakeGetListUserPost(ctx context.Context, usecase usecase.UsecaseI) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(*GetListUserPostRequest)
 		// TODO: for get metadata from headers grpc needs to update when using authorization
-		headers, ok := metadata.FromIncomingContext(ctx)
-		if !ok {
-			return nil, errors.New("invalid_metadata")
-		}
-		actor := headers["Actor"]
-		ctx = context.WithValue(ctx, helper.ACTORKEY, actor)
-
 		resp, err := usecase.GetListPost(ctx, &model.GetListRequest{
 			ActivityName: req.ActivityName,
 			Username:     req.Username,
@@ -52,12 +43,6 @@ func MakeGetDetailUserPost(ctx context.Context, usecase usecase.UsecaseI) endpoi
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(*GetByID)
 		// TODO: for get metadata from headers grpc needs to update when using authorization
-		headers, ok := metadata.FromIncomingContext(ctx)
-		if !ok {
-			return nil, errors.New("invalid_metadata")
-		}
-		actor := headers["Actor"]
-		ctx = context.WithValue(ctx, helper.ACTORKEY, actor)
 		resp, err := usecase.GetDetailPost(ctx, req.ID)
 		if err != nil {
 			return nil, err
@@ -70,12 +55,6 @@ func MakeGetListUserPostByMe(ctx context.Context, usecase usecase.UsecaseI) endp
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(*GetListUserPostRequest)
 		// TODO: for get metadata from headers grpc needs to update when using authorization
-		headers, ok := metadata.FromIncomingContext(ctx)
-		if !ok {
-			return nil, errors.New("invalid_metadata")
-		}
-		actor := headers["Actor"]
-		ctx = context.WithValue(ctx, helper.ACTORKEY, actor)
 		response, err = usecase.GetListPostByMe(ctx, &model.GetListRequest{
 			ActivityName: req.ActivityName,
 			Username:     req.Username,
@@ -185,12 +164,6 @@ func MakeLikeOrDislikePost(ctx context.Context, usecase usecase.UsecaseI) endpoi
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(*GetByID)
 		// TODO: for get metadata from headers grpc needs to update when using authorization
-		headers, ok := metadata.FromIncomingContext(ctx)
-		if !ok {
-			return nil, errors.New("invalid_metadata")
-		}
-		actor := headers["Actor"]
-		ctx = context.WithValue(ctx, helper.ACTORKEY, actor)
 		if err = usecase.LikeOrDislikePost(ctx, req.ID); err != nil {
 			return nil, err
 		}
