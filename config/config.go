@@ -2,6 +2,8 @@ package config
 
 import (
 	"fmt"
+	"os"
+	"strconv"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/spf13/viper"
@@ -22,26 +24,33 @@ func init() {
 //NewConfig ...
 func NewConfig() (defConfig *Config, err error) {
 	defConfig = &Config{}
-	appEnv := viper.GetString(`APP_ENV`)
-	appGrpcPort := viper.GetInt(`APP_GRPC_PORT`)
-	appHttpPort := viper.GetInt(`APP_HTTP_PORT`)
-	debug := viper.GetBool(`APP_DEBUG`)
+	appEnv := os.Getenv(`APP_ENV`)
+	appGRPCPort, _ := strconv.Atoi(os.Getenv(`APP_GRPC_PORT`))
+	// appGRPCPort := 9005
+	appHTTPPort, _ := strconv.Atoi(os.Getenv(`APP_HTTP_PORT`))
+	// appHTTPPort := 9006
+	debugString := os.Getenv(`APP_DEBUG`)
+	debug := false
 
-	dbHost := viper.GetString(`DB_HOST`)
-	dbPort := viper.GetInt(`DB_PORT`)
-	dbUser := viper.GetString(`DB_USER`)
-	dbPassword := viper.GetString(`DB_PASS`)
-	dbName := viper.GetString(`DB_NAME`)
-	driverName := viper.GetString(`DB_DRIVER_NAME`)
+	if debugString == "true" {
+		debug = true
+	}
 
-	if appEnv == "" || appGrpcPort == 0 || appHttpPort == 0 {
+	dbHost := os.Getenv(`DB_HOST`)
+	dbPort, _ := strconv.Atoi(os.Getenv(`DB_PORT`))
+	dbUser := os.Getenv(`DB_USER`)
+	dbPassword := os.Getenv(`DB_PASS`)
+	dbName := os.Getenv(`DB_NAME`)
+	driverName := os.Getenv(`DB_DRIVER_NAME`)
+
+	if appEnv == "" || appGRPCPort == 0 || appHTTPPort == 0 {
 		err = fmt.Errorf("[CONFIG][Critical] Please check section APP on %s", envFileName)
 		return defConfig, err
 	}
 
 	defConfig.AppEnv = appEnv
-	defConfig.AppGRPCPort = appGrpcPort
-	defConfig.AppHTTPPort = appHttpPort
+	defConfig.AppGRPCPort = appGRPCPort
+	defConfig.AppHTTPPort = appHTTPPort
 	defConfig.Debug = debug
 
 	if dbHost == "" || dbPort == 0 || dbUser == "" || dbName == "" || driverName == "" {
