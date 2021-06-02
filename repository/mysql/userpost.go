@@ -29,7 +29,7 @@ func (r *UserPost) GetListPost(ctx context.Context, request *model.UserPostReque
 	query.WriteString("SELECT id, text, tags, image_path, images, last_user_post_comment_id, likes_count, comments_count, status, created_by, updated_by, FROM_UNIXTIME(created_at) as created_at, FROM_UNIXTIME(updated_at) as updated_at FROM user_posts")
 	query, params := querySelectParams(ctx, query, request)
 	if request.Limit != nil && request.Offset != nil {
-		query.WriteString("LIMIT ?, ?")
+		query.WriteString(" LIMIT ?, ?")
 		params = append(params, request.Offset, request.Limit)
 	}
 	if request.OrderBy != nil && request.SortBy != nil {
