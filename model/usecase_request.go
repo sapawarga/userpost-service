@@ -12,22 +12,22 @@ type GetListRequest struct {
 }
 
 type CreateNewPostRequest struct {
-	Title        string
-	ImagePathURL string
-	Images       string
-	Tags         *string
-	Status       int64
+	Title        string  `json:"title"`
+	ImagePathURL string  `json:"image_path_url"`
+	Images       string  `json:"images"`
+	Tags         *string `json:"tags,omitempty"`
+	Status       int64   `json:"status"`
 }
 
 type UpdatePostRequest struct {
-	ID     int64
-	Status *int64
-	Title  *string
+	ID     int64   `json:"id"`
+	Status *int64  `json:"status,omitempty"`
+	Title  *string `json:"title,omitempty"`
 }
 
 type CreateCommentRequest struct {
-	UserPostID int64
-	Text       string
+	UserPostID int64  `json:"user_post_id"`
+	Text       string `json:"comment"`
 }
 
 type ActorFromContext struct {

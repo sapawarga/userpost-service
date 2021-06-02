@@ -121,10 +121,21 @@ var (
 		Name:     sql.NullString{String: "John Doe", Valid: true},
 		PhotoURL: sql.NullString{String: "sample", Valid: true},
 		Role:     sql.NullInt64{Int64: 99, Valid: true},
+		Regency:  sql.NullString{String: "regency", Valid: true},
+		District: sql.NullString{String: "district", Valid: true},
+		Village:  sql.NullString{String: "village", Valid: true},
+		RW:       sql.NullString{String: "rw", Valid: true},
+	}
+	actor = &model.Actor{
+		ID:       1,
+		Name:     "John Doe",
+		PhotoURL: "www.instagram.com/htm-medium=?p9878y2y3",
+		Role:     99,
 		Regency:  "regency",
 		District: "district",
 		Village:  "village",
-		RW:       sql.NullString{String: "rw", Valid: true},
+		RW:       "rw",
+		Status:   10,
 	}
 	metadataResponse = helper.SetPointerInt64(2)
 	commentResponse  = &model.CommentResponse{
@@ -159,7 +170,7 @@ var (
 			IsLiked:               true,
 			CommentCounts:         1,
 			Status:                10,
-			Actor:                 actorResponse,
+			Actor:                 actor,
 			CreatedAt:             current,
 			UpdatedAt:             current,
 		}, {
@@ -174,7 +185,7 @@ var (
 			IsLiked:               true,
 			CommentCounts:         1,
 			Status:                10,
-			Actor:                 actorResponse,
+			Actor:                 actor,
 			CreatedAt:             current,
 			UpdatedAt:             current,
 		},

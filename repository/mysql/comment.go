@@ -22,10 +22,10 @@ func NewComment(conn *sqlx.DB) *Comment {
 
 func (r *Comment) GetLastComment(ctx context.Context, id int64) (*model.CommentResponse, error) {
 	var query bytes.Buffer
-	var result *model.CommentResponse
+	var result = &model.CommentResponse{}
 	var err error
 
-	query.WriteString("SELECT id, user_post_id, `text`, status, created_by, updated_by, created_at, updated_at FROM user_post_comments")
+	query.WriteString("SELECT id, user_post_id, `text` as comment, status, created_by, updated_by, FROM_UNIXTIME(created_at) as created_at, FROM_UNIXTIME(updated_at) as updated_at FROM user_post_comments ")
 	query.WriteString("WHERE id = ?")
 
 	if ctx != nil {
@@ -72,13 +72,13 @@ func (r *Comment) GetCommentsByPostID(ctx context.Context, id int64) ([]*model.C
 	var result = make([]*model.CommentResponse, 0)
 	var err error
 
-	query.WriteString("SELECT id, user_post_id, `text`, status, created_by, updated_by, created_at, updated_at FROM user_post_comments")
+	query.WriteString("SELECT id, user_post_id, `text` as comment, status, created_by, updated_by, FROM_UNIXTIME(created_at) as created_at, FROM_UNIXTIME(updated_at) as updated_at FROM user_post_comments ")
 	query.WriteString("WHERE user_post_id = ?")
 
 	if ctx != nil {
-		err = r.conn.SelectContext(ctx, result, query.String(), id)
+		err = r.conn.SelectContext(ctx, &result, query.String(), id)
 	} else {
-		err = r.conn.Select(result, query.String(), id)
+		err = r.conn.Select(&result, query.String(), id)
 	}
 
 	if err != nil {

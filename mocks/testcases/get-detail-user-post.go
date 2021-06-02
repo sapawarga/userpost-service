@@ -31,7 +31,7 @@ var (
 		IsLiked:               true,
 		CommentCounts:         1,
 		Status:                10,
-		Actor:                 actorResponse,
+		Actor:                 actor,
 		CreatedAt:             current,
 		UpdatedAt:             current,
 	}

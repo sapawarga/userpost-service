@@ -29,7 +29,7 @@ func (r *UserPost) GetListPost(ctx context.Context, request *model.UserPostReque
 	query.WriteString("SELECT id, text, tags, image_path, images, last_user_post_comment_id, likes_count, comments_count, status, created_by, updated_by, FROM_UNIXTIME(created_at) as created_at, FROM_UNIXTIME(updated_at) as updated_at FROM user_posts")
 	query, params := querySelectParams(ctx, query, request)
 	if request.Limit != nil && request.Offset != nil {
-		query.WriteString("LIMIT ?, ?")
+		query.WriteString(" LIMIT ?, ?")
 		params = append(params, request.Offset, request.Limit)
 	}
 	if request.OrderBy != nil && request.SortBy != nil {
@@ -56,11 +56,10 @@ func (r *UserPost) GetMetadataPost(ctx context.Context, request *model.UserPostR
 
 	query.WriteString("SELECT COUNT(1) FROM user_posts")
 	query, params := querySelectParams(ctx, query, request)
-	query.WriteString("FROM user_posts")
 	if ctx != nil {
-		err = r.conn.GetContext(ctx, total, query.String(), params...)
+		err = r.conn.GetContext(ctx, &total, query.String(), params...)
 	} else {
-		err = r.conn.Get(total, query.String(), params...)
+		err = r.conn.Get(&total, query.String(), params...)
 	}
 
 	if err != nil {
@@ -75,9 +74,9 @@ func (r *UserPost) GetListPostByMe(ctx context.Context, request *model.UserPostB
 	var result = make([]*model.PostResponse, 0)
 	var err error
 
-	query.WriteString("SELECT id, text, tags. image_path, images, last_user_post_comment_id, likes_count, comments_count, status, created_by, updated_by, FROM_UNIXTIME(created_at) as created_at, FROM_UNIXTIME(updated_at) as updated_at FROM user_posts")
+	query.WriteString("SELECT id, text, tags, image_path, images, last_user_post_comment_id, likes_count, comments_count, status, created_by, updated_by, FROM_UNIXTIME(created_at) as created_at, FROM_UNIXTIME(updated_at) as updated_at FROM user_posts")
 	query, params := querySelectParams(ctx, query, request.UserPostRequest)
-	query.WriteString("AND created_by = ? ")
+	query.WriteString(" AND created_by = ? ")
 	params = append(params, request.ActorID)
 	if request.Limit != nil && request.Offset != nil {
 		query.WriteString("LIMIT ?, ?")
@@ -106,16 +105,15 @@ func (r *UserPost) GetMetadataPostByMe(ctx context.Context, request *model.UserP
 	var total *int64
 	var err error
 
-	query.WriteString("SELECT COUNT(1) FROM user_posts")
+	query.WriteString("SELECT COUNT(1) FROM user_posts ")
 	query, params := querySelectParams(ctx, query, request.UserPostRequest)
-	query.WriteString("AND created_by = ? ")
-	query.WriteString("FROM user_posts")
+	query.WriteString(" AND created_by = ? ")
 	params = append(params, request.ActorID)
 
 	if ctx != nil {
-		err = r.conn.GetContext(ctx, total, query.String(), params...)
+		err = r.conn.GetContext(ctx, &total, query.String(), params...)
 	} else {
-		err = r.conn.Get(total, query.String(), params...)
+		err = r.conn.Get(&total, query.String(), params...)
 	}
 
 	if err != nil {
@@ -127,15 +125,15 @@ func (r *UserPost) GetMetadataPostByMe(ctx context.Context, request *model.UserP
 
 func (r *UserPost) GetActor(ctx context.Context, id int64) (*model.UserResponse, error) {
 	var query bytes.Buffer
-	var result *model.UserResponse
+	var result = &model.UserResponse{}
 	var err error
 
 	query.WriteString("SELECT u.id, u.name, u.photo_url, u.`role`, u.rw, reg.name as regency_name, dis.name as district_name, vil.name as village_name")
-	query.WriteString("FROM `user` u ")
+	query.WriteString(` FROM user u `)
 	query.WriteString(`LEFT JOIN areas reg ON reg.id = u.kabkota_id
 	LEFT JOIN areas dis ON dis.id = u.kec_id 
 	LEFT JOIN areas vil ON vil.id = u.kel_id`)
-	query.WriteString("WHERE u.id = ? ")
+	query.WriteString(" WHERE u.id = ? ")
 	if ctx != nil {
 		err = r.conn.GetContext(ctx, result, query.String(), id)
 	} else {
@@ -155,11 +153,11 @@ func (r *UserPost) GetActor(ctx context.Context, id int64) (*model.UserResponse,
 
 func (r *UserPost) GetDetailPost(ctx context.Context, id int64) (*model.PostResponse, error) {
 	var query bytes.Buffer
-	var result *model.PostResponse
+	var result = &model.PostResponse{}
 	var err error
 
 	query.WriteString("SELECT id, text, tags, image_path, images, last_user_post_comment_id, likes_count, comments_count, status, created_by, updated_by, FROM_UNIXTIME(created_at) as created_at, FROM_UNIXTIME(updated_at) as updated_at FROM user_posts")
-	query.WriteString("WHERE id = ?")
+	query.WriteString(" WHERE id = ?")
 	if ctx != nil {
 		err = r.conn.GetContext(ctx, result, query.String(), id)
 	} else {

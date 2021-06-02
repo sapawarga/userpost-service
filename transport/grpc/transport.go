@@ -202,9 +202,9 @@ func encodeActor(ctx context.Context, r interface{}) *transportUserPost.Actor {
 		Name:     actorResp.Name.String,
 		PhotoUrl: actorResp.PhotoURL.String,
 		Role:     actorResp.Role.Int64,
-		Regency:  actorResp.Regency,
-		District: actorResp.District,
-		Village:  actorResp.Village,
+		Regency:  actorResp.Regency.String,
+		District: actorResp.District.String,
+		Village:  actorResp.Village.String,
 		Rw:       actorResp.RW.String,
 	}
 }
