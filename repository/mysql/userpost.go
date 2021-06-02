@@ -56,11 +56,10 @@ func (r *UserPost) GetMetadataPost(ctx context.Context, request *model.UserPostR
 
 	query.WriteString("SELECT COUNT(1) FROM user_posts")
 	query, params := querySelectParams(ctx, query, request)
-	query.WriteString("FROM user_posts")
 	if ctx != nil {
-		err = r.conn.GetContext(ctx, total, query.String(), params...)
+		err = r.conn.GetContext(ctx, &total, query.String(), params...)
 	} else {
-		err = r.conn.Get(total, query.String(), params...)
+		err = r.conn.Get(&total, query.String(), params...)
 	}
 
 	if err != nil {
@@ -127,15 +126,15 @@ func (r *UserPost) GetMetadataPostByMe(ctx context.Context, request *model.UserP
 
 func (r *UserPost) GetActor(ctx context.Context, id int64) (*model.UserResponse, error) {
 	var query bytes.Buffer
-	var result *model.UserResponse
+	var result = &model.UserResponse{}
 	var err error
 
 	query.WriteString("SELECT u.id, u.name, u.photo_url, u.`role`, u.rw, reg.name as regency_name, dis.name as district_name, vil.name as village_name")
-	query.WriteString("FROM `user` u ")
+	query.WriteString(` FROM user u `)
 	query.WriteString(`LEFT JOIN areas reg ON reg.id = u.kabkota_id
 	LEFT JOIN areas dis ON dis.id = u.kec_id 
 	LEFT JOIN areas vil ON vil.id = u.kel_id`)
-	query.WriteString("WHERE u.id = ? ")
+	query.WriteString(" WHERE u.id = ? ")
 	if ctx != nil {
 		err = r.conn.GetContext(ctx, result, query.String(), id)
 	} else {

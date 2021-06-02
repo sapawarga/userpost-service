@@ -26,9 +26,9 @@ type UserResponse struct {
 	Name     sql.NullString `db:"name"`
 	PhotoURL sql.NullString `db:"photo_url"`
 	Role     sql.NullInt64  `db:"role"`
-	Regency  string         `db:"regency_name"`
-	District string         `db:"district_name"`
-	Village  string         `db:"village_name"`
+	Regency  sql.NullString `db:"regency_name"`
+	District sql.NullString `db:"district_name"`
+	Village  sql.NullString `db:"village_name"`
 	RW       sql.NullString `db:"rw"`
 	Status   int64          `db:"status"`
 }
@@ -43,6 +43,7 @@ type CommentResponse struct {
 	ID         int64     `db:"id"`
 	UserPostID int64     `db:"user_post_id"`
 	Comment    string    `db:"comment"`
+	Status     int64     `db:"status"`
 	CreatedAt  time.Time `db:"created_at"`
 	UpdatedAt  time.Time `db:"updated_at"`
 	CreatedBy  int64     `db:"created_by"`

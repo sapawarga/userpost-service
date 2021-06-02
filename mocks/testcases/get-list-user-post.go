@@ -121,9 +121,9 @@ var (
 		Name:     sql.NullString{String: "John Doe", Valid: true},
 		PhotoURL: sql.NullString{String: "sample", Valid: true},
 		Role:     sql.NullInt64{Int64: 99, Valid: true},
-		Regency:  "regency",
-		District: "district",
-		Village:  "village",
+		Regency:  sql.NullString{String: "regency", Valid: true},
+		District: sql.NullString{String: "district", Valid: true},
+		Village:  sql.NullString{String: "village", Valid: true},
 		RW:       sql.NullString{String: "rw", Valid: true},
 	}
 	metadataResponse = helper.SetPointerInt64(2)
