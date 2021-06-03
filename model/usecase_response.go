@@ -33,13 +33,13 @@ type Metadata struct {
 }
 
 type Comment struct {
-	ID         int64         `json:"id"`
-	UserPostID int64         `json:"user_post_id"`
-	Text       string        `json:"comment"`
-	CreatedAt  time.Time     `json:"created_at"`
-	UpdatedAt  time.Time     `json:"updated_at"`
-	CreatedBy  *UserResponse `json:"created_by"`
-	UpdatedBy  *UserResponse `json:"updated_by"`
+	ID         int64     `json:"id"`
+	UserPostID int64     `json:"user_post_id"`
+	Text       string    `json:"comment"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
+	CreatedBy  *Actor    `json:"created_by"`
+	UpdatedBy  *Actor    `json:"updated_by"`
 }
 
 type Actor struct {

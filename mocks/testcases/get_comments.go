@@ -53,16 +53,16 @@ var (
 			Text:       "comment",
 			CreatedAt:  current,
 			UpdatedAt:  current,
-			CreatedBy:  actorResponse,
-			UpdatedBy:  actorResponse,
+			CreatedBy:  actor,
+			UpdatedBy:  actor,
 		}, {
 			ID:         2,
 			UserPostID: 1,
 			Text:       "ini juga comment",
 			CreatedAt:  current,
 			UpdatedAt:  current,
-			CreatedBy:  actorResponse,
-			UpdatedBy:  actorResponse,
+			CreatedBy:  actor,
+			UpdatedBy:  actor,
 		},
 	}
 )

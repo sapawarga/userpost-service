@@ -153,8 +153,8 @@ var (
 		Text:       commentResponse.Comment,
 		CreatedAt:  commentResponse.CreatedAt,
 		UpdatedAt:  commentResponse.UpdatedAt,
-		CreatedBy:  actorResponse,
-		UpdatedBy:  actorResponse,
+		CreatedBy:  actor,
+		UpdatedBy:  actor,
 	}
 	totalComment     = helper.SetPointerInt64(1)
 	userPostResponse = []*model.UserPostResponse{

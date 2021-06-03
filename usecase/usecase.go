@@ -28,7 +28,6 @@ func NewPost(repoPost repository.PostI, repoComment repository.CommentI, logger 
 func (p *Post) GetListPost(ctx context.Context, params *model.GetListRequest) (*model.UserPostWithMetadata, error) {
 	logger := kitlog.With(p.logger, "method", "GetListPost")
 	var limit, offset int64 = 10, 0
-
 	if params.Page != nil && params.Limit != nil {
 		limit = helper.GetInt64FromPointer(params.Limit)
 		offset = (helper.GetInt64FromPointer(params.Page) - 1) * limit
@@ -56,16 +55,19 @@ func (p *Post) GetListPost(ctx context.Context, params *model.GetListRequest) (*
 		level.Error(logger).Log("error_append_list", err)
 		return nil, err
 	}
-
 	total, err := p.repoPost.GetMetadataPost(ctx, req)
 	if err != nil {
 		level.Error(logger).Log("error_get_metadata", err)
 		return nil, err
 	}
+	offsetPage := helper.GetInt64FromPointer(total) % limit
+	if offsetPage > 0 {
+		offsetPage = 1
+	}
 
 	metadata := &model.Metadata{
 		Page:      helper.GetInt64FromPointer(params.Page),
-		TotalPage: helper.GetInt64FromPointer(total) / limit,
+		TotalPage: helper.GetInt64FromPointer(total)/limit + offsetPage,
 		Total:     helper.GetInt64FromPointer(total),
 	}
 
