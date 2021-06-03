@@ -176,7 +176,7 @@ func (p *Post) CreateNewPost(ctx context.Context, requestBody *model.CreateNewPo
 }
 
 func (p *Post) UpdateTitleOrStatus(ctx context.Context, requestBody *model.UpdatePostRequest) error {
-	logger := kitlog.With(p.logger, "method", "UpdateTItleOrStatus")
+	logger := kitlog.With(p.logger, "method", "UpdateTitleOrStatus")
 	_, err := p.repoPost.GetDetailPost(ctx, requestBody.ID)
 	if err != nil {
 		level.Error(logger).Log("error_get_detail", err)

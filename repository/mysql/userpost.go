@@ -263,9 +263,9 @@ func (r *UserPost) UpdateStatusOrTitle(ctx context.Context, request *model.Updat
 	var err error
 	_, unixTime := helper.GetCurrentTimeUTC()
 
-	query.WriteString("UPDATE user_posts")
+	query.WriteString("UPDATE user_posts SET ")
 	if request.Status != nil {
-		query.WriteString("status` = :status")
+		query.WriteString("status = :status")
 		params["status"] = request.Status
 		first = false
 	}
