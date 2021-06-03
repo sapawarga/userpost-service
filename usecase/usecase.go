@@ -41,7 +41,7 @@ func (p *Post) GetListPost(ctx context.Context, params *model.GetListRequest) (*
 		Offset:       helper.SetPointerInt64(offset),
 		Limit:        helper.SetPointerInt64(limit),
 		SortBy:       params.SortBy,
-		OrderBy:      params.ActivityName,
+		OrderBy:      params.OrderBy,
 	}
 
 	listData, err := p.repoPost.GetListPost(ctx, req)
