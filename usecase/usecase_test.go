@@ -124,6 +124,7 @@ var _ = Describe("Usecase", func() {
 			Expect(err).NotTo(BeNil())
 			Expect(resp).To(BeNil())
 		} else {
+			fmt.Println(resp)
 			Expect(resp).To(Equal(data.ResponseUsecase.Result))
 		}
 	}

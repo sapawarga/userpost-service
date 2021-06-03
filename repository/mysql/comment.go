@@ -92,13 +92,14 @@ func (r *Comment) Create(ctx context.Context, req *model.CreateCommentRequestRep
 	var err error
 	_, unixTime := helper.GetCurrentTimeUTC()
 
-	query.WriteString("INSERT INTO user_post_comments (user_post_id, `text`, status, created_by, updated_by, created_at, updated_at)")
-	query.WriteString("VALUES(:user_post_id. :comment, :status, :actor, :actor, :current, :current)")
+	query.WriteString("INSERT INTO user_post_comments (user_post_id, `text`, status, created_by, updated_by, created_at, updated_at) ")
+	query.WriteString("VALUES(:user_post_id, :comment, :status, :actor, :actor, :current, :current)")
 	params := map[string]interface{}{
 		"user_post_id": req.UserPostID,
 		"comment":      req.Text,
 		"actor":        req.ActorID,
 		"current":      unixTime,
+		"status":       req.Status,
 	}
 
 	if ctx != nil {

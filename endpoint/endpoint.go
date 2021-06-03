@@ -149,6 +149,7 @@ func MakeCreateComment(ctx context.Context, usecase usecase.UsecaseI) endpoint.E
 		if err = usecase.CreateCommentOnPost(ctx, &model.CreateCommentRequest{
 			UserPostID: req.UserPostID,
 			Text:       req.Comment,
+			Status:     helper.GetInt64FromPointer(req.Status),
 		}); err != nil {
 			return nil, err
 		}

@@ -226,12 +226,15 @@ func (p *Post) GetCommentsByPostID(ctx context.Context, id int64) ([]*model.Comm
 }
 
 func (p *Post) CreateCommentOnPost(ctx context.Context, req *model.CreateCommentRequest) error {
+	// TODO: implement authorization and authenticationn
 	logger := kitlog.With(p.logger, "method", "CreateCommentOnPost")
-	actor := ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Data
+	// actor := ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Data
 	if err := p.repoComment.Create(ctx, &model.CreateCommentRequestRepository{
 		UserPostID: req.UserPostID,
 		Text:       req.Text,
-		ActorID:    actor["id"].(int64),
+		Status:     req.Status,
+		// ActorID:    actor["id"].(int64),
+		ActorID: 1, // TODO: actor not existed yet using admin as default
 	}); err != nil {
 		level.Error(logger).Log("error_create_comment", err)
 		return err

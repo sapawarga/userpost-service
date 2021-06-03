@@ -55,14 +55,14 @@ func Validate(in interface{}) error {
 		)
 	} else if obj, ok := in.(*UpdateStatusOrTitle); ok {
 		err = validation.ValidateStruct(in,
-			validation.Field(obj.ID, validation.Required),
+			validation.Field(&obj.ID, validation.Required),
 			validation.Field(&obj.Title, validation.Required, validation.Length(10, 0)),
 			validation.Field(&obj.Status, validation.Required, validation.In(helper.ACTIVED, helper.DELETED, helper.INACTIVED)),
 		)
 	} else if obj, ok := in.(*CreateCommentRequest); ok {
 		err = validation.ValidateStruct(in,
-			validation.Field(obj.UserPostID, validation.Required),
-			validation.Field(obj.Comment, validation.Required, validation.Length(10, 0)),
+			validation.Field(&obj.UserPostID, validation.Required),
+			validation.Field(&obj.Comment, validation.Required, validation.Length(10, 0)),
 			validation.Field(&obj.Status, validation.Required, validation.In(helper.ACTIVED, helper.DELETED, helper.INACTIVED)),
 		)
 	}
