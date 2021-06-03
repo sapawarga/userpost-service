@@ -28,6 +28,7 @@ type UpdatePostRequest struct {
 type CreateCommentRequest struct {
 	UserPostID int64  `json:"user_post_id"`
 	Text       string `json:"comment"`
+	Status     int64  `json:"status"`
 }
 
 type ActorFromContext struct {

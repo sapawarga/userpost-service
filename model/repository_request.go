@@ -20,6 +20,7 @@ type CreateCommentRequestRepository struct {
 	UserPostID int64
 	Text       string
 	ActorID    int64
+	Status     int64
 }
 
 type CreateNewPostRequestRepository struct {

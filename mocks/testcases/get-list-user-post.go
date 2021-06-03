@@ -119,12 +119,13 @@ var (
 	actorResponse = &model.UserResponse{
 		ID:       1,
 		Name:     sql.NullString{String: "John Doe", Valid: true},
-		PhotoURL: sql.NullString{String: "sample", Valid: true},
+		PhotoURL: sql.NullString{String: "www.instagram.com/htm-medium=?p9878y2y3", Valid: true},
 		Role:     sql.NullInt64{Int64: 99, Valid: true},
 		Regency:  sql.NullString{String: "regency", Valid: true},
 		District: sql.NullString{String: "district", Valid: true},
 		Village:  sql.NullString{String: "village", Valid: true},
 		RW:       sql.NullString{String: "rw", Valid: true},
+		Status:   10,
 	}
 	actor = &model.Actor{
 		ID:       1,
@@ -153,8 +154,8 @@ var (
 		Text:       commentResponse.Comment,
 		CreatedAt:  commentResponse.CreatedAt,
 		UpdatedAt:  commentResponse.UpdatedAt,
-		CreatedBy:  actorResponse,
-		UpdatedBy:  actorResponse,
+		CreatedBy:  actor,
+		UpdatedBy:  actor,
 	}
 	totalComment     = helper.SetPointerInt64(1)
 	userPostResponse = []*model.UserPostResponse{

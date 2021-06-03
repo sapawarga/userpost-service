@@ -241,10 +241,10 @@ func encodeStatusResponse(ctx context.Context, r interface{}) (interface{}, erro
 func decodeUpdateUserPost(ctx context.Context, r interface{}) (interface{}, error) {
 	req := r.(*transportUserPost.UpdateUserPostRequest)
 
-	return &endpoint.UpdateStatusOrTitle{
-		ID:     req.GetId(),
-		Status: helper.SetPointerInt64(req.GetStatus()),
-		Title:  helper.SetPointerString(req.GetTitle()),
+	return &endpoint.CreateCommentRequest{
+		UserPostID: req.GetId(),
+		Status:     helper.SetPointerInt64(req.GetStatus()),
+		Text:       req.GetTitle(),
 	}, nil
 }
 
@@ -277,7 +277,7 @@ func decodeCreateCommentRequest(ctx context.Context, r interface{}) (interface{}
 
 	return &endpoint.CreateCommentRequest{
 		UserPostID: req.GetUserPostId(),
-		Comment:    req.GetComment(),
+		Text:       req.GetComment(),
 		Status:     helper.SetPointerInt64(req.GetStatus()),
 	}, nil
 }

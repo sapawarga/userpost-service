@@ -77,13 +77,13 @@ func (p *Post) getDetailComment(ctx context.Context, comment *model.CommentRespo
 		level.Error(logger).Log("error_get_actor_created", err)
 		return nil, err
 	}
-	commentResp.CreatedBy = actorCreated
+	commentResp.CreatedBy = p.parsingUserResponse(ctx, actorCreated)
 	actorUpdated, err := p.repoPost.GetActor(ctx, comment.UpdatedBy)
 	if err != nil {
 		level.Error(logger).Log("error_get_actor_updated", err)
 		return nil, err
 	}
-	commentResp.UpdatedBy = actorUpdated
+	commentResp.UpdatedBy = p.parsingUserResponse(ctx, actorUpdated)
 	return commentResp, nil
 }
 

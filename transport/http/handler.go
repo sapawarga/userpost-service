@@ -43,7 +43,7 @@ func MakeHTTPHandler(ctx context.Context, fs usecase.UsecaseI, logger kitlog.Log
 	processCreatePost := kithttp.NewServer(endpoint.MakeCreateNewPost(ctx, fs), decodeCreatePost, encodeResponse, opts...)
 	processCreateComment := kithttp.NewServer(endpoint.MakeCreateComment(ctx, fs), decodeCreateComment, encodeResponse, opts...)
 	processLikeDislike := kithttp.NewServer(endpoint.MakeLikeOrDislikePost(ctx, fs), decodeGetByID, encodeResponse, opts...)
-	processUpdate := kithttp.NewServer(endpoint.MakeUpdateStatusOrTitle(ctx, fs), decodeGetByID, encodeResponse, opts...)
+	processUpdate := kithttp.NewServer(endpoint.MakeUpdateStatusOrTitle(ctx, fs), decodeCreateComment, encodeResponse, opts...)
 
 	r := mux.NewRouter()
 
@@ -100,7 +100,6 @@ func decodeCreatePost(ctx context.Context, r *http.Request) (interface{}, error)
 	if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 		return nil, err
 	}
-
 	return reqBody, nil
 }
 

@@ -28,7 +28,6 @@ func NewPost(repoPost repository.PostI, repoComment repository.CommentI, logger 
 func (p *Post) GetListPost(ctx context.Context, params *model.GetListRequest) (*model.UserPostWithMetadata, error) {
 	logger := kitlog.With(p.logger, "method", "GetListPost")
 	var limit, offset int64 = 10, 0
-
 	if params.Page != nil && params.Limit != nil {
 		limit = helper.GetInt64FromPointer(params.Limit)
 		offset = (helper.GetInt64FromPointer(params.Page) - 1) * limit
@@ -56,16 +55,19 @@ func (p *Post) GetListPost(ctx context.Context, params *model.GetListRequest) (*
 		level.Error(logger).Log("error_append_list", err)
 		return nil, err
 	}
-
 	total, err := p.repoPost.GetMetadataPost(ctx, req)
 	if err != nil {
 		level.Error(logger).Log("error_get_metadata", err)
 		return nil, err
 	}
+	offsetPage := helper.GetInt64FromPointer(total) % limit
+	if offsetPage > 0 {
+		offsetPage = 1
+	}
 
 	metadata := &model.Metadata{
 		Page:      helper.GetInt64FromPointer(params.Page),
-		TotalPage: helper.GetInt64FromPointer(total) / limit,
+		TotalPage: helper.GetInt64FromPointer(total)/limit + offsetPage,
 		Total:     helper.GetInt64FromPointer(total),
 	}
 
@@ -164,6 +166,7 @@ func (p *Post) CreateNewPost(ctx context.Context, requestBody *model.CreateNewPo
 		Tags:         requestBody.Tags,
 		Status:       requestBody.Status,
 		// ActorID:      actor["id"].(int64),
+		ActorID: 1, // for now use default as admin
 	}); err != nil {
 		level.Error(logger).Log("error_create_post", err)
 		return err
@@ -173,7 +176,7 @@ func (p *Post) CreateNewPost(ctx context.Context, requestBody *model.CreateNewPo
 }
 
 func (p *Post) UpdateTitleOrStatus(ctx context.Context, requestBody *model.UpdatePostRequest) error {
-	logger := kitlog.With(p.logger, "method", "UpdateTItleOrStatus")
+	logger := kitlog.With(p.logger, "method", "UpdateTitleOrStatus")
 	_, err := p.repoPost.GetDetailPost(ctx, requestBody.ID)
 	if err != nil {
 		level.Error(logger).Log("error_get_detail", err)
@@ -223,12 +226,15 @@ func (p *Post) GetCommentsByPostID(ctx context.Context, id int64) ([]*model.Comm
 }
 
 func (p *Post) CreateCommentOnPost(ctx context.Context, req *model.CreateCommentRequest) error {
+	// TODO: implement authorization and authenticationn
 	logger := kitlog.With(p.logger, "method", "CreateCommentOnPost")
-	actor := ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Data
+	// actor := ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Data
 	if err := p.repoComment.Create(ctx, &model.CreateCommentRequestRepository{
 		UserPostID: req.UserPostID,
 		Text:       req.Text,
-		ActorID:    actor["id"].(int64),
+		Status:     req.Status,
+		// ActorID:    actor["id"].(int64),
+		ActorID: 1, // TODO: actor not existed yet using admin as default
 	}); err != nil {
 		level.Error(logger).Log("error_create_comment", err)
 		return err
