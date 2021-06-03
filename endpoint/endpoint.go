@@ -106,15 +106,15 @@ func MakeCreateNewPost(ctx context.Context, usecase usecase.UsecaseI) endpoint.E
 
 func MakeUpdateStatusOrTitle(ctx context.Context, usecase usecase.UsecaseI) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		req := request.(*UpdateStatusOrTitle)
+		req := request.(*CreateCommentRequest)
 		if err := Validate(req); err != nil {
 			return nil, err
 		}
 
 		if err = usecase.UpdateTitleOrStatus(ctx, &model.UpdatePostRequest{
-			ID:     req.ID,
+			ID:     req.UserPostID,
 			Status: req.Status,
-			Title:  req.Title,
+			Title:  helper.SetPointerString(req.Text),
 		}); err != nil {
 			return nil, err
 		}
@@ -148,7 +148,7 @@ func MakeCreateComment(ctx context.Context, usecase usecase.UsecaseI) endpoint.E
 
 		if err = usecase.CreateCommentOnPost(ctx, &model.CreateCommentRequest{
 			UserPostID: req.UserPostID,
-			Text:       req.Comment,
+			Text:       req.Text,
 			Status:     helper.GetInt64FromPointer(req.Status),
 		}); err != nil {
 			return nil, err
