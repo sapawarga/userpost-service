@@ -164,6 +164,7 @@ func (p *Post) CreateNewPost(ctx context.Context, requestBody *model.CreateNewPo
 		Tags:         requestBody.Tags,
 		Status:       requestBody.Status,
 		// ActorID:      actor["id"].(int64),
+		ActorID: 1, // for now use default as admin
 	}); err != nil {
 		level.Error(logger).Log("error_create_post", err)
 		return err

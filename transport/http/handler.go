@@ -100,7 +100,6 @@ func decodeCreatePost(ctx context.Context, r *http.Request) (interface{}, error)
 	if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 		return nil, err
 	}
-
 	return reqBody, nil
 }
 
