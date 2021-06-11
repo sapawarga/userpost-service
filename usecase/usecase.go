@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 
 	"github.com/sapawarga/userpost-service/helper"
 	"github.com/sapawarga/userpost-service/model"
@@ -271,5 +272,14 @@ func (p *Post) LikeOrDislikePost(ctx context.Context, id int64) error {
 		return err
 	}
 
+	return nil
+}
+
+func (p *Post) CheckHealthReadiness(ctx context.Context) error {
+	logger := kitlog.With(p.logger, "method", "CheckHealthReadiness")
+	if err := p.repoPost.CheckHealthReadiness(ctx); err != nil {
+		level.Error(logger).Log("error", errors.New("service_not_ready"))
+		return errors.New("service_not_ready")
+	}
 	return nil
 }

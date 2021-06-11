@@ -13,6 +13,6 @@ require (
 	github.com/onsi/ginkgo v1.7.0
 	github.com/onsi/gomega v1.4.3
 	github.com/sapawarga/proto-file v0.0.0-20210428064852-af7382ce3750
-	github.com/spf13/viper v1.7.1
 	google.golang.org/grpc v1.36.0
+	gopkg.in/yaml.v2 v2.2.4 // indirect
 )

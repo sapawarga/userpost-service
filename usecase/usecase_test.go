@@ -7,7 +7,7 @@ import (
 	"reflect"
 
 	"github.com/sapawarga/userpost-service/helper"
-	"github.com/sapawarga/userpost-service/mocks"
+	mocks "github.com/sapawarga/userpost-service/mocks"
 	"github.com/sapawarga/userpost-service/mocks/testcases"
 	"github.com/sapawarga/userpost-service/model"
 	"github.com/sapawarga/userpost-service/usecase"
@@ -188,6 +188,17 @@ var _ = Describe("Usecase", func() {
 		}
 	}
 
+	var CheckReadinessLogic = func(idx int) {
+		ctx := context.Background()
+		data := testcases.CheckReadinessData[idx]
+		mockPostRepo.EXPECT().CheckHealthReadiness(ctx).Return(data.MockCheckReadiness).Times(1)
+		if err := userPost.CheckHealthReadiness(ctx); err != nil {
+			Expect(err).NotTo(BeNil())
+		} else {
+			Expect(err).To(BeNil())
+		}
+	}
+
 	var unitTestLogic = map[string]map[string]interface{}{
 		"GetListUserPost":     {"func": GetListUserPostLogic, "test_case_count": len(testcases.GetListUserPostData), "desc": testcases.ListUserPostDescription()},
 		"GetDetailUserPost":   {"func": GetDetailUserPostLogic, "test_case_count": len(testcases.GetDetailUserPostData), "desc": testcases.ListUserPostDetailDescription()},
@@ -197,6 +208,7 @@ var _ = Describe("Usecase", func() {
 		"CreateComment":       {"func": CreateCommentLogic, "test_case_count": len(testcases.CreateCommentOnAPostData), "desc": testcases.CreateCommentDescription()},
 		"GetListUserPostByMe": {"func": GetListPostByMeLogic, "test_case_count": len(testcases.GetListUserPostByMeData), "desc": testcases.ListUserPostByMeDescription()},
 		"LikeOrDislikeOnPost": {"func": LikeOrDislikePostLogic, "test_case_count": len(testcases.LikeOrDislikePostData), "desc": testcases.LikeOrDislikePostDescription()},
+		"CheckReadiness":      {"func": CheckReadinessLogic, "test_case_count": len(testcases.CheckReadinessData), "desc": testcases.CheckReadinessDescription()},
 	}
 
 	for _, val := range unitTestLogic {

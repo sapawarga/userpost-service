@@ -15,4 +15,5 @@ type UsecaseI interface {
 	GetCommentsByPostID(ctx context.Context, id int64) ([]*model.Comment, error)
 	CreateCommentOnPost(ctx context.Context, req *model.CreateCommentRequest) error
 	LikeOrDislikePost(ctx context.Context, id int64) error
+	CheckHealthReadiness(ctx context.Context) error
 }
