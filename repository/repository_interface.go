@@ -15,6 +15,7 @@ type PostI interface {
 	GetActor(ctx context.Context, id int64) (*model.UserResponse, error)
 	GetDetailPost(ctx context.Context, id int64) (*model.PostResponse, error)
 	CheckIsExistLikeOnPostBy(ctx context.Context, request *model.AddOrRemoveLikeOnPostRequest) (bool, error)
+	CheckHealthReadiness(ctx context.Context) error
 	// query for create
 	InsertPost(ctx context.Context, request *model.CreateNewPostRequestRepository) error
 	AddLikeOnPost(ctx context.Context, request *model.AddOrRemoveLikeOnPostRequest) error

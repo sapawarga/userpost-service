@@ -67,7 +67,7 @@ func main() {
 		logger.Log("transport", "http", "address", *httpAdd, "msg", "listening")
 		mux := http.NewServeMux()
 		ctx := context.Background()
-		mux.Handle("/userpost/healthy", transportHTTP.MakeHandlerHealthy(ctx, logger))
+		mux.Handle("/health/", transportHTTP.MakeHandlerHealthy(ctx, uc, logger))
 		mux.Handle("/userpost/", transportHTTP.MakeHTTPHandler(ctx, uc, logger))
 		logger.Log("filename", filename, "method", method, "note", "running userpost service http")
 		errChan <- http.ListenAndServe(*httpAdd, accessControl(mux))
