@@ -20,7 +20,7 @@ type PostI interface {
 	InsertPost(ctx context.Context, request *model.CreateNewPostRequestRepository) error
 	AddLikeOnPost(ctx context.Context, request *model.AddOrRemoveLikeOnPostRequest) error
 	// query for update
-	UpdateStatusOrTitle(ctx context.Context, request *model.UpdatePostRequest) error
+	UpdateDetailOfUserPost(ctx context.Context, request *model.UpdatePostRequest) error
 	// query for delete
 	RemoveLikeOnPost(ctx context.Context, request *model.AddOrRemoveLikeOnPostRequest) error
 }
@@ -29,5 +29,5 @@ type CommentI interface {
 	GetLastComment(ctx context.Context, id int64) (*model.CommentResponse, error)
 	GetTotalComments(ctx context.Context, userPostID int64) (*int64, error)
 	GetCommentsByPostID(ctx context.Context, id int64) ([]*model.CommentResponse, error)
-	Create(ctx context.Context, req *model.CreateCommentRequestRepository) error
+	Create(ctx context.Context, req *model.CreateCommentRequestRepository) (int64, error)
 }

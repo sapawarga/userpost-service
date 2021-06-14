@@ -196,18 +196,18 @@ func (mr *MockPostIMockRecorder) RemoveLikeOnPost(ctx, request interface{}) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveLikeOnPost", reflect.TypeOf((*MockPostI)(nil).RemoveLikeOnPost), ctx, request)
 }
 
-// UpdateStatusOrTitle mocks base method.
-func (m *MockPostI) UpdateStatusOrTitle(ctx context.Context, request *model.UpdatePostRequest) error {
+// UpdateDetailOfUserPost mocks base method.
+func (m *MockPostI) UpdateDetailOfUserPost(ctx context.Context, request *model.UpdatePostRequest) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateStatusOrTitle", ctx, request)
+	ret := m.ctrl.Call(m, "UpdateDetailOfUserPost", ctx, request)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// UpdateStatusOrTitle indicates an expected call of UpdateStatusOrTitle.
-func (mr *MockPostIMockRecorder) UpdateStatusOrTitle(ctx, request interface{}) *gomock.Call {
+// UpdateDetailOfUserPost indicates an expected call of UpdateDetailOfUserPost.
+func (mr *MockPostIMockRecorder) UpdateDetailOfUserPost(ctx, request interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateStatusOrTitle", reflect.TypeOf((*MockPostI)(nil).UpdateStatusOrTitle), ctx, request)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateDetailOfUserPost", reflect.TypeOf((*MockPostI)(nil).UpdateDetailOfUserPost), ctx, request)
 }
 
 // MockCommentI is a mock of CommentI interface.
@@ -234,11 +234,12 @@ func (m *MockCommentI) EXPECT() *MockCommentIMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockCommentI) Create(ctx context.Context, req *model.CreateCommentRequestRepository) error {
+func (m *MockCommentI) Create(ctx context.Context, req *model.CreateCommentRequestRepository) (int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", ctx, req)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // Create indicates an expected call of Create.

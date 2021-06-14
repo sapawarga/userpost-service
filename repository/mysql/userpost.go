@@ -255,7 +255,7 @@ func (r *UserPost) AddLikeOnPost(ctx context.Context, request *model.AddOrRemove
 
 }
 
-func (r *UserPost) UpdateStatusOrTitle(ctx context.Context, request *model.UpdatePostRequest) error {
+func (r *UserPost) UpdateDetailOfUserPost(ctx context.Context, request *model.UpdatePostRequest) error {
 	var query bytes.Buffer
 	var params = make(map[string]interface{})
 	var first = true
@@ -274,6 +274,15 @@ func (r *UserPost) UpdateStatusOrTitle(ctx context.Context, request *model.Updat
 		}
 		query.WriteString("`text` = :title")
 		params["title"] = request.Title
+		first = false
+	}
+	if request.LastCommentID != nil {
+		if !first {
+			query.WriteString(", ")
+		}
+		query.WriteString(" last_user_post_comment_id = :last_user_post_comment_id,")
+		query.WriteString(" comments_count= comments_count + 1")
+		params["last_user_post_comment_id"] = request.LastCommentID
 		first = false
 	}
 	if !first {
