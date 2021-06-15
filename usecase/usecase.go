@@ -183,7 +183,7 @@ func (p *Post) UpdateTitleOrStatus(ctx context.Context, requestBody *model.Updat
 		level.Error(logger).Log("error_get_detail", err)
 		return err
 	}
-	if err = p.repoPost.UpdateStatusOrTitle(ctx, requestBody); err != nil {
+	if err = p.repoPost.UpdateDetailOfUserPost(ctx, requestBody); err != nil {
 		level.Error(logger).Log("error_update", err)
 		return err
 	}
@@ -230,14 +230,22 @@ func (p *Post) CreateCommentOnPost(ctx context.Context, req *model.CreateComment
 	// TODO: implement authorization and authenticationn
 	logger := kitlog.With(p.logger, "method", "CreateCommentOnPost")
 	// actor := ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Data
-	if err := p.repoComment.Create(ctx, &model.CreateCommentRequestRepository{
+	id, err := p.repoComment.Create(ctx, &model.CreateCommentRequestRepository{
 		UserPostID: req.UserPostID,
 		Text:       req.Text,
 		Status:     req.Status,
 		// ActorID:    actor["id"].(int64),
 		ActorID: 1, // TODO: actor not existed yet using admin as default
-	}); err != nil {
+	})
+	if err != nil {
 		level.Error(logger).Log("error_create_comment", err)
+		return err
+	}
+
+	if err := p.repoPost.UpdateDetailOfUserPost(ctx, &model.UpdatePostRequest{
+		ID:            req.UserPostID,
+		LastCommentID: helper.SetPointerInt64(id),
+	}); err != nil {
 		return err
 	}
 

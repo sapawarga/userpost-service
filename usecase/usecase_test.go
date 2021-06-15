@@ -106,7 +106,7 @@ var _ = Describe("Usecase", func() {
 		ctx := context.TODO()
 		data := testcases.UpdateUserPostDetailData[idx]
 		mockPostRepo.EXPECT().GetDetailPost(ctx, data.GetDetailParam).Return(nil, data.ResponseGetDetailRepo.Error).Times(1)
-		mockPostRepo.EXPECT().UpdateStatusOrTitle(ctx, data.UpdateUserPostParam).Return(data.ResponseUpdateUserPostRepo).Times(1)
+		mockPostRepo.EXPECT().UpdateDetailOfUserPost(ctx, data.UpdateUserPostParam).Return(data.ResponseUpdateUserPostRepo).Times(1)
 		if err := userPost.UpdateTitleOrStatus(ctx, data.UsecaseRequest); err != nil {
 			Expect(err).NotTo(BeNil())
 		} else {
@@ -124,7 +124,6 @@ var _ = Describe("Usecase", func() {
 			Expect(err).NotTo(BeNil())
 			Expect(resp).To(BeNil())
 		} else {
-			fmt.Println(resp)
 			Expect(resp).To(Equal(data.ResponseUsecase.Result))
 		}
 	}
@@ -137,7 +136,8 @@ var _ = Describe("Usecase", func() {
 		actorData := &model.ActorFromContext{Data: actor}
 		ctx = context.WithValue(ctx, helper.ACTORKEY, actorData)
 		data := testcases.CreateCommentOnAPostData[idx]
-		mockCommentsRepo.EXPECT().Create(ctx, data.RepositoryRequest).Return(data.MockRepository).Times(1)
+		mockCommentsRepo.EXPECT().Create(ctx, data.RepositoryRequest).Return(data.MockRepository.ID, data.MockRepository.Error).Times(1)
+		mockPostRepo.EXPECT().UpdateDetailOfUserPost(ctx, data.UpdatePostRequest).Return(data.MockUpdatePost).Times(1)
 		if err := userPost.CreateCommentOnPost(ctx, data.UsecaseRequest); err != nil {
 			Expect(err).ToNot(BeNil())
 		} else {

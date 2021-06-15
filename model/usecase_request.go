@@ -20,9 +20,10 @@ type CreateNewPostRequest struct {
 }
 
 type UpdatePostRequest struct {
-	ID     int64   `json:"id"`
-	Status *int64  `json:"status,omitempty"`
-	Title  *string `json:"title,omitempty"`
+	ID            int64   `json:"id"`
+	Status        *int64  `json:"status,omitempty"`
+	Title         *string `json:"title,omitempty"`
+	LastCommentID *int64  `json:"last_comment_id,omitempty"`
 }
 
 type CreateCommentRequest struct {

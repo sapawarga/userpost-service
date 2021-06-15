@@ -87,9 +87,10 @@ func (r *Comment) GetCommentsByPostID(ctx context.Context, id int64) ([]*model.C
 	return result, nil
 }
 
-func (r *Comment) Create(ctx context.Context, req *model.CreateCommentRequestRepository) error {
+func (r *Comment) Create(ctx context.Context, req *model.CreateCommentRequestRepository) (int64, error) {
 	var query bytes.Buffer
 	var err error
+	var result sql.Result
 	_, unixTime := helper.GetCurrentTimeUTC()
 
 	query.WriteString("INSERT INTO user_post_comments (user_post_id, `text`, status, created_by, updated_by, created_at, updated_at) ")
@@ -103,13 +104,13 @@ func (r *Comment) Create(ctx context.Context, req *model.CreateCommentRequestRep
 	}
 
 	if ctx != nil {
-		_, err = r.conn.NamedExecContext(ctx, query.String(), params)
+		result, err = r.conn.NamedExecContext(ctx, query.String(), params)
 	} else {
-		_, err = r.conn.NamedExec(query.String(), params)
+		result, err = r.conn.NamedExec(query.String(), params)
 	}
 
 	if err != nil {
-		return err
+		return 0, err
 	}
-	return nil
+	return result.LastInsertId()
 }
