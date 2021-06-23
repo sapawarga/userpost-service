@@ -75,12 +75,12 @@ var ordering = map[int]string{
 	1: "DESC",
 }
 
-func isOrder(val string) int {
+func isOrderValid(val string) bool {
 	for i := range ordering {
 		if ordering[i] == val {
-			return i
+			return true
 		}
 	}
 
-	return -1
+	return false
 }

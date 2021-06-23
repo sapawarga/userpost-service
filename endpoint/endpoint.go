@@ -16,7 +16,7 @@ func MakeGetListUserPost(ctx context.Context, usecase usecase.UsecaseI) endpoint
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(*GetListUserPostRequest)
 		orderBy := helper.GetStringFromPointer(req.OrderBy)
-		if req.OrderBy != nil && isOrder(orderBy) == -1 {
+		if req.OrderBy != nil && !isOrderValid(orderBy) {
 			return nil, errors.New("order_must_between_ASC_DESC")
 		}
 		// TODO: for get metadata from headers grpc needs to update when using authorization
