@@ -69,3 +69,18 @@ func validationImages(in []*Image) validation.RuleFunc {
 		return err
 	}
 }
+
+var ordering = map[int]string{
+	0: "ASC",
+	1: "DESC",
+}
+
+func isOrder(val string) int {
+	for i := range ordering {
+		if ordering[i] == val {
+			return i
+		}
+	}
+
+	return -1
+}
