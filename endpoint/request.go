@@ -1,6 +1,8 @@
 package endpoint
 
 import (
+	"strings"
+
 	"github.com/go-ozzo/ozzo-validation/is"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/sapawarga/userpost-service/helper"
@@ -70,17 +72,6 @@ func validationImages(in []*Image) validation.RuleFunc {
 	}
 }
 
-var ordering = map[int]string{
-	0: "ASC",
-	1: "DESC",
-}
-
 func isOrderValid(val string) bool {
-	for i := range ordering {
-		if ordering[i] == val {
-			return true
-		}
-	}
-
-	return false
+	return strings.EqualFold(val, "ASC") || strings.EqualFold(val, "DESC")
 }
