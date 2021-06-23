@@ -20,13 +20,13 @@ func (p *Post) getDetailOfUserPost(ctx context.Context, post *model.PostResponse
 		images = nil
 	}
 	for _, v := range images {
-		v["path"] = fmt.Sprintf("%s/%s", cfg.AppStoragePublicURL, v)
+		v["path"] = fmt.Sprintf("%s/%s", cfg.AppStoragePublicURL, v["path"])
 	}
 	userPost := &model.UserPostResponse{
 		ID:            post.ID,
 		Title:         post.Title,
 		Tag:           helper.SetPointerString(post.Tag.String),
-		ImagePath:     post.ImagePath.String,
+		ImagePath:     fmt.Sprintf("%s/%s", cfg.AppStoragePublicURL, post.ImagePath.String),
 		Images:        images,
 		LikesCount:    post.LikesCount,
 		CommentCounts: post.CommentCounts,
@@ -62,15 +62,16 @@ func (p *Post) getDetailOfUserPost(ctx context.Context, post *model.PostResponse
 
 func (p *Post) parsingUserResponse(ctx context.Context, user *model.UserResponse) *model.Actor {
 	return &model.Actor{
-		ID:       user.ID,
-		Name:     user.Name.String,
-		PhotoURL: user.PhotoURL.String,
-		Role:     user.Role.Int64,
-		Regency:  user.Regency.String,
-		District: user.District.String,
-		Village:  user.Village.String,
-		RW:       user.RW.String,
-		Status:   user.Status,
+		ID:        user.ID,
+		Name:      user.Name.String,
+		PhotoURL:  user.PhotoURL.String,
+		Role:      user.Role.Int64,
+		RoleLabel: model.RoleLabel[user.Role.Int64],
+		Regency:   user.Regency.String,
+		District:  user.District.String,
+		Village:   user.Village.String,
+		RW:        user.RW.String,
+		Status:    user.Status,
 	}
 }
 
