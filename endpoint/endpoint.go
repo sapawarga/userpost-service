@@ -16,10 +16,10 @@ import (
 func MakeGetListUserPost(ctx context.Context, usecase usecase.UsecaseI) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(*GetListUserPostRequest)
-		cASC := strings.Compare(helper.GetStringFromPointer(req.SortBy), "ASC")
-		cDESC := strings.Compare(helper.GetStringFromPointer(req.SortBy), "DESC")
-		if req.SortBy != nil && (cASC*cDESC == 1) {
-			return nil, errors.New("must_between_ASC_DESC")
+		cASC := strings.Compare(helper.GetStringFromPointer(req.OrderBy), "ASC")
+		cDESC := strings.Compare(helper.GetStringFromPointer(req.OrderBy), "DESC")
+		if req.OrderBy != nil && (cASC*cDESC == 1) {
+			return nil, errors.New("order_must_between_ASC_DESC")
 		}
 		// TODO: for get metadata from headers grpc needs to update when using authorization
 		resp, err := usecase.GetListPost(ctx, &model.GetListRequest{

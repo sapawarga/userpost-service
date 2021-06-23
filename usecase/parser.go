@@ -2,21 +2,32 @@ package usecase
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 
 	kitlog "github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
+	"github.com/sapawarga/userpost-service/config"
 	"github.com/sapawarga/userpost-service/helper"
 	"github.com/sapawarga/userpost-service/model"
 )
 
 func (p *Post) getDetailOfUserPost(ctx context.Context, post *model.PostResponse) (*model.UserPostResponse, error) {
 	logger := kitlog.With(p.logger, "method", "getDetailOfUserPost")
+	cfg, _ := config.NewConfig()
+	images := make([]map[string]interface{}, 0)
+	if err := json.Unmarshal([]byte(post.Images.String), &images); err != nil {
+		images = nil
+	}
+	for _, v := range images {
+		v["path"] = fmt.Sprintf("%s/%s", cfg.AppStoragePublicURL, v)
+	}
 	userPost := &model.UserPostResponse{
 		ID:            post.ID,
 		Title:         post.Title,
 		Tag:           helper.SetPointerString(post.Tag.String),
 		ImagePath:     post.ImagePath.String,
-		Images:        post.Images.String,
+		Images:        images,
 		LikesCount:    post.LikesCount,
 		CommentCounts: post.CommentCounts,
 		Status:        post.Status,

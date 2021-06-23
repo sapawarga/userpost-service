@@ -19,12 +19,15 @@ type ResponseGetDetailUsecase struct {
 }
 
 var (
+	images = []map[string]interface{}{
+		{"path": "general"},
+	}
 	userpostResponse = &model.UserPostResponse{
 		ID:                    1,
 		Title:                 "title",
 		Tag:                   helper.SetPointerString("tag"),
 		ImagePath:             "test",
-		Images:                "test",
+		Images:                images,
 		LastUserPostCommentID: helper.SetPointerInt64(1),
 		LastComment:           comment,
 		LikesCount:            0,

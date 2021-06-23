@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/sapawarga/userpost-service/endpoint"
 	"github.com/sapawarga/userpost-service/helper"
@@ -96,12 +97,13 @@ func encodeGetListUserPost(ctx context.Context, r interface{}) (interface{}, err
 	resultData := make([]*transportUserPost.UserPost, 0)
 
 	for _, v := range data {
+		images, _ := json.Marshal(v.Images)
 		result := &transportUserPost.UserPost{
 			Id:                    v.ID,
 			Title:                 v.Title,
 			Tag:                   helper.GetStringFromPointer(v.Tag),
 			ImagePath:             v.ImagePath,
-			Images:                v.Images,
+			Images:                string(images),
 			LastUserPostCommentId: helper.GetInt64FromPointer(v.LastUserPostCommentID),
 			LikesCount:            v.LikesCount,
 			CommentCounts:         v.CommentCounts,
@@ -175,12 +177,13 @@ func encodedUserPostDetail(ctx context.Context, r interface{}) (interface{}, err
 
 	actorUserPost := encodeActor(ctx, resp.Actor)
 
+	images, _ := json.Marshal(resp.Images)
 	userDetail := &transportUserPost.UserPost{
 		Id:                    resp.ID,
 		Title:                 resp.Title,
 		Tag:                   helper.GetStringFromPointer(resp.Tag),
 		ImagePath:             resp.ImagePath,
-		Images:                resp.Images,
+		Images:                string(images),
 		LastUserPostCommentId: helper.GetInt64FromPointer(resp.LastUserPostCommentID),
 		LastComment:           lastComment,
 		LikesCount:            resp.LikesCount,

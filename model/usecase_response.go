@@ -5,20 +5,20 @@ import (
 )
 
 type UserPostResponse struct {
-	ID                    int64     `json:"id"`
-	Title                 string    `json:"title"`
-	Tag                   *string   `json:"tags,omitempty"`
-	ImagePath             string    `json:"image_path,omitempty"`
-	Images                string    `json:"images"`
-	LastUserPostCommentID *int64    `json:"last_user_post_comment_id,omitempty"`
-	LastComment           *Comment  `json:"last_comment,omitempty"`
-	LikesCount            int64     `json:"likes_count"`
-	IsLiked               bool      `json:"is_liked"`
-	CommentCounts         int64     `json:"comment_counts"`
-	Status                int64     `json:"status"`
-	Actor                 *Actor    `json:"actor"`
-	CreatedAt             time.Time `json:"created_at"`
-	UpdatedAt             time.Time `json:"updated_at"`
+	ID                    int64                    `json:"id"`
+	Title                 string                   `json:"title"`
+	Tag                   *string                  `json:"tags,omitempty"`
+	ImagePath             string                   `json:"image_path,omitempty"`
+	Images                []map[string]interface{} `json:"images"`
+	LastUserPostCommentID *int64                   `json:"last_user_post_comment_id,omitempty"`
+	LastComment           *Comment                 `json:"last_comment,omitempty"`
+	LikesCount            int64                    `json:"likes_count"`
+	IsLiked               bool                     `json:"is_liked"`
+	CommentCounts         int64                    `json:"comment_counts"`
+	Status                int64                    `json:"status"`
+	Actor                 *Actor                   `json:"actor"`
+	CreatedAt             time.Time                `json:"created_at"`
+	UpdatedAt             time.Time                `json:"updated_at"`
 }
 
 type UserPostWithMetadata struct {
