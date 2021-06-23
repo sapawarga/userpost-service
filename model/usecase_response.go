@@ -5,20 +5,20 @@ import (
 )
 
 type UserPostResponse struct {
-	ID                    int64     `json:"id"`
-	Title                 string    `json:"title"`
-	Tag                   *string   `json:"tags,omitempty"`
-	ImagePath             string    `json:"image_path,omitempty"`
-	Images                string    `json:"images"`
-	LastUserPostCommentID *int64    `json:"last_user_post_comment_id,omitempty"`
-	LastComment           *Comment  `json:"last_comment,omitempty"`
-	LikesCount            int64     `json:"likes_count"`
-	IsLiked               bool      `json:"is_liked"`
-	CommentCounts         int64     `json:"comment_counts"`
-	Status                int64     `json:"status"`
-	Actor                 *Actor    `json:"actor"`
-	CreatedAt             time.Time `json:"created_at"`
-	UpdatedAt             time.Time `json:"updated_at"`
+	ID                    int64                    `json:"id"`
+	Title                 string                   `json:"title"`
+	Tag                   *string                  `json:"tags,omitempty"`
+	ImagePath             string                   `json:"image_path,omitempty"`
+	Images                []map[string]interface{} `json:"images"`
+	LastUserPostCommentID *int64                   `json:"last_user_post_comment_id,omitempty"`
+	LastComment           *Comment                 `json:"last_comment,omitempty"`
+	LikesCount            int64                    `json:"likes_count"`
+	IsLiked               bool                     `json:"is_liked"`
+	CommentCounts         int64                    `json:"comment_counts"`
+	Status                int64                    `json:"status"`
+	Actor                 *Actor                   `json:"actor"`
+	CreatedAt             time.Time                `json:"created_at"`
+	UpdatedAt             time.Time                `json:"updated_at"`
 }
 
 type UserPostWithMetadata struct {
@@ -43,13 +43,29 @@ type Comment struct {
 }
 
 type Actor struct {
-	ID       int64  `json:"id"`
-	Name     string `json:"name"`
-	PhotoURL string `json:"photo_url,omitempty"`
-	Role     int64  `json:"role,omitempty"`
-	Regency  string `json:"regency,omitempty"`
-	District string `json:"district,omitempty"`
-	Village  string `json:"village,omitempty"`
-	RW       string `json:"rw,omitempty"`
-	Status   int64  `json:"status,omitempty"`
+	ID        int64  `json:"id"`
+	Name      string `json:"name"`
+	PhotoURL  string `json:"photo_url,omitempty"`
+	Role      int64  `json:"role,omitempty"`
+	RoleLabel string `json:"role_label,omitempty"`
+	Regency   string `json:"regency,omitempty"`
+	District  string `json:"district,omitempty"`
+	Village   string `json:"village,omitempty"`
+	RW        string `json:"rw,omitempty"`
+	Status    int64  `json:"status,omitempty"`
+}
+
+var RoleLabel = map[int64]string{
+	10:  "user",
+	49:  "trainer",
+	50:  "staffRW",
+	60:  "staffKel",
+	70:  "staffKec",
+	80:  "staffKabKota",
+	88:  "staffOPD",
+	89:  "staffSaberhoax",
+	90:  "staffProv",
+	91:  "pimpinan",
+	99:  "admin",
+	100: "service_account",
 }

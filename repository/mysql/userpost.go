@@ -33,7 +33,7 @@ func (r *UserPost) GetListPost(ctx context.Context, request *model.UserPostReque
 		params = append(params, request.Offset, request.Limit)
 	}
 	if request.OrderBy != nil && request.SortBy != nil {
-		query.WriteString(fmt.Sprintf(" ORDER BY %s %s", *request.OrderBy, *request.SortBy))
+		query.WriteString(fmt.Sprintf(" ORDER BY %s %s", *request.SortBy, *request.OrderBy))
 	}
 	if ctx != nil {
 		err = r.conn.SelectContext(ctx, &result, query.String(), params...)

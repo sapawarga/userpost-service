@@ -128,15 +128,16 @@ var (
 		Status:   10,
 	}
 	actor = &model.Actor{
-		ID:       1,
-		Name:     "John Doe",
-		PhotoURL: "www.instagram.com/htm-medium=?p9878y2y3",
-		Role:     99,
-		Regency:  "regency",
-		District: "district",
-		Village:  "village",
-		RW:       "rw",
-		Status:   10,
+		ID:        1,
+		Name:      "John Doe",
+		PhotoURL:  "www.instagram.com/htm-medium=?p9878y2y3",
+		Role:      99,
+		RoleLabel: model.RoleLabel[int64(99)],
+		Regency:   "regency",
+		District:  "district",
+		Village:   "village",
+		RW:        "rw",
+		Status:    10,
 	}
 	metadataResponse = helper.SetPointerInt64(2)
 	commentResponse  = &model.CommentResponse{
@@ -164,7 +165,7 @@ var (
 			Title:                 "title",
 			Tag:                   helper.SetPointerString("tag"),
 			ImagePath:             "test",
-			Images:                "test",
+			Images:                images,
 			LastUserPostCommentID: helper.SetPointerInt64(1),
 			LastComment:           comment,
 			LikesCount:            0,
@@ -179,7 +180,7 @@ var (
 			Title:                 "test title",
 			Tag:                   helper.SetPointerString("tag"),
 			ImagePath:             "test",
-			Images:                "test",
+			Images:                images,
 			LastUserPostCommentID: helper.SetPointerInt64(1),
 			LastComment:           comment,
 			LikesCount:            0,
