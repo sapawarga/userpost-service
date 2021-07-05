@@ -1,5 +1,6 @@
 package model
 
+// GetListRequest ...
 type GetListRequest struct {
 	ActivityName *string
 	Username     *string
@@ -11,12 +12,19 @@ type GetListRequest struct {
 	OrderBy      *string
 }
 
+// CreateNewPostRequest ...
 type CreateNewPostRequest struct {
 	Title        string  `json:"title"`
 	ImagePathURL string  `json:"image_path_url"`
 	Images       string  `json:"images"`
 	Tags         *string `json:"tags,omitempty"`
 	Status       int64   `json:"status"`
+}
+
+// GetCommentRequest ...
+type GetCommentRequest struct {
+	ID   int64
+	Page int64
 }
 
 type UpdatePostRequest struct {

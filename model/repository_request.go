@@ -16,6 +16,12 @@ type UserPostByMeRequest struct {
 	*UserPostRequest
 }
 
+type GetComment struct {
+	ID     int64
+	Limit  int64
+	Offset int64
+}
+
 type CreateCommentRequestRepository struct {
 	UserPostID int64
 	Text       string

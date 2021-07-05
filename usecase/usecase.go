@@ -61,15 +61,10 @@ func (p *Post) GetListPost(ctx context.Context, params *model.GetListRequest) (*
 		level.Error(logger).Log("error_get_metadata", err)
 		return nil, err
 	}
-	offsetPage := helper.GetInt64FromPointer(total) % limit
-	if offsetPage > 0 {
-		offsetPage = 1
-	}
 
 	metadata := &model.Metadata{
-		Page:      helper.GetInt64FromPointer(params.Page),
-		TotalPage: helper.GetInt64FromPointer(total)/limit + offsetPage,
-		Total:     helper.GetInt64FromPointer(total),
+		Page:  helper.GetInt64FromPointer(params.Page),
+		Total: helper.GetInt64FromPointer(total),
 	}
 
 	return &model.UserPostWithMetadata{Data: userPosts, Metadata: metadata}, nil
@@ -116,9 +111,8 @@ func (p *Post) GetListPostByMe(ctx context.Context, params *model.GetListRequest
 	return &model.UserPostWithMetadata{
 		Data: userPosts,
 		Metadata: &model.Metadata{
-			Page:      helper.GetInt64FromPointer(params.Page),
-			TotalPage: helper.GetInt64FromPointer(total) / limit,
-			Total:     helper.GetInt64FromPointer(total),
+			Page:  helper.GetInt64FromPointer(params.Page),
+			Total: helper.GetInt64FromPointer(total),
 		},
 	}, nil
 }
@@ -191,39 +185,58 @@ func (p *Post) UpdateTitleOrStatus(ctx context.Context, requestBody *model.Updat
 	return nil
 }
 
-func (p *Post) GetCommentsByPostID(ctx context.Context, id int64) ([]*model.Comment, error) {
+func (p *Post) GetCommentsByPostID(ctx context.Context, req *model.GetCommentRequest) (*model.CommentWithMetadata, error) {
 	logger := kitlog.With(p.logger, "method", "GetCommentsByPostID")
-	resp, err := p.repoComment.GetCommentsByPostID(ctx, id)
+	var limit, offset int64 = 20, 0
+	if req.Page > 1 {
+		offset = (req.Page - 1) * limit
+	}
+	resp, err := p.repoComment.GetCommentsByPostID(ctx, &model.GetComment{
+		ID:     req.ID,
+		Limit:  limit,
+		Offset: offset,
+	})
 	if err != nil {
 		level.Error(logger).Log("error_get_comments_by_post_id", err)
 		return nil, err
 	}
 
-	if len(resp) == 0 {
-		return nil, nil
+	totalComment, err := p.repoComment.GetTotalComments(ctx, req.ID)
+	if err != nil {
+		level.Error(logger).Log("error_get_metadata", err)
+		return nil, err
 	}
-
 	comments := make([]*model.Comment, 0)
-	for _, v := range resp {
-		detailComment, err := p.getDetailComment(ctx, v)
-		if err != nil {
-			level.Error(logger).Log("error_get_detail_comment", err)
-			return nil, err
-		}
-		comment := &model.Comment{
-			ID:         detailComment.ID,
-			UserPostID: detailComment.UserPostID,
-			Text:       detailComment.Text,
-			CreatedAt:  detailComment.CreatedAt,
-			UpdatedAt:  detailComment.UpdatedAt,
-			CreatedBy:  detailComment.CreatedBy,
-			UpdatedBy:  detailComment.UpdatedBy,
-		}
 
-		comments = append(comments, comment)
+	if len(resp) > 0 {
+		for _, v := range resp {
+			detailComment, err := p.getDetailComment(ctx, v)
+			if err != nil {
+				level.Error(logger).Log("error_get_detail_comment", err)
+				return nil, err
+			}
+			comment := &model.Comment{
+				ID:         detailComment.ID,
+				UserPostID: detailComment.UserPostID,
+				Text:       detailComment.Text,
+				User:       detailComment.User,
+				CreatedAt:  detailComment.CreatedAt,
+				UpdatedAt:  detailComment.UpdatedAt,
+				CreatedBy:  detailComment.CreatedBy,
+				UpdatedBy:  detailComment.UpdatedBy,
+			}
+			comments = append(comments, comment)
+		}
+	}
+	meta := &model.Metadata{
+		Page:  req.Page,
+		Total: helper.GetInt64FromPointer(totalComment),
 	}
 
-	return comments, nil
+	return &model.CommentWithMetadata{
+		Data:     comments,
+		Metadata: meta,
+	}, nil
 }
 
 func (p *Post) CreateCommentOnPost(ctx context.Context, req *model.CreateCommentRequest) error {

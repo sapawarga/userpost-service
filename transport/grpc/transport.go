@@ -116,9 +116,9 @@ func encodeGetListUserPost(ctx context.Context, r interface{}) (interface{}, err
 	}
 
 	meta := &transportUserPost.Metadata{
-		Page:      metadata.Page,
+		Page:      metadata.CurrentPage,
 		Total:     metadata.Total,
-		TotalPage: metadata.TotalPage,
+		TotalPage: int64(metadata.TotalPage),
 	}
 
 	return &transportUserPost.GetListUserPostResponse{

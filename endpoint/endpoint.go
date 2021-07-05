@@ -3,6 +3,7 @@ package endpoint
 import (
 	"context"
 	"encoding/json"
+	"math"
 
 	"errors"
 
@@ -34,13 +35,19 @@ func MakeGetListUserPost(ctx context.Context, usecase usecase.UsecaseI) endpoint
 			return nil, err
 		}
 
-		return &UserPostWithMetadata{
+		totalPage := math.Ceil(float64(resp.Metadata.Total) / float64(*req.Limit))
+
+		data := &UserPostWithMetadata{
 			Data: resp.Data,
 			Metadata: &Metadata{
-				Page:      resp.Metadata.Page,
-				TotalPage: resp.Metadata.TotalPage,
-				Total:     resp.Metadata.Total,
+				PerPage:     helper.GetInt64FromPointer(req.Limit),
+				TotalPage:   totalPage,
+				Total:       resp.Metadata.Total,
+				CurrentPage: helper.GetInt64FromPointer(req.Page),
 			},
+		}
+		return map[string]interface{}{
+			"data": data,
 		}, nil
 	}
 }
@@ -53,7 +60,8 @@ func MakeGetDetailUserPost(ctx context.Context, usecase usecase.UsecaseI) endpoi
 		if err != nil {
 			return nil, err
 		}
-		return resp, nil
+		return map[string]interface{}{
+			"data": resp}, nil
 	}
 }
 
@@ -61,7 +69,7 @@ func MakeGetListUserPostByMe(ctx context.Context, usecase usecase.UsecaseI) endp
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(*GetListUserPostRequest)
 		// TODO: for get metadata from headers grpc needs to update when using authorization
-		response, err = usecase.GetListPostByMe(ctx, &model.GetListRequest{
+		resp, err := usecase.GetListPostByMe(ctx, &model.GetListRequest{
 			ActivityName: req.ActivityName,
 			Username:     req.Username,
 			Category:     req.Category,
@@ -74,7 +82,19 @@ func MakeGetListUserPostByMe(ctx context.Context, usecase usecase.UsecaseI) endp
 		if err != nil {
 			return nil, err
 		}
-		return response, nil
+		totalPage := math.Ceil(float64(resp.Metadata.Total) / float64(*req.Limit))
+
+		data := &UserPostWithMetadata{
+			Data: resp.Data,
+			Metadata: &Metadata{
+				PerPage:     helper.GetInt64FromPointer(req.Limit),
+				TotalPage:   totalPage,
+				Total:       resp.Metadata.Total,
+				CurrentPage: helper.GetInt64FromPointer(req.Page),
+			},
+		}
+		return map[string]interface{}{
+			"data": data}, nil
 	}
 }
 
@@ -133,15 +153,27 @@ func MakeUpdateStatusOrTitle(ctx context.Context, usecase usecase.UsecaseI) endp
 
 func MakeGetCommentsByID(ctx context.Context, usecase usecase.UsecaseI) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		req := request.(*GetByID)
-		resp, err := usecase.GetCommentsByPostID(ctx, req.ID)
+		req := request.(*GetComment)
+		resp, err := usecase.GetCommentsByPostID(ctx, &model.GetCommentRequest{
+			ID:   req.ID,
+			Page: req.Page,
+		})
 		if err != nil {
 			return nil, err
 		}
 
-		return &CommentsResponse{
-			Data: resp,
-		}, nil
+		data := &CommentsResponse{
+			Data: resp.Data,
+			Metadata: &Metadata{
+				PerPage:     20,
+				Total:       resp.Metadata.Total,
+				TotalPage:   math.Ceil(float64(resp.Metadata.Total) / float64(20)),
+				CurrentPage: resp.Metadata.Page,
+			},
+		}
+
+		return map[string]interface{}{
+			"data": data}, nil
 	}
 }
 

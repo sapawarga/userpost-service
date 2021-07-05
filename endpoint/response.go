@@ -3,14 +3,15 @@ package endpoint
 import "github.com/sapawarga/userpost-service/model"
 
 type UserPostWithMetadata struct {
-	Data     []*model.UserPostResponse `json:"data"`
-	Metadata *Metadata                 `json:"metadata"`
+	Data     []*model.UserPostResponse `json:"items"`
+	Metadata *Metadata                 `json:"_meta"`
 }
 
 type Metadata struct {
-	Page      int64 `json:"page"`
-	TotalPage int64 `json:"total_page"`
-	Total     int64 `json:"total"`
+	PerPage     int64   `json:"page"`
+	TotalPage   float64 `json:"total_page"`
+	CurrentPage int64   `json:"current_page"`
+	Total       int64   `json:"total"`
 }
 
 type UserPostDetail struct {
@@ -23,5 +24,6 @@ type StatusResponse struct {
 }
 
 type CommentsResponse struct {
-	Data []*model.Comment `json:"data"`
+	Data     []*model.Comment `json:"items"`
+	Metadata *Metadata        `json:"_meta"`
 }

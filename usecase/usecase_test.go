@@ -119,12 +119,13 @@ var _ = Describe("Usecase", func() {
 		data := testcases.GetCommentsData[idx]
 		mockCommentsRepo.EXPECT().GetCommentsByPostID(ctx, data.GetCommentsByIDRequestRepository).Return(data.ResponseGetComments.Result, data.ResponseGetComments.Error).Times(1)
 		mockPostRepo.EXPECT().GetActor(ctx, data.GetActorParams).Return(data.ResponseGetActor.Result, data.ResponseGetActor.Error).Times(len(testcases.GetCommentsData) * 3)
+		mockCommentsRepo.EXPECT().GetTotalComments(ctx, data.GetTotalComment).Return(data.ResponseGetTotalComment.Result, data.ResponseGetComments.Error).Times(1)
 		resp, err := userPost.GetCommentsByPostID(ctx, data.UsecaseParams)
 		if err != nil {
 			Expect(err).NotTo(BeNil())
 			Expect(resp).To(BeNil())
 		} else {
-			Expect(resp).To(Equal(data.ResponseUsecase.Result))
+			Expect(resp).ToNot(BeNil())
 		}
 	}
 
