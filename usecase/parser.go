@@ -12,15 +12,17 @@ import (
 	"github.com/sapawarga/userpost-service/model"
 )
 
+var cfg, _ = config.NewConfig()
+
 func (p *Post) getDetailOfUserPost(ctx context.Context, post *model.PostResponse) (*model.UserPostResponse, error) {
 	logger := kitlog.With(p.logger, "method", "getDetailOfUserPost")
-	cfg, _ := config.NewConfig()
 	images := make([]map[string]interface{}, 0)
 	if err := json.Unmarshal([]byte(post.Images.String), &images); err != nil {
 		images = nil
 	}
 	for _, v := range images {
-		v["path"] = fmt.Sprintf("%s/%s", cfg.AppStoragePublicURL, v["path"])
+		v["url"] = fmt.Sprintf("%s/%s", cfg.AppStoragePublicURL, v["path"])
+		delete(v, "path")
 	}
 	userPost := &model.UserPostResponse{
 		ID:            post.ID,
@@ -31,6 +33,7 @@ func (p *Post) getDetailOfUserPost(ctx context.Context, post *model.PostResponse
 		LikesCount:    post.LikesCount,
 		CommentCounts: post.CommentCounts,
 		Status:        post.Status,
+		StatusLabel:   model.StatusLabel[post.Status]["id"],
 		CreatedAt:     post.CreatedAt,
 		UpdatedAt:     post.UpdatedAt,
 	}
@@ -64,14 +67,13 @@ func (p *Post) parsingUserResponse(ctx context.Context, user *model.UserResponse
 	return &model.Actor{
 		ID:        user.ID,
 		Name:      user.Name.String,
-		PhotoURL:  user.PhotoURL.String,
+		PhotoURL:  fmt.Sprintf("%s/%s", cfg.AppStoragePublicURL, user.PhotoURL.String),
 		Role:      user.Role.Int64,
 		RoleLabel: model.RoleLabel[user.Role.Int64],
 		Regency:   user.Regency.String,
 		District:  user.District.String,
 		Village:   user.Village.String,
 		RW:        user.RW.String,
-		Status:    user.Status,
 	}
 }
 
@@ -83,19 +85,15 @@ func (p *Post) getDetailComment(ctx context.Context, comment *model.CommentRespo
 		Text:       comment.Comment,
 		CreatedAt:  comment.CreatedAt,
 		UpdatedAt:  comment.UpdatedAt,
+		CreatedBy:  comment.CreatedBy,
+		UpdatedBy:  comment.UpdatedBy,
 	}
 	actorCreated, err := p.repoPost.GetActor(ctx, comment.CreatedBy)
 	if err != nil {
 		level.Error(logger).Log("error_get_actor_created", err)
 		return nil, err
 	}
-	commentResp.CreatedBy = p.parsingUserResponse(ctx, actorCreated)
-	actorUpdated, err := p.repoPost.GetActor(ctx, comment.UpdatedBy)
-	if err != nil {
-		level.Error(logger).Log("error_get_actor_updated", err)
-		return nil, err
-	}
-	commentResp.UpdatedBy = p.parsingUserResponse(ctx, actorUpdated)
+	commentResp.User = p.parsingUserResponse(ctx, actorCreated)
 	return commentResp, nil
 }
 

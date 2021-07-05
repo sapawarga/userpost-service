@@ -137,7 +137,6 @@ var (
 		District:  "district",
 		Village:   "village",
 		RW:        "rw",
-		Status:    10,
 	}
 	metadataResponse = helper.SetPointerInt64(2)
 	commentResponse  = &model.CommentResponse{
@@ -155,8 +154,9 @@ var (
 		Text:       commentResponse.Comment,
 		CreatedAt:  commentResponse.CreatedAt,
 		UpdatedAt:  commentResponse.UpdatedAt,
-		CreatedBy:  actor,
-		UpdatedBy:  actor,
+		User:       actor,
+		CreatedBy:  1,
+		UpdatedBy:  1,
 	}
 	totalComment     = helper.SetPointerInt64(1)
 	userPostResponse = []*model.UserPostResponse{
@@ -195,9 +195,8 @@ var (
 	usecaseResponse = &model.UserPostWithMetadata{
 		Data: userPostResponse,
 		Metadata: &model.Metadata{
-			Page:      1,
-			TotalPage: 1,
-			Total:     2,
+			Page:  1,
+			Total: 2,
 		},
 	}
 )

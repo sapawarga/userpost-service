@@ -9,7 +9,7 @@ import (
 )
 
 type GetListUserPostRequest struct {
-	ActivityName *string `httpquery:"activity_name"`
+	ActivityName *string `httpquery:"text"`
 	Username     *string `httpquery:"username"`
 	Category     *string `httpquery:"category"`
 	Status       *int64  `httpquery:"status"`
@@ -19,12 +19,17 @@ type GetListUserPostRequest struct {
 	OrderBy      *string `httpquery:"order_by"`
 }
 
+type GetComment struct {
+	ID   int64 `json:"id" httpquery:"id"`
+	Page int64 `json:"page" httpquery:"page"`
+}
+
 type GetByID struct {
 	ID int64 `json:"id" httpquery:"id"`
 }
 
 type CreateNewPostRequest struct {
-	Title  *string  `json:"title"`
+	Title  *string  `json:"text"`
 	Images []*Image `json:"images"`
 	Tags   *string  `json:"tags"`
 	Status *int64   `json:"status"`

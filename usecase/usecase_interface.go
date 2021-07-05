@@ -12,7 +12,7 @@ type UsecaseI interface {
 	GetDetailPost(ctx context.Context, id int64) (*model.UserPostResponse, error)
 	CreateNewPost(ctx context.Context, requestBody *model.CreateNewPostRequest) error
 	UpdateTitleOrStatus(ctx context.Context, requestBody *model.UpdatePostRequest) error
-	GetCommentsByPostID(ctx context.Context, id int64) ([]*model.Comment, error)
+	GetCommentsByPostID(ctx context.Context, req *model.GetCommentRequest) (*model.CommentWithMetadata, error)
 	CreateCommentOnPost(ctx context.Context, req *model.CreateCommentRequest) error
 	LikeOrDislikePost(ctx context.Context, id int64) error
 	CheckHealthReadiness(ctx context.Context) error
