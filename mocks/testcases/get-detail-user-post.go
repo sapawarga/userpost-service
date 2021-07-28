@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/sapawarga/userpost-service/helper"
+	"github.com/sapawarga/userpost-service/lib/convert"
 	"github.com/sapawarga/userpost-service/model"
 )
 
@@ -25,10 +25,10 @@ var (
 	userpostResponse = &model.UserPostResponse{
 		ID:                    1,
 		Title:                 "title",
-		Tag:                   helper.SetPointerString("tag"),
+		Tag:                   "tag",
 		ImagePath:             "test",
 		Images:                images,
-		LastUserPostCommentID: helper.SetPointerInt64(1),
+		LastUserPostCommentID: convert.SetPointerInt64(1),
 		LastComment:           comment,
 		LikesCount:            0,
 		IsLiked:               true,

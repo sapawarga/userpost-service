@@ -6,7 +6,8 @@ import (
 	"net/http"
 
 	"github.com/sapawarga/userpost-service/endpoint"
-	"github.com/sapawarga/userpost-service/helper"
+	"github.com/sapawarga/userpost-service/lib/constant"
+	"github.com/sapawarga/userpost-service/lib/convert"
 	"github.com/sapawarga/userpost-service/usecase"
 
 	kitlog "github.com/go-kit/kit/log"
@@ -26,8 +27,8 @@ func MakeHandlerHealthy(ctx context.Context, fs usecase.UsecaseI, logger kitlog.
 	}
 
 	r := mux.NewRouter()
-	r.Handle("/health/live", kithttp.NewServer(endpoint.MakeCheckHealthy(ctx), decodeNoRequest, encodeResponse, opts...)).Methods(helper.HTTP_GET)
-	r.Handle("/health/ready", kithttp.NewServer(endpoint.MakeCheckReadiness(ctx, fs), decodeNoRequest, encodeResponse, opts...)).Methods(helper.HTTP_GET)
+	r.Handle("/health/live", kithttp.NewServer(endpoint.MakeCheckHealthy(ctx), decodeNoRequest, encodeResponse, opts...)).Methods(constant.HTTP_GET)
+	r.Handle("/health/ready", kithttp.NewServer(endpoint.MakeCheckReadiness(ctx, fs), decodeNoRequest, encodeResponse, opts...)).Methods(constant.HTTP_GET)
 	return r
 }
 
@@ -49,14 +50,15 @@ func MakeHTTPHandler(ctx context.Context, fs usecase.UsecaseI, logger kitlog.Log
 	r := mux.NewRouter()
 
 	// TODO: handle token middleware
-	r.Handle("/userpost/", processGetList).Methods(helper.HTTP_GET)
-	r.Handle("/userpost/byme", processGetListByMe).Methods(helper.HTTP_GET)
-	r.Handle("/userpost/{id}", processGetDetail).Methods(helper.HTTP_GET)
-	r.Handle("/userpost/{id}/comments", processGetComments).Methods(helper.HTTP_GET)
-	r.Handle("/userpost/", processCreatePost).Methods(helper.HTTP_POST)
-	r.Handle("/userpost/{id}/comments", processCreateComment).Methods(helper.HTTP_POST)
-	r.Handle("/userpost/{id}/like-dislike", processLikeDislike).Methods(helper.HTTP_PUT)
-	r.Handle("/userpost/{id}", processUpdate).Methods(helper.HTTP_PUT)
+	r.Handle("/user-posts/", processGetList).Methods(constant.HTTP_GET)
+	r.Handle("/user-posts/byme", processGetListByMe).Methods(constant.HTTP_GET)
+	r.Handle("/user-posts/{id:[0-9]+}", processGetDetail).Methods(constant.HTTP_GET)
+	r.Handle("/user-posts/{id:[0-9]+}/comments", processGetComments).Methods(constant.HTTP_GET)
+	r.Handle("/user-posts/", processCreatePost).Methods(constant.HTTP_POST)
+	r.Handle("/user-posts/{id:[0-9]+}", processUpdate).Methods(constant.HTTP_PUT)
+	r.Handle("/user-posts/{id:[0-9]+}/comments", processCreateComment).Methods(constant.HTTP_POST)
+	r.Handle("/user-posts/{id:[0-9]+}/like-dislike", processLikeDislike).Methods(constant.HTTP_PUT)
+
 	return r
 }
 
@@ -72,25 +74,30 @@ func decodeGetList(ctx context.Context, r *http.Request) (interface{}, error) {
 		pageString = "1"
 	}
 
-	status, _ := helper.ConvertFromStringToInt64(statusString)
-	limit, _ := helper.ConvertFromStringToInt64(limitString)
-	page, _ := helper.ConvertFromStringToInt64(pageString)
+	var status *int64
+	if statusString != "" {
+		status, _ = convert.FromStringToInt64(statusString)
+
+	}
+	limit, _ := convert.FromStringToInt64(limitString)
+	page, _ := convert.FromStringToInt64(pageString)
 
 	return &endpoint.GetListUserPostRequest{
-		ActivityName: helper.SetPointerString(r.URL.Query().Get("activity_name")),
-		Username:     helper.SetPointerString(r.URL.Query().Get("username")),
-		Category:     helper.SetPointerString(r.URL.Query().Get("category")),
+		ActivityName: convert.SetPointerString(r.URL.Query().Get("text")),
+		Username:     convert.SetPointerString(r.URL.Query().Get("username")),
+		Category:     convert.SetPointerString(r.URL.Query().Get("tags")),
 		Status:       status,
 		Page:         page,
 		Limit:        limit,
-		SortBy:       helper.SetPointerString(r.URL.Query().Get("sort_by")),
-		OrderBy:      helper.SetPointerString(r.URL.Query().Get("order_by")),
+		SortBy:       convert.SetPointerString(r.URL.Query().Get("sort_by")),
+		OrderBy:      convert.SetPointerString(r.URL.Query().Get("order_by")),
+		Search:       convert.SetPointerString(r.URL.Query().Get("search")),
 	}, nil
 }
 
 func decodeGetByID(ctx context.Context, r *http.Request) (interface{}, error) {
 	params := mux.Vars(r)
-	_, id := helper.ConvertFromStringToInt64(params["id"])
+	_, id := convert.FromStringToInt64(params["id"])
 	return &endpoint.GetByID{
 		ID: id,
 	}, nil
@@ -106,7 +113,7 @@ func decodeCreatePost(ctx context.Context, r *http.Request) (interface{}, error)
 
 func decodeCreateComment(ctx context.Context, r *http.Request) (interface{}, error) {
 	params := mux.Vars(r)
-	_, id := helper.ConvertFromStringToInt64(params["id"])
+	_, id := convert.FromStringToInt64(params["id"])
 	reqBody := &endpoint.CreateCommentRequest{}
 	if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 		return nil, err
@@ -128,9 +135,9 @@ func encodeResponse(ctx context.Context, w http.ResponseWriter, response interfa
 
 	status, ok := response.(*endpoint.StatusResponse)
 	if ok {
-		if status.Code == helper.STATUS_CREATED {
+		if status.Code == constant.STATUS_CREATED {
 			w.WriteHeader(http.StatusCreated)
-		} else if status.Code == helper.STATUS_UPDATED || status.Code == helper.STATUS_DELETED {
+		} else if status.Code == constant.STATUS_UPDATED || status.Code == constant.STATUS_DELETED {
 			w.WriteHeader(http.StatusNoContent)
 			_ = json.NewEncoder(w).Encode(nil)
 			return nil
@@ -144,7 +151,7 @@ func encodeResponse(ctx context.Context, w http.ResponseWriter, response interfa
 
 func encodeError(_ context.Context, err error, w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusBadRequest)
+	w.WriteHeader(http.StatusUnprocessableEntity)
 
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"error": err.Error(),

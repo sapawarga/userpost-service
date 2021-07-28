@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"strings"
 
-	"github.com/sapawarga/userpost-service/helper"
+	"github.com/sapawarga/userpost-service/lib/convert"
 	"github.com/sapawarga/userpost-service/model"
 )
 
@@ -25,45 +26,50 @@ func (r *UserPost) CheckHealthReadiness(ctx context.Context) error {
 }
 
 func querySelectParams(ctx context.Context, query bytes.Buffer, params *model.UserPostRequest) (newQuery bytes.Buffer, queryParams []interface{}) {
-	var first = true
+	if params.Search != nil {
+		query.WriteString(" WHERE (u.name LIKE ? OR up.text LIKE ? )")
+		queryParams = append(queryParams, "'%"+convert.GetStringFromPointer(params.Search)+"%'", "'%"+convert.GetStringFromPointer(params.Search)+"%'")
+	}
+
 	if params.ActivityName != nil {
-		qBuffer := isFirstQuery(ctx, first, helper.SELECT_QUERY)
-		query.WriteString(qBuffer.String())
-		query.WriteString(fmt.Sprintf(`text LIKE LOWER(%s) `, "'%"+helper.GetStringFromPointer(params.ActivityName)+"%'"))
-		first = false
+		query.WriteString(andWhere(ctx, query, "up.text", "LIKE"))
+		queryParams = append(queryParams, "'%"+convert.GetStringFromPointer(params.ActivityName)+"%'")
 	}
 
 	if params.Category != nil {
-		qBuffer := isFirstQuery(ctx, first, helper.SELECT_QUERY)
-		query.WriteString(qBuffer.String())
-		query.WriteString(" tags = ? ")
-		queryParams = append(queryParams, params.Category)
-		first = false
+		query.WriteString(andWhere(ctx, query, "LOWER(up.tags)", "LIKE"))
+		queryParams = append(queryParams, "'%"+convert.GetStringFromPointer(params.Category)+"%'")
 	}
 
 	if params.Status != nil {
-		qBuffer := isFirstQuery(ctx, first, helper.SELECT_QUERY)
-		query.WriteString(qBuffer.String())
-		query.WriteString(" status = ?")
-		queryParams = append(queryParams, params.Status)
+		query.WriteString(andWhere(ctx, query, "up.status", "="))
+		queryParams = append(queryParams, convert.GetInt64FromPointer(params.Status))
+	}
+
+	if params.Username != nil {
+		query.WriteString(andWhere(ctx, query, "u.name", "LIKE"))
+		queryParams = append(queryParams, "'%"+convert.GetStringFromPointer(params.Username)+"%'")
 	}
 
 	return query, queryParams
 }
 
-func isFirstQuery(ctx context.Context, isFirst bool, queryType string) bytes.Buffer {
-	var query bytes.Buffer
-	if queryType == helper.SELECT_QUERY {
-		if isFirst {
-			query.WriteString(" WHERE ")
-		} else {
-			query.WriteString(" AND ")
-		}
-	} else if queryType == helper.UPDATE_QUERY {
-		if !isFirst {
-			query.WriteString(" , ")
-		}
+func andWhere(ctx context.Context, query bytes.Buffer, field string, action string) string {
+	var newQuery string
+	if strings.Contains(query.String(), "WHERE") {
+		newQuery = fmt.Sprintf(" AND %s %s ? ", field, action)
+	} else {
+		newQuery = fmt.Sprintf(" WHERE %s %s ? ", field, action)
 	}
+	return newQuery
+}
 
-	return query
+func updateQuery(ctx context.Context, fields ...string) string {
+	var query bytes.Buffer
+	query.WriteString(fmt.Sprintf(" %s = :%s ", fields[0], fields[0]))
+	fields = fields[1:]
+	for _, field := range fields {
+		query.WriteString(fmt.Sprintf(" , %s = :%s ", field, field))
+	}
+	return query.String()
 }

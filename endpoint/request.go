@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-ozzo/ozzo-validation/is"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/sapawarga/userpost-service/helper"
+	"github.com/sapawarga/userpost-service/lib/constant"
 )
 
 type GetListUserPostRequest struct {
@@ -17,6 +17,7 @@ type GetListUserPostRequest struct {
 	Limit        *int64  `httpquery:"limit"`
 	SortBy       *string `httpquery:"sort_by"`
 	OrderBy      *string `httpquery:"order_by"`
+	Search       *string `httpquery:"search"`
 }
 
 type GetComment struct {
@@ -52,13 +53,13 @@ func Validate(in interface{}) error {
 			validation.Field(&obj.Title, validation.Required, validation.Length(10, 0)),
 			validation.Field(&obj.Images, validation.Required, validation.By(validationImages(obj.Images))),
 			validation.Field(&obj.Tags, validation.Required),
-			validation.Field(&obj.Status, validation.Required, validation.In(helper.ACTIVED, helper.DELETED, helper.INACTIVED)),
+			validation.Field(&obj.Status, validation.Required, validation.In(constant.ACTIVED, constant.DELETED, constant.INACTIVED)),
 		)
 	} else if obj, ok := in.(*CreateCommentRequest); ok {
 		err = validation.ValidateStruct(in,
 			validation.Field(&obj.UserPostID, validation.Required),
 			validation.Field(&obj.Text, validation.Required, validation.Length(10, 0)),
-			validation.Field(&obj.Status, validation.Required, validation.In(helper.ACTIVED, helper.DELETED, helper.INACTIVED)),
+			validation.Field(&obj.Status, validation.Required, validation.In(constant.ACTIVED, constant.DELETED, constant.INACTIVED)),
 		)
 	}
 	return err

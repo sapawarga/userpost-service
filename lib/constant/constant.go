@@ -1,9 +1,11 @@
-package helper
+package constant
 
 const (
 	DELETED          int64 = -1
 	INACTIVED        int64 = 0
 	ACTIVED          int64 = 10
+	DEFAULT_LIMIT    int64 = 20
+	DEFAULT_OFFSET   int64 = 0
 	DELETED_STRING         = "deleted"
 	INACTIVED_STRING       = "inactived"
 	ACTIVED_STRING         = "actived"

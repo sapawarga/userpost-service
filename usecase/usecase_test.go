@@ -6,7 +6,7 @@ import (
 	"os"
 	"reflect"
 
-	"github.com/sapawarga/userpost-service/helper"
+	"github.com/sapawarga/userpost-service/lib/constant"
 	mocks "github.com/sapawarga/userpost-service/mocks"
 	"github.com/sapawarga/userpost-service/mocks/testcases"
 	"github.com/sapawarga/userpost-service/model"
@@ -43,7 +43,7 @@ var _ = Describe("Usecase", func() {
 			"id": int64(1),
 		}
 		actorData := &model.ActorFromContext{Data: actor}
-		ctx = context.WithValue(ctx, helper.ACTORKEY, actorData)
+		ctx = context.WithValue(ctx, constant.ACTORKEY, actorData)
 		data := testcases.GetListUserPostData[idx]
 		mockPostRepo.EXPECT().GetListPost(ctx, gomock.Any()).Return(data.ResponseGetList.Result, data.ResponseGetList.Error).Times(1)
 		mockPostRepo.EXPECT().GetMetadataPost(ctx, gomock.Any()).Return(data.ResponseMetadata.Result, data.ResponseMetadata.Error).Times(1)
@@ -68,7 +68,7 @@ var _ = Describe("Usecase", func() {
 			"id": int64(1),
 		}
 		actorData := &model.ActorFromContext{Data: actor}
-		ctx = context.WithValue(ctx, helper.ACTORKEY, actorData)
+		ctx = context.WithValue(ctx, constant.ACTORKEY, actorData)
 		data := testcases.GetDetailUserPostData[idx]
 		mockPostRepo.EXPECT().GetDetailPost(ctx, data.GetUserPostParams).Return(data.ResponseGetDetailUserPost.Result, data.ResponseGetDetailUserPost.Error).Times(1)
 		mockCommentsRepo.EXPECT().GetLastComment(ctx, data.GetLastCommentParams).Return(data.ResponseGetLastComment.Result, data.ResponseGetLastComment.Error).Times(1)
@@ -91,7 +91,7 @@ var _ = Describe("Usecase", func() {
 			"id": int64(1),
 		}
 		actorData := &model.ActorFromContext{Data: actor}
-		ctx = context.WithValue(ctx, helper.ACTORKEY, actorData)
+		ctx = context.WithValue(ctx, constant.ACTORKEY, actorData)
 		data := testcases.CreateNewUserPostData[idx]
 		mockPostRepo.EXPECT().InsertPost(ctx, data.RepositoryRequest).Return(data.MockRepository).Times(1)
 		err := userPost.CreateNewPost(ctx, data.UsecaseRequest)
@@ -135,7 +135,7 @@ var _ = Describe("Usecase", func() {
 			"id": int64(1),
 		}
 		actorData := &model.ActorFromContext{Data: actor}
-		ctx = context.WithValue(ctx, helper.ACTORKEY, actorData)
+		ctx = context.WithValue(ctx, constant.ACTORKEY, actorData)
 		data := testcases.CreateCommentOnAPostData[idx]
 		mockCommentsRepo.EXPECT().Create(ctx, data.RepositoryRequest).Return(data.MockRepository.ID, data.MockRepository.Error).Times(1)
 		mockPostRepo.EXPECT().UpdateDetailOfUserPost(ctx, data.UpdatePostRequest).Return(data.MockUpdatePost).Times(1)
@@ -151,7 +151,7 @@ var _ = Describe("Usecase", func() {
 		actor := &model.ActorFromContext{Data: map[string]interface{}{
 			"id": int64(1),
 		}}
-		ctx = context.WithValue(ctx, helper.ACTORKEY, actor)
+		ctx = context.WithValue(ctx, constant.ACTORKEY, actor)
 		data := testcases.GetListUserPostByMeData[idx]
 		mockPostRepo.EXPECT().GetListPostByMe(ctx, gomock.Any()).Return(data.ResponseGetList.Result, data.ResponseGetList.Error).Times(1)
 		mockPostRepo.EXPECT().GetMetadataPostByMe(ctx, gomock.Any()).Return(data.ResponseMetadata.Result, data.ResponseMetadata.Error).Times(1)
@@ -176,7 +176,7 @@ var _ = Describe("Usecase", func() {
 		actor := &model.ActorFromContext{Data: map[string]interface{}{
 			"id": int64(1),
 		}}
-		ctx = context.WithValue(ctx, helper.ACTORKEY, actor)
+		ctx = context.WithValue(ctx, constant.ACTORKEY, actor)
 		data := testcases.LikeOrDislikePostData[idx]
 		mockPostRepo.EXPECT().CheckIsExistLikeOnPostBy(ctx, data.CheckIsLikedRequest).Return(data.MockCheckIsLiked.Result, data.MockCheckIsLiked.Error).Times(1)
 		mockPostRepo.EXPECT().AddLikeOnPost(ctx, data.AddLikeOnPostRequest).Return(data.MockAddLikeOnPost).Times(1)

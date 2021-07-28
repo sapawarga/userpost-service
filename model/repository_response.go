@@ -2,7 +2,6 @@ package model
 
 import (
 	"database/sql"
-	"time"
 )
 
 type PostResponse struct {
@@ -17,8 +16,8 @@ type PostResponse struct {
 	Status                int64          `db:"status"`
 	CreatedBy             sql.NullInt64  `db:"created_by"`
 	UpdatedBy             sql.NullInt64  `db:"updated_by"`
-	CreatedAt             time.Time      `db:"created_at"`
-	UpdatedAt             time.Time      `db:"updated_at"`
+	CreatedAt             int64          `db:"created_at"`
+	UpdatedAt             int64          `db:"updated_at"`
 }
 
 type UserResponse struct {
@@ -40,12 +39,12 @@ type LikeResponse struct {
 }
 
 type CommentResponse struct {
-	ID         int64     `db:"id"`
-	UserPostID int64     `db:"user_post_id"`
-	Comment    string    `db:"comment"`
-	Status     int64     `db:"status"`
-	CreatedAt  time.Time `db:"created_at"`
-	UpdatedAt  time.Time `db:"updated_at"`
-	CreatedBy  int64     `db:"created_by"`
-	UpdatedBy  int64     `db:"updated_by"`
+	ID         int64         `db:"id"`
+	UserPostID sql.NullInt64 `db:"user_post_id"`
+	Comment    string        `db:"text"`
+	Status     int64         `db:"status"`
+	CreatedAt  int64         `db:"created_at"`
+	UpdatedAt  int64         `db:"updated_at"`
+	CreatedBy  sql.NullInt64 `db:"created_by"`
+	UpdatedBy  sql.NullInt64 `db:"updated_by"`
 }

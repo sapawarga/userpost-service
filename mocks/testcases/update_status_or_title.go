@@ -3,14 +3,15 @@ package testcases
 import (
 	"errors"
 
-	"github.com/sapawarga/userpost-service/helper"
+	"github.com/sapawarga/userpost-service/lib/constant"
+	"github.com/sapawarga/userpost-service/lib/convert"
 	"github.com/sapawarga/userpost-service/model"
 )
 
 var updateUserPost = &model.UpdatePostRequest{
 	ID:     1,
-	Status: helper.SetPointerInt64(helper.ACTIVED),
-	Title:  helper.SetPointerString("Update Description"),
+	Status: convert.SetPointerInt64(constant.ACTIVED),
+	Title:  convert.SetPointerString("Update Description"),
 }
 
 type UpdateUserPostDetail struct {

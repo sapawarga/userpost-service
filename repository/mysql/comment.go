@@ -6,7 +6,7 @@ import (
 	"database/sql"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/sapawarga/userpost-service/helper"
+	"github.com/sapawarga/userpost-service/lib/convert"
 	"github.com/sapawarga/userpost-service/model"
 )
 
@@ -25,7 +25,7 @@ func (r *Comment) GetLastComment(ctx context.Context, id int64) (*model.CommentR
 	var result = &model.CommentResponse{}
 	var err error
 
-	query.WriteString("SELECT id, user_post_id, `text` as comment, status, created_by, updated_by, FROM_UNIXTIME(created_at) as created_at, FROM_UNIXTIME(updated_at) as updated_at FROM user_post_comments ")
+	query.WriteString("SELECT id, user_post_id, `text`, status, created_by, updated_by, created_at, updated_at FROM user_post_comments ")
 	query.WriteString("WHERE id = ?")
 
 	if ctx != nil {
@@ -52,9 +52,9 @@ func (r *Comment) GetTotalComments(ctx context.Context, userPostID int64) (*int6
 	query.WriteString("SELECT COUNT(1) as total FROM user_post_comments WHERE user_post_id = ?")
 
 	if ctx != nil {
-		err = r.conn.GetContext(ctx, total, query.String(), userPostID)
+		err = r.conn.GetContext(ctx, &total, query.String(), userPostID)
 	} else {
-		err = r.conn.Get(total, query.String(), userPostID)
+		err = r.conn.Get(&total, query.String(), userPostID)
 	}
 
 	if err == sql.ErrNoRows {
@@ -72,7 +72,7 @@ func (r *Comment) GetCommentsByPostID(ctx context.Context, req *model.GetComment
 	var result = make([]*model.CommentResponse, 0)
 	var err error
 
-	query.WriteString("SELECT id, user_post_id, `text` as comment, status, created_by, updated_by, FROM_UNIXTIME(created_at) as created_at, FROM_UNIXTIME(updated_at) as updated_at FROM user_post_comments ")
+	query.WriteString("SELECT id, user_post_id, `text`, status, created_by, updated_by, created_at, updated_at FROM user_post_comments ")
 	query.WriteString("WHERE user_post_id = ?")
 	query.WriteString(" LIMIT ?, ?")
 
@@ -92,7 +92,7 @@ func (r *Comment) Create(ctx context.Context, req *model.CreateCommentRequestRep
 	var query bytes.Buffer
 	var err error
 	var result sql.Result
-	_, unixTime := helper.GetCurrentTimeUTC()
+	_, unixTime := convert.GetCurrentTimeUTC()
 
 	query.WriteString("INSERT INTO user_post_comments (user_post_id, `text`, status, created_by, updated_by, created_at, updated_at) ")
 	query.WriteString("VALUES(:user_post_id, :comment, :status, :actor, :actor, :current, :current)")

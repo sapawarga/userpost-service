@@ -1,9 +1,10 @@
 package testcases
 
 import (
+	"database/sql"
 	"errors"
 
-	"github.com/sapawarga/userpost-service/helper"
+	"github.com/sapawarga/userpost-service/lib/convert"
 	"github.com/sapawarga/userpost-service/model"
 )
 
@@ -17,7 +18,7 @@ type ResponseGetCommentsUsecase struct {
 	Error  error
 }
 
-var amountComments = helper.SetPointerInt64(2)
+var amountComments = convert.SetPointerInt64(2)
 
 type GetComments struct {
 	Description                      string
@@ -36,19 +37,19 @@ var (
 		{
 			ID:         1,
 			Comment:    "comment",
-			UserPostID: 1,
+			UserPostID: sql.NullInt64{Int64: 1, Valid: true},
 			CreatedAt:  current,
 			UpdatedAt:  current,
-			CreatedBy:  1,
-			UpdatedBy:  1,
+			CreatedBy:  sql.NullInt64{Int64: 1, Valid: true},
+			UpdatedBy:  sql.NullInt64{Int64: 1, Valid: true},
 		}, {
 			ID:         2,
 			Comment:    "ini juga comment",
-			UserPostID: 1,
+			UserPostID: sql.NullInt64{Int64: 1, Valid: true},
 			CreatedAt:  current,
 			UpdatedAt:  current,
-			CreatedBy:  1,
-			UpdatedBy:  1,
+			CreatedBy:  sql.NullInt64{Int64: 1, Valid: true},
+			UpdatedBy:  sql.NullInt64{Int64: 1, Valid: true},
 		},
 	}
 	commentsUsecase = []*model.Comment{
