@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 
 	"github.com/sapawarga/userpost-service/endpoint"
-	"github.com/sapawarga/userpost-service/helper"
+	"github.com/sapawarga/userpost-service/lib/convert"
 	"github.com/sapawarga/userpost-service/model"
 	"github.com/sapawarga/userpost-service/usecase"
 
@@ -78,14 +78,14 @@ func decodeGetListUserPost(ctx context.Context, r interface{}) (interface{}, err
 	req := r.(*transportUserPost.GetListUserPostRequest)
 
 	return &endpoint.GetListUserPostRequest{
-		ActivityName: helper.SetPointerString(req.GetActivityName()),
-		Username:     helper.SetPointerString(req.GetUsername()),
-		Category:     helper.SetPointerString(req.GetCategory()),
-		Status:       helper.SetPointerInt64(req.GetStatus()),
-		Page:         helper.SetPointerInt64(req.GetPage()),
-		Limit:        helper.SetPointerInt64(req.GetLimit()),
-		SortBy:       helper.SetPointerString(req.GetSortBy()),
-		OrderBy:      helper.SetPointerString(req.GetOrderBy()),
+		ActivityName: convert.SetPointerString(req.GetActivityName()),
+		Username:     convert.SetPointerString(req.GetUsername()),
+		Category:     convert.SetPointerString(req.GetCategory()),
+		Status:       convert.SetPointerInt64(req.GetStatus()),
+		Page:         convert.SetPointerInt64(req.GetPage()),
+		Limit:        convert.SetPointerInt64(req.GetLimit()),
+		SortBy:       convert.SetPointerString(req.GetSortBy()),
+		OrderBy:      convert.SetPointerString(req.GetOrderBy()),
 	}, nil
 }
 
@@ -101,15 +101,13 @@ func encodeGetListUserPost(ctx context.Context, r interface{}) (interface{}, err
 		result := &transportUserPost.UserPost{
 			Id:                    v.ID,
 			Title:                 v.Title,
-			Tag:                   helper.GetStringFromPointer(v.Tag),
+			Tag:                   v.Tag,
 			ImagePath:             v.ImagePath,
 			Images:                string(images),
-			LastUserPostCommentId: helper.GetInt64FromPointer(v.LastUserPostCommentID),
+			LastUserPostCommentId: convert.GetInt64FromPointer(v.LastUserPostCommentID),
 			LikesCount:            v.LikesCount,
 			CommentCounts:         v.CommentCounts,
 			Status:                v.Status,
-			CreatedAt:             v.CreatedAt.String(),
-			UpdatedAt:             v.UpdatedAt.String(),
 		}
 		result = appendDetailUserPost(ctx, v, result)
 		resultData = append(resultData, result)
@@ -137,8 +135,6 @@ func appendDetailUserPost(ctx context.Context, r *model.UserPostResponse, data *
 			Id:         r.LastComment.ID,
 			UserPostId: r.LastComment.UserPostID,
 			Comment:    r.LastComment.Text,
-			CreatedAt:  r.LastComment.CreatedAt.String(),
-			UpdatedAt:  r.LastComment.UpdatedAt.String(),
 		}
 		actorCreated := encodeActor(ctx, r.LastComment.CreatedBy)
 		actorUpdated := encodeActor(ctx, r.LastComment.UpdatedBy)
@@ -165,8 +161,6 @@ func encodedUserPostDetail(ctx context.Context, r interface{}) (interface{}, err
 		Id:         comment.ID,
 		UserPostId: comment.UserPostID,
 		Comment:    comment.Text,
-		CreatedAt:  comment.CreatedAt.String(),
-		UpdatedAt:  comment.UpdatedAt.String(),
 	}
 
 	lastCommentActorCreated := encodeActor(ctx, comment.CreatedBy)
@@ -181,18 +175,16 @@ func encodedUserPostDetail(ctx context.Context, r interface{}) (interface{}, err
 	userDetail := &transportUserPost.UserPost{
 		Id:                    resp.ID,
 		Title:                 resp.Title,
-		Tag:                   helper.GetStringFromPointer(resp.Tag),
+		Tag:                   resp.Tag,
 		ImagePath:             resp.ImagePath,
 		Images:                string(images),
-		LastUserPostCommentId: helper.GetInt64FromPointer(resp.LastUserPostCommentID),
+		LastUserPostCommentId: convert.GetInt64FromPointer(resp.LastUserPostCommentID),
 		LastComment:           lastComment,
 		LikesCount:            resp.LikesCount,
 		IsLiked:               resp.IsLiked,
 		CommentCounts:         resp.CommentCounts,
 		Status:                resp.Status,
 		Actor:                 actorUserPost,
-		CreatedAt:             resp.CreatedAt.String(),
-		UpdatedAt:             resp.UpdatedAt.String(),
 	}
 
 	return userDetail, nil
@@ -225,10 +217,10 @@ func decodeCreateNewPostRequest(ctx context.Context, r interface{}) (interface{}
 	}
 
 	return &endpoint.CreateNewPostRequest{
-		Title:  helper.SetPointerString(req.GetTitle()),
+		Title:  convert.SetPointerString(req.GetTitle()),
 		Images: images,
-		Tags:   helper.SetPointerString(req.GetTags()),
-		Status: helper.SetPointerInt64(req.GetStatus()),
+		Tags:   convert.SetPointerString(req.GetTags()),
+		Status: convert.SetPointerInt64(req.GetStatus()),
 	}, nil
 }
 
@@ -246,7 +238,7 @@ func decodeUpdateUserPost(ctx context.Context, r interface{}) (interface{}, erro
 
 	return &endpoint.CreateCommentRequest{
 		UserPostID: req.GetId(),
-		Status:     helper.SetPointerInt64(req.GetStatus()),
+		Status:     convert.SetPointerInt64(req.GetStatus()),
 		Text:       req.GetTitle(),
 	}, nil
 }
@@ -262,8 +254,6 @@ func encodeGetCommentsByIDResponse(ctx context.Context, r interface{}) (interfac
 			Id:         v.ID,
 			UserPostId: v.UserPostID,
 			Comment:    v.Text,
-			CreatedAt:  v.CreatedAt.String(),
-			UpdatedAt:  v.UpdatedAt.String(),
 			CreatedBy:  created,
 			UpdatedBy:  updated,
 		}
@@ -281,6 +271,6 @@ func decodeCreateCommentRequest(ctx context.Context, r interface{}) (interface{}
 	return &endpoint.CreateCommentRequest{
 		UserPostID: req.GetUserPostId(),
 		Text:       req.GetComment(),
-		Status:     helper.SetPointerInt64(req.GetStatus()),
+		Status:     convert.SetPointerInt64(req.GetStatus()),
 	}, nil
 }

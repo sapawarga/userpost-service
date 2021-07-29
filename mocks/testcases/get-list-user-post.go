@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/sapawarga/userpost-service/helper"
+	"github.com/sapawarga/userpost-service/lib/convert"
 	"github.com/sapawarga/userpost-service/model"
 )
 
@@ -62,15 +62,15 @@ type GetListUserPost struct {
 }
 
 var (
-	testRandomString = helper.SetPointerString("random-test")
-	statusNumber     = helper.SetPointerInt64(10)
+	testRandomString = convert.SetPointerString("random-test")
+	statusNumber     = convert.SetPointerInt64(10)
 	requestUsecase   = model.GetListRequest{
 		ActivityName: testRandomString,
 		Username:     testRandomString,
 		Category:     testRandomString,
 		Status:       statusNumber,
-		Page:         helper.SetPointerInt64(1),
-		Limit:        helper.SetPointerInt64(10),
+		Page:         convert.SetPointerInt64(1),
+		Limit:        convert.SetPointerInt64(10),
 		SortBy:       nil,
 		OrderBy:      nil,
 	}
@@ -79,12 +79,12 @@ var (
 		Username:     requestUsecase.Username,
 		Category:     requestUsecase.Category,
 		Status:       requestUsecase.Status,
-		Offset:       helper.SetPointerInt64(0),
+		Offset:       convert.SetPointerInt64(0),
 		Limit:        requestUsecase.Limit,
 		SortBy:       nil,
 		OrderBy:      nil,
 	}
-	current, _   = helper.GetCurrentTimeUTC()
+	_, current   = convert.GetCurrentTimeUTC()
 	postResponse = []*model.PostResponse{
 		{
 			ID:                    1,
@@ -133,24 +133,24 @@ var (
 		PhotoURL:  "www.instagram.com/htm-medium=?p9878y2y3",
 		Role:      99,
 		RoleLabel: model.RoleLabel[int64(99)],
-		Regency:   "regency",
-		District:  "district",
-		Village:   "village",
-		RW:        "rw",
+		Regency:   convert.SetPointerString("regency"),
+		District:  convert.SetPointerString("district"),
+		Village:   convert.SetPointerString("village"),
+		RW:        convert.SetPointerString("rw"),
 	}
-	metadataResponse = helper.SetPointerInt64(2)
+	metadataResponse = convert.SetPointerInt64(2)
 	commentResponse  = &model.CommentResponse{
 		ID:         1,
 		Comment:    "comment",
-		UserPostID: 1,
+		UserPostID: sql.NullInt64{Int64: 1, Valid: true},
 		CreatedAt:  current,
 		UpdatedAt:  current,
-		CreatedBy:  1,
-		UpdatedBy:  1,
+		CreatedBy:  sql.NullInt64{Int64: 1, Valid: true},
+		UpdatedBy:  sql.NullInt64{Int64: 1, Valid: true},
 	}
 	comment = &model.Comment{
 		ID:         commentResponse.ID,
-		UserPostID: commentResponse.UserPostID,
+		UserPostID: commentResponse.UserPostID.Int64,
 		Text:       commentResponse.Comment,
 		CreatedAt:  commentResponse.CreatedAt,
 		UpdatedAt:  commentResponse.UpdatedAt,
@@ -158,15 +158,15 @@ var (
 		CreatedBy:  1,
 		UpdatedBy:  1,
 	}
-	totalComment     = helper.SetPointerInt64(1)
+	totalComment     = convert.SetPointerInt64(1)
 	userPostResponse = []*model.UserPostResponse{
 		{
 			ID:                    1,
 			Title:                 "title",
-			Tag:                   helper.SetPointerString("tag"),
+			Tag:                   "tag",
 			ImagePath:             "test",
 			Images:                images,
-			LastUserPostCommentID: helper.SetPointerInt64(1),
+			LastUserPostCommentID: convert.SetPointerInt64(1),
 			LastComment:           comment,
 			LikesCount:            0,
 			IsLiked:               true,
@@ -178,10 +178,10 @@ var (
 		}, {
 			ID:                    2,
 			Title:                 "test title",
-			Tag:                   helper.SetPointerString("tag"),
+			Tag:                   "tag",
 			ImagePath:             "test",
 			Images:                images,
-			LastUserPostCommentID: helper.SetPointerInt64(1),
+			LastUserPostCommentID: convert.SetPointerInt64(1),
 			LastComment:           comment,
 			LikesCount:            0,
 			IsLiked:               true,

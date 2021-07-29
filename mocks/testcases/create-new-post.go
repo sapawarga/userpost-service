@@ -3,18 +3,19 @@ package testcases
 import (
 	"errors"
 
-	"github.com/sapawarga/userpost-service/helper"
+	"github.com/sapawarga/userpost-service/lib/constant"
+	"github.com/sapawarga/userpost-service/lib/convert"
 	"github.com/sapawarga/userpost-service/model"
 )
 
-var tags = helper.SetPointerString("categories")
+var tags = convert.SetPointerString("categories")
 
 var newPostRequest = &model.CreateNewPostRequest{
 	Title:        "test",
 	ImagePathURL: "http://localhost",
 	Images:       "[{\"path\":\"http://localhost\"}]",
 	Tags:         tags,
-	Status:       helper.ACTIVED,
+	Status:       constant.ACTIVED,
 }
 
 var newRepositoryRequest = &model.CreateNewPostRequestRepository{
@@ -22,7 +23,7 @@ var newRepositoryRequest = &model.CreateNewPostRequestRepository{
 	ImagePathURL: "http://localhost",
 	Images:       "[{\"path\":\"http://localhost\"}]",
 	Tags:         tags,
-	Status:       helper.ACTIVED,
+	Status:       constant.ACTIVED,
 	ActorID:      1,
 }
 

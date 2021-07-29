@@ -4,7 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/sapawarga/userpost-service/helper"
+	"github.com/sapawarga/userpost-service/lib/constant"
+	"github.com/sapawarga/userpost-service/lib/convert"
 	"github.com/sapawarga/userpost-service/model"
 	"github.com/sapawarga/userpost-service/repository"
 
@@ -28,10 +29,10 @@ func NewPost(repoPost repository.PostI, repoComment repository.CommentI, logger 
 
 func (p *Post) GetListPost(ctx context.Context, params *model.GetListRequest) (*model.UserPostWithMetadata, error) {
 	logger := kitlog.With(p.logger, "method", "GetListPost")
-	var limit, offset int64 = 10, 0
+	var limit, offset = constant.DEFAULT_LIMIT, constant.DEFAULT_OFFSET
 	if params.Page != nil && params.Limit != nil {
-		limit = helper.GetInt64FromPointer(params.Limit)
-		offset = (helper.GetInt64FromPointer(params.Page) - 1) * limit
+		limit = convert.GetInt64FromPointer(params.Limit)
+		offset = (convert.GetInt64FromPointer(params.Page) - 1) * limit
 	}
 
 	req := &model.UserPostRequest{
@@ -39,10 +40,11 @@ func (p *Post) GetListPost(ctx context.Context, params *model.GetListRequest) (*
 		Username:     params.Username,
 		Category:     params.Category,
 		Status:       params.Status,
-		Offset:       helper.SetPointerInt64(offset),
-		Limit:        helper.SetPointerInt64(limit),
+		Offset:       convert.SetPointerInt64(offset),
+		Limit:        convert.SetPointerInt64(limit),
 		SortBy:       params.SortBy,
 		OrderBy:      params.OrderBy,
+		Search:       params.Search,
 	}
 
 	listData, err := p.repoPost.GetListPost(ctx, req)
@@ -63,8 +65,8 @@ func (p *Post) GetListPost(ctx context.Context, params *model.GetListRequest) (*
 	}
 
 	metadata := &model.Metadata{
-		Page:  helper.GetInt64FromPointer(params.Page),
-		Total: helper.GetInt64FromPointer(total),
+		Page:  convert.GetInt64FromPointer(params.Page),
+		Total: convert.GetInt64FromPointer(total),
 	}
 
 	return &model.UserPostWithMetadata{Data: userPosts, Metadata: metadata}, nil
@@ -72,24 +74,25 @@ func (p *Post) GetListPost(ctx context.Context, params *model.GetListRequest) (*
 
 func (p *Post) GetListPostByMe(ctx context.Context, params *model.GetListRequest) (*model.UserPostWithMetadata, error) {
 	logger := kitlog.With(p.logger, "method", "GetListPostByMe")
-	var limit, offset int64 = 10, 0
+	var limit, offset int64 = constant.DEFAULT_LIMIT, constant.DEFAULT_OFFSET
 
 	if params.Page != nil && params.Limit != nil {
-		limit = helper.GetInt64FromPointer(params.Limit)
-		offset = (helper.GetInt64FromPointer(params.Page) - 1) * limit
+		limit = convert.GetInt64FromPointer(params.Limit)
+		offset = (convert.GetInt64FromPointer(params.Page) - 1) * limit
 	}
 
 	req := &model.UserPostByMeRequest{
-		// ActorID: ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Get("id").(int64),
+		// ActorID: ctx.Value(constant.ACTORKEY).(*model.ActorFromContext).Get("id").(int64),
 		UserPostRequest: &model.UserPostRequest{
 			ActivityName: params.ActivityName,
 			Username:     params.Username,
 			Category:     params.Category,
 			Status:       params.Status,
-			Offset:       helper.SetPointerInt64(offset),
-			Limit:        helper.SetPointerInt64(limit),
+			Offset:       convert.SetPointerInt64(offset),
+			Limit:        convert.SetPointerInt64(limit),
 			SortBy:       params.SortBy,
-			OrderBy:      params.OrderBy},
+			OrderBy:      params.OrderBy,
+			Search:       params.Search},
 	}
 	resp, err := p.repoPost.GetListPostByMe(ctx, req)
 	if err != nil {
@@ -111,8 +114,8 @@ func (p *Post) GetListPostByMe(ctx context.Context, params *model.GetListRequest
 	return &model.UserPostWithMetadata{
 		Data: userPosts,
 		Metadata: &model.Metadata{
-			Page:  helper.GetInt64FromPointer(params.Page),
-			Total: helper.GetInt64FromPointer(total),
+			Page:  convert.GetInt64FromPointer(params.Page),
+			Total: convert.GetInt64FromPointer(total),
 		},
 	}, nil
 }
@@ -120,7 +123,7 @@ func (p *Post) GetListPostByMe(ctx context.Context, params *model.GetListRequest
 func (p *Post) GetDetailPost(ctx context.Context, id int64) (*model.UserPostResponse, error) {
 	// TODO: add actor
 	logger := kitlog.With(p.logger, "method", "GetDetailPost")
-	// actor := ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Data
+	// actor := ctx.Value(constant.ACTORKEY).(*model.ActorFromContext).Data
 	resp, err := p.repoPost.GetDetailPost(ctx, id)
 	if err != nil {
 		level.Error(logger).Log("error_get_detail", err)
@@ -136,7 +139,7 @@ func (p *Post) GetDetailPost(ctx context.Context, id int64) (*model.UserPostResp
 	isLiked, err := p.repoPost.CheckIsExistLikeOnPostBy(ctx, &model.AddOrRemoveLikeOnPostRequest{
 		UserPostID: id,
 		// ActorID:    actor["id"].(int64),
-		TypeEntity: helper.TYPE_USERPOST,
+		TypeEntity: constant.TYPE_USERPOST,
 	})
 	if err != nil {
 		level.Error(logger).Log("error_check_isliked", err)
@@ -153,7 +156,7 @@ func (p *Post) GetDetailPost(ctx context.Context, id int64) (*model.UserPostResp
 func (p *Post) CreateNewPost(ctx context.Context, requestBody *model.CreateNewPostRequest) error {
 	// TODO: add checker tags, Add Actor
 	logger := kitlog.With(p.logger, "method", "CreateNewPost")
-	// actor := ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Data
+	// actor := ctx.Value(constant.ACTORKEY).(*model.ActorFromContext).Data
 	if err := p.repoPost.InsertPost(ctx, &model.CreateNewPostRequestRepository{
 		Title:        requestBody.Title,
 		ImagePathURL: requestBody.ImagePathURL,
@@ -167,6 +170,7 @@ func (p *Post) CreateNewPost(ctx context.Context, requestBody *model.CreateNewPo
 		return err
 	}
 
+	level.Info(logger).Log("msg", "success_create_new_post")
 	return nil
 }
 
@@ -187,10 +191,8 @@ func (p *Post) UpdateTitleOrStatus(ctx context.Context, requestBody *model.Updat
 
 func (p *Post) GetCommentsByPostID(ctx context.Context, req *model.GetCommentRequest) (*model.CommentWithMetadata, error) {
 	logger := kitlog.With(p.logger, "method", "GetCommentsByPostID")
-	var limit, offset int64 = 20, 0
-	if req.Page > 1 {
-		offset = (req.Page - 1) * limit
-	}
+	var limit, offset = constant.DEFAULT_LIMIT, constant.DEFAULT_OFFSET
+
 	resp, err := p.repoComment.GetCommentsByPostID(ctx, &model.GetComment{
 		ID:     req.ID,
 		Limit:  limit,
@@ -230,7 +232,7 @@ func (p *Post) GetCommentsByPostID(ctx context.Context, req *model.GetCommentReq
 	}
 	meta := &model.Metadata{
 		Page:  req.Page,
-		Total: helper.GetInt64FromPointer(totalComment),
+		Total: convert.GetInt64FromPointer(totalComment),
 	}
 
 	return &model.CommentWithMetadata{
@@ -242,7 +244,7 @@ func (p *Post) GetCommentsByPostID(ctx context.Context, req *model.GetCommentReq
 func (p *Post) CreateCommentOnPost(ctx context.Context, req *model.CreateCommentRequest) error {
 	// TODO: implement authorization and authenticationn
 	logger := kitlog.With(p.logger, "method", "CreateCommentOnPost")
-	// actor := ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Data
+	// actor := ctx.Value(constant.ACTORKEY).(*model.ActorFromContext).Data
 	id, err := p.repoComment.Create(ctx, &model.CreateCommentRequestRepository{
 		UserPostID: req.UserPostID,
 		Text:       req.Text,
@@ -257,8 +259,9 @@ func (p *Post) CreateCommentOnPost(ctx context.Context, req *model.CreateComment
 
 	if err := p.repoPost.UpdateDetailOfUserPost(ctx, &model.UpdatePostRequest{
 		ID:            req.UserPostID,
-		LastCommentID: helper.SetPointerInt64(id),
+		LastCommentID: convert.SetPointerInt64(id),
 	}); err != nil {
+		level.Error(logger).Log("error_update", err)
 		return err
 	}
 
@@ -268,13 +271,13 @@ func (p *Post) CreateCommentOnPost(ctx context.Context, req *model.CreateComment
 func (p *Post) LikeOrDislikePost(ctx context.Context, id int64) error {
 	// TODO: context actor
 	logger := kitlog.With(p.logger, "method", "LikeOrDislikePost")
-	// actorID := ctx.Value(helper.ACTORKEY).(*model.ActorFromContext).Get("id").(int64)
+	// actorID := ctx.Value(constant.ACTORKEY).(*model.ActorFromContext).Get("id").(int64)
 	var err error
 
 	request := &model.AddOrRemoveLikeOnPostRequest{
 		UserPostID: id,
 		// ActorID:    actorID,
-		TypeEntity: helper.TYPE_USERPOST,
+		TypeEntity: constant.TYPE_USERPOST,
 	}
 	isExist, err := p.repoPost.CheckIsExistLikeOnPostBy(ctx, request)
 	if err != nil {

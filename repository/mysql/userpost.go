@@ -7,7 +7,7 @@ import (
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/sapawarga/userpost-service/helper"
+	"github.com/sapawarga/userpost-service/lib/convert"
 	"github.com/sapawarga/userpost-service/model"
 )
 
@@ -26,7 +26,9 @@ func (r *UserPost) GetListPost(ctx context.Context, request *model.UserPostReque
 	var result = make([]*model.PostResponse, 0)
 	var err error
 
-	query.WriteString("SELECT id, text, tags, image_path, images, last_user_post_comment_id, likes_count, comments_count, status, created_by, updated_by, FROM_UNIXTIME(created_at) as created_at, FROM_UNIXTIME(updated_at) as updated_at FROM user_posts")
+	query.WriteString(`SELECT up.id, up.text, up.tags, up.image_path, up.images, up.last_user_post_comment_id, up.likes_count, up.comments_count, up.status, 
+		up.created_by, up.updated_by, up.created_at, up.updated_at FROM user_posts up
+		LEFT JOIN user u ON u.id = up.created_by`)
 	query, params := querySelectParams(ctx, query, request)
 	if request.Limit != nil && request.Offset != nil {
 		query.WriteString(" LIMIT ?, ?")
@@ -35,6 +37,7 @@ func (r *UserPost) GetListPost(ctx context.Context, request *model.UserPostReque
 	if request.OrderBy != nil && request.SortBy != nil {
 		query.WriteString(fmt.Sprintf(" ORDER BY %s %s", *request.SortBy, *request.OrderBy))
 	}
+
 	if ctx != nil {
 		err = r.conn.SelectContext(ctx, &result, query.String(), params...)
 	} else {
@@ -53,7 +56,7 @@ func (r *UserPost) GetMetadataPost(ctx context.Context, request *model.UserPostR
 	var total *int64
 	var err error
 
-	query.WriteString("SELECT COUNT(1) FROM user_posts")
+	query.WriteString("SELECT COUNT(1) FROM user_posts up LEFT JOIN user u ON u.id = up.created_by")
 	query, params := querySelectParams(ctx, query, request)
 	if ctx != nil {
 		err = r.conn.GetContext(ctx, &total, query.String(), params...)
@@ -73,9 +76,9 @@ func (r *UserPost) GetListPostByMe(ctx context.Context, request *model.UserPostB
 	var result = make([]*model.PostResponse, 0)
 	var err error
 
-	query.WriteString("SELECT id, text, tags, image_path, images, last_user_post_comment_id, likes_count, comments_count, status, created_by, updated_by, FROM_UNIXTIME(created_at) as created_at, FROM_UNIXTIME(updated_at) as updated_at FROM user_posts")
+	query.WriteString(`SELECT id, text, tags, image_path, images, last_user_post_comment_id, likes_count, comments_count, status, 
+	created_by, updated_by, created_at, updated_at FROM user_posts WHERE created_by = ?`)
 	query, params := querySelectParams(ctx, query, request.UserPostRequest)
-	query.WriteString(" AND created_by = ? ")
 	params = append(params, request.ActorID)
 	if request.Limit != nil && request.Offset != nil {
 		query.WriteString("LIMIT ?, ?")
@@ -105,8 +108,8 @@ func (r *UserPost) GetMetadataPostByMe(ctx context.Context, request *model.UserP
 	var err error
 
 	query.WriteString("SELECT COUNT(1) FROM user_posts ")
+	query.WriteString(" WHERE created_by = ? ")
 	query, params := querySelectParams(ctx, query, request.UserPostRequest)
-	query.WriteString(" AND created_by = ? ")
 	params = append(params, request.ActorID)
 
 	if ctx != nil {
@@ -155,7 +158,7 @@ func (r *UserPost) GetDetailPost(ctx context.Context, id int64) (*model.PostResp
 	var result = &model.PostResponse{}
 	var err error
 
-	query.WriteString("SELECT id, text, tags, image_path, images, last_user_post_comment_id, likes_count, comments_count, status, created_by, updated_by, FROM_UNIXTIME(created_at) as created_at, FROM_UNIXTIME(updated_at) as updated_at FROM user_posts")
+	query.WriteString("SELECT id, text, tags, image_path, images, last_user_post_comment_id, likes_count, comments_count, status, created_by, updated_by, created_at, updated_at FROM user_posts")
 	query.WriteString(" WHERE id = ?")
 	if ctx != nil {
 		err = r.conn.GetContext(ctx, result, query.String(), id)
@@ -202,7 +205,7 @@ func (r *UserPost) CheckIsExistLikeOnPostBy(ctx context.Context, request *model.
 func (r *UserPost) InsertPost(ctx context.Context, request *model.CreateNewPostRequestRepository) error {
 	var query bytes.Buffer
 	var err error
-	_, unixTime := helper.GetCurrentTimeUTC()
+	_, unixTime := convert.GetCurrentTimeUTC()
 
 	query.WriteString("INSERT INTO user_posts (`text`, tags, image_path, images, status, created_by, updated_by, created_at, updated_at)")
 	query.WriteString("VALUES (:title, :tags, :image_path, :images, :status, :actor, :actor, :created_at, :created_at)")
@@ -231,7 +234,7 @@ func (r *UserPost) InsertPost(ctx context.Context, request *model.CreateNewPostR
 func (r *UserPost) AddLikeOnPost(ctx context.Context, request *model.AddOrRemoveLikeOnPostRequest) error {
 	var query bytes.Buffer
 	var err error
-	_, unixTime := helper.GetCurrentTimeUTC()
+	_, unixTime := convert.GetCurrentTimeUTC()
 
 	query.WriteString("INSERT INTO likes (`type`, user_id, entity_id, created_at, updated_at) ")
 	query.WriteString("VALUES(:type_entity, :user_id, :entity_id, :current, :current)")
@@ -258,39 +261,27 @@ func (r *UserPost) AddLikeOnPost(ctx context.Context, request *model.AddOrRemove
 func (r *UserPost) UpdateDetailOfUserPost(ctx context.Context, request *model.UpdatePostRequest) error {
 	var query bytes.Buffer
 	var params = make(map[string]interface{})
-	var first = true
+	var fields []string
 	var err error
-	_, unixTime := helper.GetCurrentTimeUTC()
+	_, unixTime := convert.GetCurrentTimeUTC()
 
 	query.WriteString("UPDATE user_posts SET ")
 	if request.Status != nil {
-		query.WriteString("status = :status")
+		fields = append(fields, "status")
 		params["status"] = request.Status
-		first = false
 	}
 	if request.Title != nil {
-		if !first {
-			query.WriteString(", ")
-		}
-		query.WriteString("`text` = :title")
-		params["title"] = request.Title
-		first = false
+		fields = append(fields, "text")
+		params["text"] = request.Title
 	}
 	if request.LastCommentID != nil {
-		if !first {
-			query.WriteString(", ")
-		}
-		query.WriteString(" last_user_post_comment_id = :last_user_post_comment_id,")
-		query.WriteString(" comments_count= comments_count + 1")
+		fields = append(fields, "last_user_post_comment_id")
+		query.WriteString(" comments_count = comments_count + 1 , ")
 		params["last_user_post_comment_id"] = request.LastCommentID
-		first = false
 	}
-	if !first {
-		query.WriteString(", ")
-	}
-	query.WriteString(" updated_at = :update")
-	params["update"] = unixTime
-	query.WriteString(" WHERE id = :id ")
+	fields = append(fields, "updated_at")
+	params["updated_at"] = unixTime
+	query.WriteString(updateQuery(ctx, fields...) + " WHERE id = :id ")
 	params["id"] = request.ID
 
 	if ctx != nil {

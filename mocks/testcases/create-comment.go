@@ -3,7 +3,7 @@ package testcases
 import (
 	"errors"
 
-	"github.com/sapawarga/userpost-service/helper"
+	"github.com/sapawarga/userpost-service/lib/convert"
 	"github.com/sapawarga/userpost-service/model"
 )
 
@@ -25,7 +25,7 @@ type ResponseCreateComment struct {
 
 var updateTotalCommentPost = &model.UpdatePostRequest{
 	ID:            1,
-	LastCommentID: helper.SetPointerInt64(1),
+	LastCommentID: convert.SetPointerInt64(1),
 }
 
 type CreateCommentOnAPost struct {

@@ -8,7 +8,8 @@ import (
 	"errors"
 
 	"github.com/go-kit/kit/endpoint"
-	"github.com/sapawarga/userpost-service/helper"
+	"github.com/sapawarga/userpost-service/lib/constant"
+	"github.com/sapawarga/userpost-service/lib/convert"
 	"github.com/sapawarga/userpost-service/model"
 	"github.com/sapawarga/userpost-service/usecase"
 )
@@ -16,7 +17,7 @@ import (
 func MakeGetListUserPost(ctx context.Context, usecase usecase.UsecaseI) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(*GetListUserPostRequest)
-		orderBy := helper.GetStringFromPointer(req.OrderBy)
+		orderBy := convert.GetStringFromPointer(req.OrderBy)
 		if req.OrderBy != nil && !isOrderValid(orderBy) {
 			return nil, errors.New("order_must_between_ASC_DESC")
 		}
@@ -30,6 +31,7 @@ func MakeGetListUserPost(ctx context.Context, usecase usecase.UsecaseI) endpoint
 			Limit:        req.Limit,
 			SortBy:       req.SortBy,
 			OrderBy:      req.OrderBy,
+			Search:       req.Search,
 		})
 		if err != nil {
 			return nil, err
@@ -40,10 +42,10 @@ func MakeGetListUserPost(ctx context.Context, usecase usecase.UsecaseI) endpoint
 		data := &UserPostWithMetadata{
 			Data: resp.Data,
 			Metadata: &Metadata{
-				PerPage:     helper.GetInt64FromPointer(req.Limit),
+				PerPage:     convert.GetInt64FromPointer(req.Limit),
 				TotalPage:   totalPage,
 				Total:       resp.Metadata.Total,
-				CurrentPage: helper.GetInt64FromPointer(req.Page),
+				CurrentPage: convert.GetInt64FromPointer(req.Page),
 			},
 		}
 		return map[string]interface{}{
@@ -87,10 +89,10 @@ func MakeGetListUserPostByMe(ctx context.Context, usecase usecase.UsecaseI) endp
 		data := &UserPostWithMetadata{
 			Data: resp.Data,
 			Metadata: &Metadata{
-				PerPage:     helper.GetInt64FromPointer(req.Limit),
+				PerPage:     convert.GetInt64FromPointer(req.Limit),
 				TotalPage:   totalPage,
 				Total:       resp.Metadata.Total,
-				CurrentPage: helper.GetInt64FromPointer(req.Page),
+				CurrentPage: convert.GetInt64FromPointer(req.Page),
 			},
 		}
 		return map[string]interface{}{
@@ -112,11 +114,11 @@ func MakeCreateNewPost(ctx context.Context, usecase usecase.UsecaseI) endpoint.E
 		}
 
 		bodyRequest := &model.CreateNewPostRequest{
-			Title:        helper.GetStringFromPointer(req.Title),
+			Title:        convert.GetStringFromPointer(req.Title),
 			ImagePathURL: imagePathURL.Path,
 			Images:       string(imagesFormatted),
 			Tags:         req.Tags,
-			Status:       helper.GetInt64FromPointer(req.Status),
+			Status:       convert.GetInt64FromPointer(req.Status),
 		}
 
 		if err = usecase.CreateNewPost(ctx, bodyRequest); err != nil {
@@ -124,7 +126,7 @@ func MakeCreateNewPost(ctx context.Context, usecase usecase.UsecaseI) endpoint.E
 		}
 
 		return &StatusResponse{
-			Code:    helper.STATUS_CREATED,
+			Code:    constant.STATUS_CREATED,
 			Message: "a_post_has_been_created",
 		}, nil
 	}
@@ -140,12 +142,12 @@ func MakeUpdateStatusOrTitle(ctx context.Context, usecase usecase.UsecaseI) endp
 		if err = usecase.UpdateTitleOrStatus(ctx, &model.UpdatePostRequest{
 			ID:     req.UserPostID,
 			Status: req.Status,
-			Title:  helper.SetPointerString(req.Text),
+			Title:  convert.SetPointerString(req.Text),
 		}); err != nil {
 			return nil, err
 		}
 		return &StatusResponse{
-			Code:    helper.STATUS_UPDATED,
+			Code:    constant.STATUS_UPDATED,
 			Message: "post_has_been_updated",
 		}, nil
 	}
@@ -153,10 +155,9 @@ func MakeUpdateStatusOrTitle(ctx context.Context, usecase usecase.UsecaseI) endp
 
 func MakeGetCommentsByID(ctx context.Context, usecase usecase.UsecaseI) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		req := request.(*GetComment)
+		req := request.(*GetByID)
 		resp, err := usecase.GetCommentsByPostID(ctx, &model.GetCommentRequest{
-			ID:   req.ID,
-			Page: req.Page,
+			ID: req.ID,
 		})
 		if err != nil {
 			return nil, err
@@ -165,7 +166,7 @@ func MakeGetCommentsByID(ctx context.Context, usecase usecase.UsecaseI) endpoint
 		data := &CommentsResponse{
 			Data: resp.Data,
 			Metadata: &Metadata{
-				PerPage:     20,
+				PerPage:     constant.DEFAULT_LIMIT,
 				Total:       resp.Metadata.Total,
 				TotalPage:   math.Ceil(float64(resp.Metadata.Total) / float64(20)),
 				CurrentPage: resp.Metadata.Page,
@@ -187,13 +188,13 @@ func MakeCreateComment(ctx context.Context, usecase usecase.UsecaseI) endpoint.E
 		if err = usecase.CreateCommentOnPost(ctx, &model.CreateCommentRequest{
 			UserPostID: req.UserPostID,
 			Text:       req.Text,
-			Status:     helper.GetInt64FromPointer(req.Status),
+			Status:     convert.GetInt64FromPointer(req.Status),
 		}); err != nil {
 			return nil, err
 		}
 
 		return &StatusResponse{
-			Code:    helper.STATUS_CREATED,
+			Code:    constant.STATUS_CREATED,
 			Message: "success_post_comment",
 		}, nil
 	}
@@ -208,7 +209,7 @@ func MakeLikeOrDislikePost(ctx context.Context, usecase usecase.UsecaseI) endpoi
 		}
 
 		return &StatusResponse{
-			Code:    helper.STATUS_CREATED,
+			Code:    constant.STATUS_UPDATED,
 			Message: "success_like_or_dislike_a_post",
 		}, nil
 	}
@@ -217,7 +218,7 @@ func MakeLikeOrDislikePost(ctx context.Context, usecase usecase.UsecaseI) endpoi
 func MakeCheckHealthy(ctx context.Context) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		return &StatusResponse{
-			Code:    helper.STATUS_OK,
+			Code:    constant.STATUS_OK,
 			Message: "service_is_ok",
 		}, nil
 	}
@@ -229,7 +230,7 @@ func MakeCheckReadiness(ctx context.Context, usecase usecase.UsecaseI) endpoint.
 			return nil, err
 		}
 		return &StatusResponse{
-			Code:    helper.STATUS_OK,
+			Code:    constant.STATUS_OK,
 			Message: "service_is_ready",
 		}, nil
 	}

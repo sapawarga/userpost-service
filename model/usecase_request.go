@@ -10,6 +10,7 @@ type GetListRequest struct {
 	Limit        *int64
 	SortBy       *string
 	OrderBy      *string
+	Search       *string
 }
 
 // CreateNewPostRequest ...
