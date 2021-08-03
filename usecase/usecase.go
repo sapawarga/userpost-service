@@ -186,6 +186,7 @@ func (p *Post) UpdateTitleOrStatus(ctx context.Context, requestBody *model.Updat
 		return err
 	}
 
+	level.Info(logger).Log("msg", "success_update_title_or_status")
 	return nil
 }
 
