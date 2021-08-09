@@ -28,14 +28,14 @@ func (r *UserPost) GetListPost(ctx context.Context, request *model.UserPostReque
 
 	query.WriteString(`SELECT up.id, up.text, up.tags, up.image_path, up.images, up.last_user_post_comment_id, up.likes_count, up.comments_count, up.status, 
 		up.created_by, up.updated_by, up.created_at, up.updated_at FROM user_posts up
-		LEFT JOIN user u ON u.id = up.created_by`)
+		LEFT JOIN user ON user.id = up.created_by`)
 	query, params := querySelectParams(ctx, query, request)
 	if request.Limit != nil && request.Offset != nil {
 		query.WriteString(" LIMIT ?, ?")
 		params = append(params, request.Offset, request.Limit)
 	}
-	if request.OrderBy != nil && request.SortBy != nil {
-		query.WriteString(fmt.Sprintf(" ORDER BY %s %s", *request.SortBy, *request.OrderBy))
+	if request.OrderBy != "" && request.SortBy != "" {
+		query.WriteString(fmt.Sprintf(" ORDER BY %s %s", request.SortBy, request.OrderBy))
 	}
 
 	if ctx != nil {
@@ -56,7 +56,7 @@ func (r *UserPost) GetMetadataPost(ctx context.Context, request *model.UserPostR
 	var total *int64
 	var err error
 
-	query.WriteString("SELECT COUNT(1) FROM user_posts up LEFT JOIN user u ON u.id = up.created_by")
+	query.WriteString("SELECT COUNT(1) FROM user_posts up LEFT JOIN user ON user.id = up.created_by")
 	query, params := querySelectParams(ctx, query, request)
 	if ctx != nil {
 		err = r.conn.GetContext(ctx, &total, query.String(), params...)
@@ -84,7 +84,7 @@ func (r *UserPost) GetListPostByMe(ctx context.Context, request *model.UserPostB
 		query.WriteString("LIMIT ?, ?")
 		params = append(params, request.Offset, request.Limit)
 	}
-	if request.OrderBy != nil && request.SortBy != nil {
+	if request.OrderBy != "" && request.SortBy != "" {
 		query.WriteString(" ORDER BY ? ?")
 		params = append(params, request.OrderBy, request.SortBy)
 	}

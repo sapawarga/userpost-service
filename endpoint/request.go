@@ -15,8 +15,8 @@ type GetListUserPostRequest struct {
 	Status       *int64  `httpquery:"status"`
 	Page         *int64  `httpquery:"page"`
 	Limit        *int64  `httpquery:"limit"`
-	SortBy       *string `httpquery:"sort_by"`
-	OrderBy      *string `httpquery:"order_by"`
+	SortBy       string  `httpquery:"sort_by"`
+	OrderBy      string  `httpquery:"order_by"`
 	Search       *string `httpquery:"search"`
 }
 

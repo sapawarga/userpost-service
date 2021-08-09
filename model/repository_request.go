@@ -7,8 +7,8 @@ type UserPostRequest struct {
 	Status       *int64
 	Offset       *int64
 	Limit        *int64
-	SortBy       *string
-	OrderBy      *string
+	SortBy       string
+	OrderBy      string
 	Search       *string
 }
 
