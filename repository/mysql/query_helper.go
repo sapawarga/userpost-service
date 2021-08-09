@@ -27,18 +27,18 @@ func (r *UserPost) CheckHealthReadiness(ctx context.Context) error {
 
 func querySelectParams(ctx context.Context, query bytes.Buffer, params *model.UserPostRequest) (newQuery bytes.Buffer, queryParams []interface{}) {
 	if params.Search != nil {
-		query.WriteString(" WHERE (u.name LIKE ? OR up.text LIKE ? )")
-		queryParams = append(queryParams, "'%"+convert.GetStringFromPointer(params.Search)+"%'", "'%"+convert.GetStringFromPointer(params.Search)+"%'")
+		query.WriteString(" WHERE (user.name LIKE ? OR up.text LIKE ? )")
+		queryParams = append(queryParams, "%"+convert.GetStringFromPointer(params.Search)+"%", "%"+convert.GetStringFromPointer(params.Search)+"%")
 	}
 
 	if params.ActivityName != nil {
 		query.WriteString(andWhere(ctx, query, "up.text", "LIKE"))
-		queryParams = append(queryParams, "'%"+convert.GetStringFromPointer(params.ActivityName)+"%'")
+		queryParams = append(queryParams, "%"+convert.GetStringFromPointer(params.ActivityName)+"%")
 	}
 
 	if params.Category != nil {
 		query.WriteString(andWhere(ctx, query, "LOWER(up.tags)", "LIKE"))
-		queryParams = append(queryParams, "'%"+convert.GetStringFromPointer(params.Category)+"%'")
+		queryParams = append(queryParams, "%"+strings.ToLower(convert.GetStringFromPointer(params.Category))+"%")
 	}
 
 	if params.Status != nil {
@@ -47,8 +47,8 @@ func querySelectParams(ctx context.Context, query bytes.Buffer, params *model.Us
 	}
 
 	if params.Username != nil {
-		query.WriteString(andWhere(ctx, query, "u.name", "LIKE"))
-		queryParams = append(queryParams, "'%"+convert.GetStringFromPointer(params.Username)+"%'")
+		query.WriteString(andWhere(ctx, query, "user.name", "LIKE"))
+		queryParams = append(queryParams, "%"+convert.GetStringFromPointer(params.Username)+"%")
 	}
 
 	return query, queryParams

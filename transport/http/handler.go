@@ -77,20 +77,28 @@ func decodeGetList(ctx context.Context, r *http.Request) (interface{}, error) {
 	var status *int64
 	if statusString != "" {
 		status, _ = convert.FromStringToInt64(statusString)
-
 	}
+
+	var sortBy, orderBy = "created_at", "DESC"
+	if r.URL.Query().Get("sort_by") != "" {
+		sortBy = r.URL.Query().Get("sort_by")
+	}
+	if r.URL.Query().Get("sort_order") != "" {
+		orderBy = constant.AscOrDesc[r.URL.Query().Get("sort_order")]
+	}
+
 	limit, _ := convert.FromStringToInt64(limitString)
 	page, _ := convert.FromStringToInt64(pageString)
 
 	return &endpoint.GetListUserPostRequest{
 		ActivityName: convert.SetPointerString(r.URL.Query().Get("text")),
-		Username:     convert.SetPointerString(r.URL.Query().Get("username")),
+		Username:     convert.SetPointerString(r.URL.Query().Get("name")),
 		Category:     convert.SetPointerString(r.URL.Query().Get("tags")),
 		Status:       status,
 		Page:         page,
 		Limit:        limit,
-		SortBy:       convert.SetPointerString(r.URL.Query().Get("sort_by")),
-		OrderBy:      convert.SetPointerString(r.URL.Query().Get("order_by")),
+		SortBy:       sortBy,
+		OrderBy:      orderBy,
 		Search:       convert.SetPointerString(r.URL.Query().Get("search")),
 	}, nil
 }

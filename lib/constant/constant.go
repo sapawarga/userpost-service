@@ -25,3 +25,13 @@ const (
 type keyType string
 
 var ACTORKEY keyType = "Actor"
+
+// AscOrDesc ...
+var AscOrDesc = map[string]string{
+	"ascending":  "ASC",
+	"descending": "DESC",
+	"asc":        "ASC",
+	"desc":       "DESC",
+	"ASC":        "ASC",
+	"DESC":       "DESC",
+}

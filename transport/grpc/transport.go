@@ -84,8 +84,8 @@ func decodeGetListUserPost(ctx context.Context, r interface{}) (interface{}, err
 		Status:       convert.SetPointerInt64(req.GetStatus()),
 		Page:         convert.SetPointerInt64(req.GetPage()),
 		Limit:        convert.SetPointerInt64(req.GetLimit()),
-		SortBy:       convert.SetPointerString(req.GetSortBy()),
-		OrderBy:      convert.SetPointerString(req.GetOrderBy()),
+		SortBy:       req.GetSortBy(),
+		OrderBy:      req.GetOrderBy(),
 	}, nil
 }
 

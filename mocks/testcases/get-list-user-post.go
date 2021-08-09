@@ -71,8 +71,8 @@ var (
 		Status:       statusNumber,
 		Page:         convert.SetPointerInt64(1),
 		Limit:        convert.SetPointerInt64(10),
-		SortBy:       nil,
-		OrderBy:      nil,
+		SortBy:       "",
+		OrderBy:      "",
 	}
 	userPostParams = model.UserPostRequest{
 		ActivityName: requestUsecase.ActivityName,
@@ -81,8 +81,8 @@ var (
 		Status:       requestUsecase.Status,
 		Offset:       convert.SetPointerInt64(0),
 		Limit:        requestUsecase.Limit,
-		SortBy:       nil,
-		OrderBy:      nil,
+		SortBy:       "",
+		OrderBy:      "",
 	}
 	_, current   = convert.GetCurrentTimeUTC()
 	postResponse = []*model.PostResponse{
