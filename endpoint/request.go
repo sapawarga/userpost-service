@@ -1,8 +1,6 @@
 package endpoint
 
 import (
-	"strings"
-
 	"github.com/go-ozzo/ozzo-validation/is"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/sapawarga/userpost-service/lib/constant"
@@ -76,8 +74,4 @@ func validationImages(in []*Image) validation.RuleFunc {
 		}
 		return err
 	}
-}
-
-func isOrderValid(val string) bool {
-	return strings.EqualFold(val, "ASC") || strings.EqualFold(val, "DESC")
 }
