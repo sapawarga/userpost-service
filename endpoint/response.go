@@ -8,10 +8,10 @@ type UserPostWithMetadata struct {
 }
 
 type Metadata struct {
-	PerPage     int64   `json:"page"`
-	TotalPage   float64 `json:"total_page"`
-	CurrentPage int64   `json:"current_page"`
-	Total       int64   `json:"total"`
+	PerPage     int64   `json:"perPage"`
+	TotalPage   float64 `json:"totalPage"`
+	CurrentPage int64   `json:"currentPage"`
+	Total       int64   `json:"totalCount"`
 }
 
 type UserPostDetail struct {
