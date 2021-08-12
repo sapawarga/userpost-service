@@ -10,7 +10,7 @@ type UserPostResponse struct {
 	LastComment           *Comment                 `json:"last_comment"`
 	LikesCount            int64                    `json:"likes_count"`
 	IsLiked               bool                     `json:"is_liked"`
-	CommentCounts         int64                    `json:"comment_counts"`
+	CommentCounts         int64                    `json:"comments_count"`
 	Status                int64                    `json:"status"`
 	StatusLabel           string                   `json:"status_label"`
 	CreatedBy             int64                    `json:"created_by"`
