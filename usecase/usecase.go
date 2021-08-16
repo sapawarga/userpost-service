@@ -45,6 +45,7 @@ func (p *Post) GetListPost(ctx context.Context, params *model.GetListRequest) (*
 		SortBy:       params.SortBy,
 		OrderBy:      params.OrderBy,
 		Search:       params.Search,
+		RegencyID:    params.RegencyID,
 	}
 
 	listData, err := p.repoPost.GetListPost(ctx, req)
@@ -92,6 +93,7 @@ func (p *Post) GetListPostByMe(ctx context.Context, params *model.GetListRequest
 			Limit:        convert.SetPointerInt64(limit),
 			SortBy:       params.SortBy,
 			OrderBy:      params.OrderBy,
+			RegencyID:    params.RegencyID,
 			Search:       params.Search},
 	}
 	resp, err := p.repoPost.GetListPostByMe(ctx, req)

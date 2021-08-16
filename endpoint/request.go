@@ -16,6 +16,7 @@ type GetListUserPostRequest struct {
 	SortBy       string  `httpquery:"sort_by"`
 	OrderBy      string  `httpquery:"order_by"`
 	Search       *string `httpquery:"search"`
+	RegencyID    *int64  `httpquery:"kabkota_id"`
 }
 
 type GetComment struct {
