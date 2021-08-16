@@ -10,7 +10,7 @@ type UserPostRequest struct {
 	SortBy       string
 	OrderBy      string
 	Search       *string
-	RegencyID    *int64
+	DistrictID   *int64
 }
 
 type UserPostByMeRequest struct {

@@ -66,7 +66,7 @@ func decodeGetList(ctx context.Context, r *http.Request) (interface{}, error) {
 	statusString := r.URL.Query().Get("status")
 	limitString := r.URL.Query().Get("limit")
 	pageString := r.URL.Query().Get("page")
-	regencyID, _ := convert.FromStringToInt64(r.URL.Query().Get("kabkota_id"))
+	districtID, _ := convert.FromStringToInt64(r.URL.Query().Get("kabkota_id"))
 	status, _ := convert.FromStringToInt64(statusString)
 
 	if limitString == "" {
@@ -97,7 +97,7 @@ func decodeGetList(ctx context.Context, r *http.Request) (interface{}, error) {
 		SortBy:       sortBy,
 		OrderBy:      orderBy,
 		Search:       convert.SetPointerString(r.URL.Query().Get("search")),
-		RegencyID:    regencyID,
+		DistrictID:   districtID,
 	}, nil
 }
 

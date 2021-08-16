@@ -26,7 +26,7 @@ func MakeGetListUserPost(ctx context.Context, usecase usecase.UsecaseI) endpoint
 			SortBy:       req.SortBy,
 			OrderBy:      req.OrderBy,
 			Search:       req.Search,
-			RegencyID:    req.RegencyID,
+			DistrictID:   req.DistrictID,
 		})
 		if err != nil {
 			return nil, err
@@ -76,7 +76,7 @@ func MakeGetListUserPostByMe(ctx context.Context, usecase usecase.UsecaseI) endp
 			SortBy:       req.SortBy,
 			OrderBy:      req.OrderBy,
 			Search:       req.Search,
-			RegencyID:    req.RegencyID,
+			DistrictID:   req.DistrictID,
 		})
 		if err != nil {
 			return nil, err
