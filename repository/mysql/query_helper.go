@@ -51,6 +51,11 @@ func querySelectParams(ctx context.Context, query bytes.Buffer, params *model.Us
 		queryParams = append(queryParams, "%"+convert.GetStringFromPointer(params.Username)+"%")
 	}
 
+	if params.DistrictID != nil {
+		query.WriteString(andWhere(ctx, query, "user.kabkota_id", "="))
+		queryParams = append(queryParams, convert.GetInt64FromPointer(params.DistrictID))
+	}
+
 	return query, queryParams
 }
 

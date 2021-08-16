@@ -66,17 +66,14 @@ func decodeGetList(ctx context.Context, r *http.Request) (interface{}, error) {
 	statusString := r.URL.Query().Get("status")
 	limitString := r.URL.Query().Get("limit")
 	pageString := r.URL.Query().Get("page")
+	districtID, _ := convert.FromStringToInt64(r.URL.Query().Get("kabkota_id"))
+	status, _ := convert.FromStringToInt64(statusString)
 
 	if limitString == "" {
 		limitString = "10"
 	}
 	if pageString == "" || pageString == "0" {
 		pageString = "1"
-	}
-
-	var status *int64
-	if statusString != "" {
-		status, _ = convert.FromStringToInt64(statusString)
 	}
 
 	var sortBy, orderBy = "created_at", "DESC"
@@ -100,6 +97,7 @@ func decodeGetList(ctx context.Context, r *http.Request) (interface{}, error) {
 		SortBy:       sortBy,
 		OrderBy:      orderBy,
 		Search:       convert.SetPointerString(r.URL.Query().Get("search")),
+		DistrictID:   districtID,
 	}, nil
 }
 

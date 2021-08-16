@@ -11,6 +11,7 @@ type GetListRequest struct {
 	SortBy       string
 	OrderBy      string
 	Search       *string
+	DistrictID   *int64
 }
 
 // CreateNewPostRequest ...
